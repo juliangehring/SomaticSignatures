@@ -1,0 +1,466 @@
+% Created 2014-01-08 Wed 13:24
+\documentclass{article}
+<<style, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex(use.unsrturl = FALSE)
+@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Julian Gehring, EMBL Heidelberg}
+\date{\today}
+\title{The SomaticSignatures Package}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.1.1 (Org mode 8.2.5c)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{SomaticSignatures - PDF}
+%\VignettePackage{SomaticSignatures}
+
+<<echo=FALSE, results='hide'>>=
+set.seed(1)
+library(knitr)
+opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "0.7\\columnwidth", indent = 10) ## background = "#FFFFFF", dev = 'pdf'
+@ %def
+
+
+\section{Motivation: The Concept Behind Mutational Signatures}
+\label{sec-1}
+
+Recent publications introduced the concept of identifying mutational signatures
+from cancer sequencing studies and linked them to potential mutation generation
+processes \cite{nik-zainal_mutational_2012} \cite{alexandrov_signatures_2013}.
+Conceptually, this relates somatically occurring single nucleotide variants
+(SNVs) to the surrounding sequence which will be referred to as mutational or
+somatic motifs in the following.  Based on the frequency of the motifs occurring
+in multiple samples, these can be decomposed mathematically into so called
+\emph{mutational signatures}.  In case of the investigation of tumors, the term
+somatic signatures will be used to distinguish them from germline mutations and
+their generating processes.
+
+The \texttt{SomaticSignatures} package provides an efficient and user-friendly
+implementation for the extraction of somatic motifs based on a list of
+somatically mutated genomic sites and the estimation of somatic signatures with
+a number of statistical approaches.
+
+\section{Methodology: From Mutations to Somatic Signatures}
+\label{sec-2}
+
+The basic idea of somatic signatures is composed of two parts:
+
+Firstly, each somatic mutation is described in relation of the sequence context
+in which it occurs.  As an example, consider a SNV resulting in the alteration
+from \texttt{A} in the normal to \texttt{G} in the tumor sample is embedded in the sequence
+context \texttt{TAC}.  Thus, the somatic motif can be written as \texttt{TAC>TGC} or \texttt{TNC
+A>G}.  The frequency of these motifs across multiple samples is then represented
+as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples,
+as follows: 
+
+\begin{center}
+\begin{tabular}{lrlr}
+ & Sample 1 & \ldots{} & Sample N\\
+ANA A>C & 10 & \ldots{} & 5\\
+\ldots{} & \ldots{} & .. & ..\\
+TNC A>G & 3 & .. & 20\\
+\end{tabular}
+\end{center}
+
+
+In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
+and $H$
+
+$M_{ij} = \sum_{k=1}^{R} W_{ik} H_{jk}$
+
+for a fixed number $R$ of signatures.  While $W$ describes the composition of
+each signature in term of somatic motifs, $H$ shows the contribution of the
+signature to the alterations present in each sample.
+
+\section{Workflow and Implementation: Analysis with the SomaticSignatures Package}
+\label{sec-3}
+
+The \texttt{SomaticSignatures} package offers a framework for inferring signatures of
+SNVs in a user-friendly and efficient manner for large-scale data sets.  A tight
+integration with standard data representations of the Bioconductor project was a
+major design goal.  Further, it extends the selection of multivariate
+statistical methods for the matrix decomposition and allows a simple
+visualization of the results.
+
+For a typical workflow, a set of variant calls and the reference sequence are
+needed.  Ideally, the SNVs are represented as a \texttt{VRanges} object with the
+genomic location as well as reference and alternative allele defined.  The
+reference sequence can be, for example, a \texttt{FaFile} object, representing an
+indexed Fasta file, a \texttt{BSgenome} object, or a \texttt{GmapGenome} object.
+Alternatively, we provide some functionality to extract the relevant information
+from other sources of inputs.  At the moment, this covers the \emph{MuTect}
+\cite{cibulskis_sensitive_2013} variant caller and the \emph{h5vc} package
+\cite{pyl_h5vc:_2013}.
+
+Generally, the individual steps of the analysis can be summarized as:
+
+\begin{enumerate}
+\item The somatic motifs for each variant are retrieved from the reference sequence
+with the \texttt{mutationContext} function and converted to a matrix representation
+with the \texttt{mutationContextMatrix} function.
+
+\item Somatic signatures are estimated with a method of choice (currently
+   \texttt{nmfSignatures}, \texttt{pcaSignatures}, or \texttt{kmeansSignatures}).
+
+\item The somatic signatures and their representation in the samples are assessed
+with a set of accessor and plotting functions.
+\end{enumerate}
+
+To decompose $M$, the \texttt{SomaticSignatures} package implements three methods:
+
+\begin{description}
+\item[{Non-negative matrix factorization (NMF)}] The NMF decomposes $M$ with the
+constraint of positive components in $W$ and $H$
+\cite{gaujoux_flexible_2010}.  The methods was used
+\cite{nik-zainal_mutational_2012} for the identification of mutational
+signatures, and can be computationally expensive for large data sets.
+
+\item[{Principal component analysis (PCA)}] The PCA employs the eigenvalue
+decomposition and is therefore suitable for large data sets
+\cite{stacklies_pcamethodsbioconductor_2007}.  While this is related to the
+NMF, no constraint on the sign of the elements of $W$ and $H$ exist.
+
+\item[{K-means clustering}] In contrast to the NMF and PCA, the k-means clustering
+assigns each sample to a single somatic signature, such that $H$ can only
+contain the value 0 and 1.  This approach is suited for large data sets.
+\end{description}
+
+\section{Use case: Estimating Somatic Signatures from TCGA WES Studies}
+\label{sec-4}
+
+In the following, the concept of somatic signatures and to steps of inferring
+these from an actual biological data set is shown.  For this purpose, somatic
+variant calls from whole exome sequencing (WES) studies from The Cancer Genome
+Atlas (TCGA) project will be used, which are part of the
+\texttt{SomaticCancerAlterations} package.
+
+<<load_ss,results='hide',message=FALSE>>=
+library(SomaticSignatures)
+@ %def
+
+<<load_supporting_packages,results='hide',message=FALSE>>=
+library(GenomicRanges)
+library(VariantAnnotation)
+library(ggplot2)
+library(stringr)
+@ %def
+
+<<load_data_package,results='hide',message=FALSE>>=
+library(SomaticCancerAlterations)
+library(BSgenome.Hsapiens.UCSC.hg19)
+@ %def
+
+
+\subsection{Data: Preproccessing of the TCGA WES Studies}
+\label{sec-4-1}
+
+The \texttt{SomaticCancerAlterations} provides the somatic SNV calls for eight WES
+studies, each investigating a different cancer type.  The metadata summarizes the
+biological and experimental settings of each study.
+
+<<sca_metadata>>=
+sca_metadata = scaMetadata()
+
+print(sca_metadata)
+@ %def
+
+In this example, all mutational calls of a study will be pooled together, in
+order to find signatures related to a specific cancer type.  The data of all
+studies is loaded and merged into a single \texttt{GRanges} object, with each entry
+describing a somatic variant call.  Further on, only SNVs located on the human
+autosomes will be considered.  For later analyzes, each variant is also
+associated with the study it originated from.
+
+<<sca_load_pool>>=
+sca_all = scaLoadDatasets()
+
+sca_merge = unlist(sca_all)
+short_names = str_split_fixed(rownames(sca_metadata), "_", 2)[ ,1]
+names(sca_merge) = sca_merge$study = factor(rep(short_names, times = elementLengths(sca_all)))
+
+sca_merge = sca_merge[ sca_merge$Variant_Type %in% "SNP" ]
+sca_merge = keepSeqlevels(sca_merge, hsAutosomes())
+@ %def
+
+<<sca_variant_classification_table>>=
+sort(table(sca_merge$Variant_Classification), decreasing = TRUE)
+@ %def
+
+<<sca_study_table>>=
+sort(table(sca_merge$study), decreasing = TRUE)
+@ %def
+
+The starting point of the analysis is a \texttt{VRanges} object which describes the
+somatic variants in terms of genomic location as well as reference and
+alternative allele.  For more details about this class and how to construct it,
+please see the \texttt{VariantAnnotation} documentation.  Since the genomic positions
+are given in the \emph{NCBI} notation and the references used later are in \emph{UCSC}
+notation, the functions \texttt{ucsc} and \texttt{ncbi} are used to easily transform between
+the two notations.
+
+<<sca_to_vranges>>=
+sca_vr = VRanges(
+    seqnames(sca_merge),
+    ranges(sca_merge),
+    ref = sca_merge$Reference_Allele,
+    alt = sca_merge$Tumor_Seq_Allele2,
+    seqinfo = seqinfo(sca_merge))
+sca_vr = ucsc(sca_vr)
+
+head(sca_vr, 3)
+@ %def
+
+\subsection{Motifs: Extracting the Sequence Context of Somatic Variants}
+\label{sec-4-2}
+
+In a first step, the sequence motif for each variant is extracted based on the
+reference sequence.  Here, the \texttt{BSgenomes} object for the human hg19 reference
+is used.  However, all objects with a defined \texttt{getSeq} method can serve as the
+reference, e.g. an indexed fasta file.  Additionally, we transform all motifs to
+have a pyrimidine base (\texttt{C} or \texttt{T}) as a reference base
+\cite{alexandrov_signatures_2013}.
+
+<<sca_vr_to_motifs>>=
+sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+@ %def
+
+<<sca_add_vars>>=
+sca_motifs$study = sca_merge$study
+
+head(sca_motifs, 3)
+@ %def
+
+To continue with the estimation of the somatic signatures, the matrix $M$ of the
+form motifs \texttimes{} studies is constructed.  The \texttt{normalize} argument specifies
+that frequencies rather than the actual counts are returned.
+
+<<sca_motif_occurrence>>=
+sca_occurrence = mutationContextMatrix(sca_motifs, group = "study", normalize = TRUE)
+
+head(round(sca_occurrence, 4))
+@ %def
+
+The observed occurrence of the motifs, also termed somatic spectrum, can be
+visualized across studies, which gives a first impression of the data.  The
+distribution of the motifs clearly varies between the studies.
+
+<<sca_plot_samples_observed,fig.cap='Observed frequency of somatic motifs across studies.'>>=
+plotSamplesObserved(sca_motifs)
+@ %def
+
+\subsection{Decomposition: Inferring Somatic Signatures}
+\label{sec-4-3}
+
+The somatic signatures can be estimated with each of the statistical methods
+implemented in the package.  Here, we will use the \texttt{NMF} and \texttt{PCA}, and compare
+the results.  Prior to the estimation, the number $R$ of signatures to obtain has to
+be fixed; in this example, the data will be decomposed into 5 signatures.
+
+<<sca_nmf_pca>>=
+n_sigs = 5
+
+sigs_nmf = nmfSignatures(sca_occurrence, r = n_sigs)
+
+sigs_pca = pcaSignatures(sca_occurrence, r = n_sigs)
+@ %def
+
+The results contains the decomposed matrices stored as a listed and can be
+accessed using the standard R accessor functions.
+
+<<sca_explore_nmf>>=
+names(sigs_nmf)
+
+sapply(sigs_nmf, dim)
+
+head(sigs_nmf$w, 3)
+
+head(sigs_nmf$h, 3)
+@ %def
+
+\subsection{Visualization: Exploration of Signatures and Samples}
+\label{sec-4-4}
+
+To explore the results for the TCGA data set, we will use the plotting
+functions.  All figures are generated with the \texttt{ggplot2} package, and thus,
+their properties and appearances can also be modified at a later stage.
+
+Focusing on the results of the NMF first, the five somatic signatures (named S1
+to S5) can be visualized either as a heatmap or as a barchart.
+
+<<sca_plot_nmf_signatures_map,fig.cap='Composition of somatic signatures estimated with the NMF, represented as a heatmap.'>>=
+plotSignatureMap(sigs_nmf) + ggtitle("Somatic Signatures: NMF - Heatmap")
+@ %def
+
+<<sca_plot_nmf_signatures,fig.cap='Composition of somatic signatures estimated with the NMF, represented as a barchart.'>>=
+plotSignatures(sigs_nmf) + ggtitle("Somatic Signatures: NMF - Barchart")
+@ %def
+
+Each signature represents different properties of the somatic spectrum observed
+in the data.  While signature S1 is mainly characterized by selective \texttt{C>T} alterations,
+others as S4 and S5 show a broad distribution across the motifs.
+
+In addition, the contribution of the signatures in each study can be represented
+with the same sets of plots.  Signature S1 and S3 are strongly represented in
+the GBM and SKCM study, respectively.  Other signatures show a weaker
+association with a single cancer type.
+
+<<sca_plot_nmf_samples_map,fig.cap='Occurrence of signatures estimated with the NMF, represented as a heatmap.'>>=
+plotSampleMap(sigs_nmf)
+@ %def
+
+<<sca_plot_nmf_samples,fig.cap='Occurrence of signatures estimated with the NMF, represented as a barchart.'>>=
+plotSamples(sigs_nmf)
+@ %def
+
+In the same way as before, the results of the PCA can be visualized.  In
+contrast to the NMF, the signatures also contain negative values, indicating the
+depletion of a somatic motif.
+
+<<sca_plot_pca_signatures_map,fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap'>>=
+plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA")
+@ %def
+
+<<sca_plot_pca_signatures,fig.cap='Composition of somatic signatures estimated with the PCA, represented as a barchart.'>>=
+plotSignatures(sigs_pca)
+@ %def
+
+<<sca_plot_pca_samples_map,fig.cap='Occurrence of signatures estimated with the PCA, represented as a heatmap.'>>=
+plotSampleMap(sigs_pca)
+@ %def
+
+<<sca_plot_pca_samples,fig.cap='Occurrence of signatures estimated with the PCA, represented as a barchart.'>>=
+plotSamples(sigs_pca)
+@ %def
+
+Comparing the results of the two methods, we can see similar characteristics
+between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
+
+\subsection{Extensions: Normalization of Sequence Motif Frequency and Batch Effects}
+\label{sec-4-5}
+
+When investigating somatic signatures between samples from different studies,
+corrections for technical confounding factors should be considered.  In our use
+case of the TCGA WES studies shown before, this is of minor influence due to
+similar sequencing technology and variant calling methods across the studies.
+Approaches for the identification of so termed batch effects have been proposed
+\cite{leek_capturing_2007} \cite{sun_multiple_2012} and could be adapted to the
+setting of somatic signatures with existing implementations (the \texttt{sva} and
+\texttt{leapp} packages).  While this correction is not performed here, we exemplify
+the usage by taking the different sequencing technologies of the studies into
+account.
+
+<<sva_batch_not_run,eval=FALSE>>=
+library(sva)
+library(stringr)
+
+df = as(sca_metadata, "data.frame") ## sample x covariable
+pheno = data.frame(s = unlist(df[ ,"Sequence_Source"]), c = unlist(df[ ,"Cancer_Type"]))
+rownames(pheno) = str_split_fixed(rownames(pheno), "_", 2)[ ,1]
+mod = model.matrix(~ s + c, data = pheno)
+mod0 = model.matrix(~ c, data = pheno)
+
+sv = sva(sca_occurrence, mod, mod0, method = "irw")
+@ %def
+
+If comparisons are performed across samples or studies with different capture
+targets, for example by comparing whole exome with whole genome sequencing,
+further corrections for the frequency of sequence motifs can be taken into
+account.  The \texttt{kmerFrequency} function provides the basis for calculating the
+occurance of k-mers over a set of ranges of a reference sequence.
+
+As an example, we compute the frequency of 3-mers for the human chromosome 1,
+based on a sample of 100'000 locations.  Analogously, the k-mer occurrence across
+the human exome can be obtained easily.
+
+<<kmer_chr1>>=
+k = 3
+n = 1e5
+chrs = "chr1"
+
+chr1_ranges = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
+chr1_ranges = keepSeqlevels(chr1_ranges, chrs)
+
+k3_chr1 = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, chr1_ranges)
+
+k3_chr1
+@ %def
+
+With the \texttt{normalizeMotifs} function, the frequency of motifs can be adjusted.
+Here, we will transform our results of the TCGA WES studies to have the same
+motif distribution as of a whole-genome analysis.  The \texttt{kmers} dataset contains
+the estimated frequency of 3-mers across the human genome and exome.
+
+<<normalize_motifs>>=
+head(sca_occurrence)
+
+data(kmers)
+norms = k3we / k3wg
+head(norms)
+
+sca_norm = normalizeMotifs(sca_occurrence, norms)
+
+head(sca_norm)
+@ %def
+
+\subsection{Visualization: Mutational Landscapes and Hypermutated Regions}
+\label{sec-4-6}
+
+Another relevant aspect of exploring mutational processes is also the
+distribution of variants across the genome, which can indicate local effects of
+mutational processes and regions of hypermutations.  So called rainfall plots
+\cite{nik-zainal_mutational_2012} show the distance between neighboring variants
+along chromosomes, which can be also colored according to arbitrarily defined
+properties.  As an example, we show all somatic SNVs for the GBM study colored
+by the type of alteration.
+
+<<sca_vr_gbm>>=
+sca_gbm = sca_motifs[ names(sca_motifs) %in% "gbm"]
+@ %def
+
+<<sca_plot_rainfall_alteration,fig.cap='Rainfall plot for the GBM study, colored by alteration.'>>=
+plotRainfall(sca_gbm, "alteration", size = 1)
+@ %def
+
+\section{Alternatives: Infering Somatic Signatures with Different Approaches}
+\label{sec-5}
+
+For the identification of somatic signatures, other methods and implementations
+exist.  The original framework \cite{nik-zainal_mutational_2012} proposed for this
+is based on the NMF and available for the Matlab programming language
+\cite{alexandrov_wtsi_2012}.  In extension, a probabilistic approach based on
+Poisson processes has been proposed \cite{fischer_emu:_2013-1} and implemented
+\cite{fischer_emu:_2013}.
+
+\section{Session Info}
+\label{sec-6}
+
+<<echo=FALSE, results='asis'>>=
+toLatex(sessionInfo())
+@ %def
+
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+% Emacs 24.1.1 (Org mode 8.2.5c)
+\end{document}

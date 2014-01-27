@@ -1,0 +1,19 @@
+Package: SomaticSignatures
+Type: Package
+Title: Somatic Signatures
+Version: 0.3.0
+Date: 2014-01-16
+Author: Julian Gehring
+Maintainer: Julian Gehring <julian.gehring@embl.de>
+Description: The SomaticSignatures package offers the framework for identifying mutational signatures of single nucleotide variants (SNVs) from high-throughput experiments.
+Imports: GenomicRanges, IRanges, VariantAnnotation, Biostrings,
+        ggplot2, ggbio, stringr, reshape2, NMF, methods, pcaMethods
+Depends: R (>= 3.0.2)
+Suggests: testthat, knitr, BiocStyle, parallel,
+        BSgenome.Hsapiens.UCSC.hg19, SomaticCancerAlterations, h5vc,
+        h5vcData
+VignetteBuilder: knitr
+ByteCompile: FALSE
+License: GPL-3
+LazyLoad: yes
+biocViews: Bioinformatics, Classification, Clustering, Visualization

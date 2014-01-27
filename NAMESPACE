@@ -1,0 +1,19 @@
+
+import(GenomicRanges)
+import(VariantAnnotation)
+import(ggplot2)
+import(IRanges)
+import(Biostrings)
+
+#importFrom(VariantAnnotation, VRanges, ref, alt, altFraction, totalDepth)
+#importFrom(GenomicRanges, mcols, GRanges, start, end, width, seqnameStyle, genome, seqnames, strand, resize, ranges)
+#importFrom(IRanges, IRanges, start, end, width, subset, DataFrame, cbind, rbind)
+#importFrom(Biostrings, DNAStringSet, BStringSet, subseq, reverseComplement, complement, xscat, letterFrequency, getSeq)
+importFrom(methods, setAs)
+importFrom(NMF, nmf, basis, coef, fitted)
+importFrom(reshape2, melt, acast)
+importFrom(ggbio, plotGrandLinear)
+importFrom(stringr, str_split_fixed)
+importFrom(pcaMethods, pca, scores, loadings) ## fitted comes from 'stats'
+
+exportPattern("^[^\\.]")
