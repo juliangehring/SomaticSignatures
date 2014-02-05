@@ -66,8 +66,7 @@ kmeansSignatures <- function(x, r, ...) {
 
 pcaSignatures <- function(x, r, ...) {
   
-    #pca = prcomp(x, scale = scale) ##
-    #w = pca$rotation ## signatures x k
+    #pca = pr    #w = pca$rotation ## signatures x k
     #h = pca$x ## samples x k
     #v = scale(h %*% t(w), pca$center, pca$scale)
     
@@ -76,7 +75,7 @@ pcaSignatures <- function(x, r, ...) {
     h = loadings(y) ## samples x k
     v = fitted(y) 
     
-    sig_names = paste0("S", 1:r)
+    sig_names = paste0("S", 1:r)      
     colnames(w) = colnames(h) = sig_names
     res = list(w = w, h = h, v = v, raw = y)
   

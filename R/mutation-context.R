@@ -49,8 +49,8 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
     alteration = xscat(ref_base, alt_base)
 
     ## CHCK: assign individually ?
-    df = DataFrame(alteration = alteration, context = context)
-    mcols(vr) = cbind(mcols(vr), df)
+    vr$alteration = alteration
+    vr$context = context
 
     return(vr)
 }
