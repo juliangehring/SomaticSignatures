@@ -1,4 +1,4 @@
-% Created 2014-01-08 Wed 13:24
+% Created 2014-02-06 Thu 14:56
 \documentclass{article}
 <<style, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex(use.unsrturl = FALSE)
@@ -25,7 +25,7 @@ BiocStyle::latex(use.unsrturl = FALSE)
 \hypersetup{
   pdfkeywords={},
   pdfsubject={},
-  pdfcreator={Emacs 24.1.1 (Org mode 8.2.5c)}}
+  pdfcreator={Emacs 24.1.1 (Org mode 8.2.5h)}}
 \begin{document}
 
 \maketitle
@@ -47,7 +47,7 @@ opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = 
 
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
-processes \cite{nik-zainal_mutational_2012} \cite{alexandrov_signatures_2013}.
+processes \cite{nik-zainal_mutational_2012} \cite{alexandrov_signatures_2013} \cite{alexandrov_deciphering_2013}.
 Conceptually, this relates somatically occurring single nucleotide variants
 (SNVs) to the surrounding sequence which will be referred to as mutational or
 somatic motifs in the following.  Based on the frequency of the motifs occurring
@@ -108,8 +108,8 @@ needed.  Ideally, the SNVs are represented as a \texttt{VRanges} object with the
 genomic location as well as reference and alternative allele defined.  The
 reference sequence can be, for example, a \texttt{FaFile} object, representing an
 indexed Fasta file, a \texttt{BSgenome} object, or a \texttt{GmapGenome} object.
-Alternatively, we provide some functionality to extract the relevant information
-from other sources of inputs.  At the moment, this covers the \emph{MuTect}
+Alternatively, we provide functions to extract the relevant information from
+other sources of inputs.  At the moment, this covers the \emph{MuTect}
 \cite{cibulskis_sensitive_2013} variant caller and the \emph{h5vc} package
 \cite{pyl_h5vc:_2013}.
 
@@ -132,7 +132,7 @@ To decompose $M$, the \texttt{SomaticSignatures} package implements three method
 \begin{description}
 \item[{Non-negative matrix factorization (NMF)}] The NMF decomposes $M$ with the
 constraint of positive components in $W$ and $H$
-\cite{gaujoux_flexible_2010}.  The methods was used
+\cite{gaujoux_flexible_2010}.  The method was used
 \cite{nik-zainal_mutational_2012} for the identification of mutational
 signatures, and can be computationally expensive for large data sets.
 
@@ -149,8 +149,8 @@ contain the value 0 and 1.  This approach is suited for large data sets.
 \section{Use case: Estimating Somatic Signatures from TCGA WES Studies}
 \label{sec-4}
 
-In the following, the concept of somatic signatures and to steps of inferring
-these from an actual biological data set is shown.  For this purpose, somatic
+In the following, the concept of somatic signatures and the steps for inferring
+these from an actual biological data set are shown.  For the example, somatic
 variant calls from whole exome sequencing (WES) studies from The Cancer Genome
 Atlas (TCGA) project will be used, which are part of the
 \texttt{SomaticCancerAlterations} package.
@@ -175,9 +175,9 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 \subsection{Data: Preproccessing of the TCGA WES Studies}
 \label{sec-4-1}
 
-The \texttt{SomaticCancerAlterations} provides the somatic SNV calls for eight WES
-studies, each investigating a different cancer type.  The metadata summarizes the
-biological and experimental settings of each study.
+The \texttt{SomaticCancerAlterations} package provides the somatic SNV calls for eight
+WES studies, each investigating a different cancer type.  The metadata
+summarizes the biological and experimental settings of each study.
 
 <<sca_metadata>>=
 sca_metadata = scaMetadata()
@@ -212,8 +212,8 @@ sort(table(sca_merge$study), decreasing = TRUE)
 @ %def
 
 The starting point of the analysis is a \texttt{VRanges} object which describes the
-somatic variants in terms of genomic location as well as reference and
-alternative allele.  For more details about this class and how to construct it,
+somatic variants in terms of their genomic locations as well as reference and
+alternative alleles.  For more details about this class and how to construct it,
 please see the \texttt{VariantAnnotation} documentation.  Since the genomic positions
 are given in the \emph{NCBI} notation and the references used later are in \emph{UCSC}
 notation, the functions \texttt{ucsc} and \texttt{ncbi} are used to easily transform between
@@ -285,8 +285,8 @@ sigs_nmf = nmfSignatures(sca_occurrence, r = n_sigs)
 sigs_pca = pcaSignatures(sca_occurrence, r = n_sigs)
 @ %def
 
-The results contains the decomposed matrices stored as a listed and can be
-accessed using the standard R accessor functions.
+The results contains the decomposed matrices stored in a list and can be
+accessed using standard R accessor functions.
 
 <<sca_explore_nmf>>=
 names(sigs_nmf)
@@ -446,11 +446,11 @@ plotRainfall(sca_gbm, "alteration", size = 1)
 \label{sec-5}
 
 For the identification of somatic signatures, other methods and implementations
-exist.  The original framework \cite{nik-zainal_mutational_2012} proposed for this
-is based on the NMF and available for the Matlab programming language
-\cite{alexandrov_wtsi_2012}.  In extension, a probabilistic approach based on
-Poisson processes has been proposed \cite{fischer_emu:_2013-1} and implemented
-\cite{fischer_emu:_2013}.
+exist.  The original framework \cite{nik-zainal_mutational_2012}
+\cite{alexandrov_deciphering_2013} proposed for this is based on the NMF and
+available for the Matlab programming language \cite{alexandrov_wtsi_2012}.  In
+extension, a probabilistic approach based on Poisson processes has been proposed
+\cite{fischer_emu:_2013-1} and implemented \cite{fischer_emu:_2013}.
 
 \section{Session Info}
 \label{sec-6}
@@ -462,5 +462,5 @@ toLatex(sessionInfo())
 
 \bibliographystyle{unsrt}
 \bibliography{references}
-% Emacs 24.1.1 (Org mode 8.2.5c)
+% Emacs 24.1.1 (Org mode 8.2.5h)
 \end{document}

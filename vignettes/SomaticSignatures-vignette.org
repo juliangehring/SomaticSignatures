@@ -37,7 +37,7 @@ opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = 
 
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
-processes [[cite:nik-zainal_mutational_2012]] cite:alexandrov_signatures_2013.
+processes [[cite:nik-zainal_mutational_2012]] cite:alexandrov_signatures_2013 cite:alexandrov_deciphering_2013.
 Conceptually, this relates somatically occurring single nucleotide variants
 (SNVs) to the surrounding sequence which will be referred to as mutational or
 somatic motifs in the following.  Based on the frequency of the motifs occurring
@@ -653,8 +653,6 @@ the estimated frequency of 3-mers across the human genome and exome.
   plotSamplesObserved(sca_norm, group = "study")
 #+END_SRC
 
-out.width = "0.6\\columnwidth"
-
 
 ** Visualization: Mutational Landscapes and Hypermutated Regions
 
@@ -680,11 +678,11 @@ by the type of alteration.
 * Alternatives: Infering Somatic Signatures with Different Approaches
 
 For the identification of somatic signatures, other methods and implementations
-exist.  The original framework [[cite:nik-zainal_mutational_2012]] proposed for this
-is based on the NMF and available for the Matlab programming language
-cite:alexandrov_wtsi_2012.  In extension, a probabilistic approach based on
-Poisson processes has been proposed [[cite:fischer_emu:_2013-1]] and implemented
-[[cite:fischer_emu:_2013]].
+exist.  The original framework [[cite:nik-zainal_mutational_2012]]
+cite:alexandrov_deciphering_2013 proposed for this is based on the NMF and
+available for the Matlab programming language cite:alexandrov_wtsi_2012.  In
+extension, a probabilistic approach based on Poisson processes has been proposed
+[[cite:fischer_emu:_2013-1]] and implemented [[cite:fischer_emu:_2013]].
 
 
 * Session Info
