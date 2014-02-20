@@ -2,7 +2,7 @@
 Package: SomaticSignatures
 Type: Package
 Title: Somatic Signatures
-Version: 0.3.3
+Version: 0.3.4
 Date: 2014-02-18
 Author: Julian Gehring
 Maintainer: Julian Gehring <julian.gehring@embl.de>
