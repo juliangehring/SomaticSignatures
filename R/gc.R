@@ -1,4 +1,3 @@
-
 gcContent <- function(regions, ref) {
     
     seq = getSeq(ref, regions)

@@ -1,4 +1,3 @@
-
 plotSamplesObserved <- function(s, group = "study") {
 
     df = as(mcols(s), "data.frame")

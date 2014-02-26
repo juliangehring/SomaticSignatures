@@ -1,4 +1,3 @@
-
 hsToplevel <- function() {
     chrs = c(1:22, "X", "Y", "MT")
     return(chrs)

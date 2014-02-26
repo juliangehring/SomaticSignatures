@@ -1,4 +1,3 @@
-
 \name{kmers-data}
 
 \alias{kmers-data}

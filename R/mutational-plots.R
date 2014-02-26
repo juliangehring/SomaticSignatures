@@ -1,4 +1,3 @@
-
 plotVariantAbundance <- function(x, group = NULL, alpha = 0.5, size = 2) {
 
     df = data.frame(

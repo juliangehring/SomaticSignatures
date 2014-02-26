@@ -59,16 +59,9 @@ The basic idea of somatic signatures is composed of two parts:
 Firstly, each somatic mutation is described in relation of the sequence context
 in which it occurs.  As an example, consider a SNV resulting in the alteration
 from =A= in the normal to =G= in the tumor sample is embedded in the sequence
-context =TAC=.  Thus, the somatic motif can be written as =TAC>TGC= or =TNC
+context =TAC=.  Thus, the somatic motif can be written as =TAC>TGC= or =T.C
 A>G=.  The frequency of these motifs across multiple samples is then represented
-as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples,
-as follows: 
-
-|         | Sample 1 | ... | Sample N |
-| ANA A>C | 10       | ... | 5        |
-| ...     | ...      | ..  | ..       |
-| TNC A>G | 3        | ..  | 20       |
-
+as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples.
 
 In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
 and $H$
@@ -97,7 +90,7 @@ indexed Fasta file, a =BSgenome= object, or a =GmapGenome= object.
 Alternatively, we provide functions to extract the relevant information from
 other sources of inputs.  At the moment, this covers the /MuTect/
 [[cite:cibulskis_sensitive_2013]] variant caller and the /h5vc/ package
-[[cite:pyl_h5vc:_2013]].
+[[cite:pyl_h5vc:_2014]] [[cite:pyl_h5vc:_2013]].
 
 Generally, the individual steps of the analysis can be summarized as:
 
@@ -430,12 +423,12 @@ that frequencies rather than the actual counts are returned.
 #+RESULTS: sca_motif_occurrence
 |        |    gbm |   hnsc |   kirc |   luad |   lusc |     ov |   skcm |   thca |
 |--------+--------+--------+--------+--------+--------+--------+--------+--------|
-| CA ANA | 0.0083 | 0.0098 | 0.0126 |   0.02 | 0.0165 | 0.0126 | 0.0014 | 0.0077 |
-| CA ANC | 0.0093 | 0.0082 | 0.0121 | 0.0217 | 0.0156 | 0.0192 |  9e-04 | 0.0068 |
-| CA ANG | 0.0026 | 0.0061 | 0.0046 | 0.0144 | 0.0121 |  0.006 |  4e-04 | 0.0048 |
-| CA ANT | 0.0057 | 0.0051 |  0.007 | 0.0134 |   0.01 | 0.0092 |  7e-04 | 0.0067 |
-| CA CNA | 0.0075 | 0.0143 | 0.0215 | 0.0414 |  0.039 | 0.0128 |  0.006 | 0.0112 |
-| CA CNC | 0.0075 | 0.0111 | 0.0138 | 0.0415 | 0.0275 | 0.0143 | 0.0018 | 0.0063 |
+| CA A.A | 0.0083 | 0.0098 | 0.0126 |   0.02 | 0.0165 | 0.0126 | 0.0014 | 0.0077 |
+| CA A.C | 0.0093 | 0.0082 | 0.0121 | 0.0217 | 0.0156 | 0.0192 |  9e-04 | 0.0068 |
+| CA A.G | 0.0026 | 0.0061 | 0.0046 | 0.0144 | 0.0121 |  0.006 |  4e-04 | 0.0048 |
+| CA A.T | 0.0057 | 0.0051 |  0.007 | 0.0134 |   0.01 | 0.0092 |  7e-04 | 0.0067 |
+| CA C.A | 0.0075 | 0.0143 | 0.0215 | 0.0414 |  0.039 | 0.0128 |  0.006 | 0.0112 |
+| CA C.C | 0.0075 | 0.0111 | 0.0138 | 0.0415 | 0.0275 | 0.0143 | 0.0018 | 0.0063 |
 
 The observed occurrence of the motifs, also termed somatic spectrum, can be
 visualized across studies, which gives a first impression of the data.  The

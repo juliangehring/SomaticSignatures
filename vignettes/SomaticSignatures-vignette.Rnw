@@ -1,4 +1,4 @@
-% Created 2014-02-06 Thu 14:56
+% Created 2014-02-26 Wed 13:21
 \documentclass{article}
 <<style, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex(use.unsrturl = FALSE)
@@ -69,20 +69,9 @@ The basic idea of somatic signatures is composed of two parts:
 Firstly, each somatic mutation is described in relation of the sequence context
 in which it occurs.  As an example, consider a SNV resulting in the alteration
 from \texttt{A} in the normal to \texttt{G} in the tumor sample is embedded in the sequence
-context \texttt{TAC}.  Thus, the somatic motif can be written as \texttt{TAC>TGC} or \texttt{TNC
+context \texttt{TAC}.  Thus, the somatic motif can be written as \texttt{TAC>TGC} or \texttt{T.C
 A>G}.  The frequency of these motifs across multiple samples is then represented
-as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples,
-as follows: 
-
-\begin{center}
-\begin{tabular}{lrlr}
- & Sample 1 & \ldots{} & Sample N\\
-ANA A>C & 10 & \ldots{} & 5\\
-\ldots{} & \ldots{} & .. & ..\\
-TNC A>G & 3 & .. & 20\\
-\end{tabular}
-\end{center}
-
+as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples.
 
 In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
 and $H$
@@ -111,7 +100,7 @@ indexed Fasta file, a \texttt{BSgenome} object, or a \texttt{GmapGenome} object.
 Alternatively, we provide functions to extract the relevant information from
 other sources of inputs.  At the moment, this covers the \emph{MuTect}
 \cite{cibulskis_sensitive_2013} variant caller and the \emph{h5vc} package
-\cite{pyl_h5vc:_2013}.
+\cite{pyl_h5vc:_2014} \cite{pyl_h5vc:_2013}.
 
 Generally, the individual steps of the analysis can be summarized as:
 

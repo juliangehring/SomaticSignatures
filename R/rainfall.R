@@ -1,4 +1,3 @@
-
 mutationDistance <- function(x) {
 
     x = sort(x) ## must be sorted

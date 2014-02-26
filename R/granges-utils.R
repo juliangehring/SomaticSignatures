@@ -1,4 +1,3 @@
-
 grangesPlain <- function(x) {
     mcols(x) = NULL
     x = as(x, "GRanges")

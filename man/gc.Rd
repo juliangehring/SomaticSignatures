@@ -1,4 +1,3 @@
-
 \name{gcContent}
   
 \alias{gcContent}
