@@ -1,4 +1,3 @@
-
 mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = TRUE) {
 
     ## only SNVs beyond this point
@@ -45,7 +44,7 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
         alt_base[idx_complement] = reverseComplement(alt_base[idx_complement])
     }
     
-    subseq(context, mid, mid) = "N"
+    subseq(context, mid, mid) = "."
     alteration = xscat(ref_base, alt_base)
 
     ## CHCK: assign individually ?
@@ -99,7 +98,7 @@ mutationContextH5vc <- function( vc, ms, unify = TRUE ) {
     context = DNAStringSet(ms$Context)
     k = width(context[1])
     mid = (k+1) / 2
-    subseq(context, mid, mid) = "N"
+    subseq(context, mid, mid) = "."
 
     ## convert to alterations starting with "C/T"
     if(unify) {

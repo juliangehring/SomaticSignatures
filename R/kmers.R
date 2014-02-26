@@ -1,4 +1,3 @@
-
 kmerFrequency <- function(ref, n = 1e4, k = 1, ranges = as(seqinfo(ref), "GRanges")) {
 
     w = width(ranges) - k + 1 ## width 'k' is still good

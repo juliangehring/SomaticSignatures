@@ -1,4 +1,3 @@
-
 readMutect <- function(file, columns, strip = FALSE) {
 
     x = read.delim(file,
@@ -25,7 +24,7 @@ readMutect <- function(file, columns, strip = FALSE) {
     mcols(vr) = subset(x, select = columns)
     ## convert the context to DNAStringSet
     bs = BStringSet(x$context)
-    subseq(bs, 4, 4) = "N"
+    subseq(bs, 4, 4) = "."
     vr$context = DNAStringSet(bs)
 
     return(vr)

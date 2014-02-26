@@ -1,4 +1,3 @@
-
 mutationContextMatrix <- function(x, group = "sample", normalize = TRUE) {
 
     d = as(mcols(x), "data.frame")

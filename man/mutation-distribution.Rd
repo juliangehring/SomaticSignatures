@@ -1,4 +1,3 @@
-
 \name{mutation-distribution}
   
 \alias{mutationDistance}

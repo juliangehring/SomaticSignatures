@@ -1,4 +1,3 @@
-
 normalizeMotifs <- function(x, norms) {
   
     ## find the 'from' sequence

@@ -1,4 +1,3 @@
-
 \name{kmerFrequency}
 
 \alias{kmerFrequency}

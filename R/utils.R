@@ -1,4 +1,3 @@
-
 dfConvertColumns <- function(x, from = "character", to = "factor") {
     idx = sapply(x, is, from)
     x[idx] = lapply(x[idx], as, to)

@@ -1,4 +1,3 @@
-
 ## Compute the 3mer frequency for the genome and exome of humans
 library(SomaticSignatures)
 library(BSgenome.Hsapiens.UCSC.hg19)

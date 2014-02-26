@@ -1,0 +1,7 @@
+NEWS: SomaticSignatures
+
+Version 0.3.5:
+
+* Represent ambigous base as '.' instead of 'N'.  This is now possible with the new version of the 'Biostrings' package.
+
+* Update of vignette

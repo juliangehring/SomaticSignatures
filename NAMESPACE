@@ -1,4 +1,3 @@
-
 import(GenomicRanges)
 import(VariantAnnotation)
 import(ggplot2)

@@ -1,4 +1,3 @@
-
 \name{GRanges-converters}
 
 \alias{grangesPlain}

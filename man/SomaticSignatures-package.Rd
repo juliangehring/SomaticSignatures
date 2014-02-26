@@ -1,4 +1,3 @@
-
 \name{SomaticSignatures}
 
 \alias{SomaticSignatures}
