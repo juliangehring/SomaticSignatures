@@ -2,6 +2,9 @@
 #+AUTHOR: Julian Gehring, EMBL Heidelberg
 
 #+LATEX_CLASS: biocKnitrRnwPlain
+#+LATEX_HEADER: \usepackage[nottoc,numbib]{tocbibind}
+#+LATEX_HEADER: \usepackage{helvet}
+
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.ebi.ac.uk/~jgehring/css/worg.css" />
 #+INFOJS_OPT: view:showall toc:t ftoc:t
 
@@ -38,12 +41,12 @@ opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = 
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
 processes [[cite:nik-zainal_mutational_2012]] cite:alexandrov_signatures_2013 cite:alexandrov_deciphering_2013.
-Conceptually, this relates somatically occurring single nucleotide variants
-(SNVs) to the surrounding sequence which will be referred to as mutational or
-somatic motifs in the following.  Based on the frequency of the motifs occurring
+Conceptually, this relates somatically occurring /single nucleotide variants/
+(SNVs) to the surrounding sequence which will be referred to as /mutational/ or
+/somatic motifs/ in the following.  Based on the frequency of the motifs occurring
 in multiple samples, these can be decomposed mathematically into so called
 /mutational signatures/.  In case of the investigation of tumors, the term
-somatic signatures will be used to distinguish them from germline mutations and
+/somatic signatures/ will be used here to distinguish them from germline mutations and
 their generating processes.
 
 The =SomaticSignatures= package provides an efficient and user-friendly
@@ -57,8 +60,8 @@ a number of statistical approaches.
 The basic idea of somatic signatures is composed of two parts:
 
 Firstly, each somatic mutation is described in relation of the sequence context
-in which it occurs.  As an example, consider a SNV resulting in the alteration
-from =A= in the normal to =G= in the tumor sample is embedded in the sequence
+in which it occurs.  As an example, consider a SNV, resulting in the alteration
+from =A= in the normal to =G= in the tumor sample, that is embedded in the sequence
 context =TAC=.  Thus, the somatic motif can be written as =TAC>TGC= or =T.C
 A>G=.  The frequency of these motifs across multiple samples is then represented
 as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples.
@@ -66,7 +69,7 @@ as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples.
 In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
 and $H$
 
-$M_{ij} = \sum_{k=1}^{R} W_{ik} H_{jk}$
+$$M_{ij} = \sum_{k=1}^{R} W_{ik} H_{jk}$$
 
 for a fixed number $R$ of signatures.  While $W$ describes the composition of
 each signature in term of somatic motifs, $H$ shows the contribution of the
@@ -77,16 +80,16 @@ signature to the alterations present in each sample.
 
 The =SomaticSignatures= package offers a framework for inferring signatures of
 SNVs in a user-friendly and efficient manner for large-scale data sets.  A tight
-integration with standard data representations of the Bioconductor project was a
-major design goal.  Further, it extends the selection of multivariate
-statistical methods for the matrix decomposition and allows a simple
-visualization of the results.
+integration with standard data representations of the =Bioconductor= project
+[[cite:gentleman_bioconductor:_2004]] was a major design goal.  Further, it extends
+the selection of multivariate statistical methods for the matrix decomposition
+and allows a simple visualization of the results.
 
 For a typical workflow, a set of variant calls and the reference sequence are
 needed.  Ideally, the SNVs are represented as a =VRanges= object with the
 genomic location as well as reference and alternative allele defined.  The
 reference sequence can be, for example, a =FaFile= object, representing an
-indexed Fasta file, a =BSgenome= object, or a =GmapGenome= object.
+indexed FASTA file, a =BSgenome= object, or a =GmapGenome= object.
 Alternatively, we provide functions to extract the relevant information from
 other sources of inputs.  At the moment, this covers the /MuTect/
 [[cite:cibulskis_sensitive_2013]] variant caller and the /h5vc/ package
@@ -115,7 +118,7 @@ To decompose $M$, the =SomaticSignatures= package implements three methods:
 - Principal component analysis (PCA) :: The PCA employs the eigenvalue
      decomposition and is therefore suitable for large data sets
      cite:stacklies_pcamethodsbioconductor_2007.  While this is related to the
-     NMF, no constraint on the sign of the elements of $W$ and $H$ exist.
+     NMF, no constraint on the sign of the elements of $W$ and $H$ exists.
 
 - K-means clustering :: In contrast to the NMF and PCA, the k-means clustering
      assigns each sample to a single somatic signature, such that $H$ can only
@@ -156,6 +159,7 @@ Atlas (TCGA) project will be used, which are part of the
   library(ggplot2)
   library(stringr)
 #+END_SRC
+
 
 #+RESULTS: load_supporting_packages
 | stringr           |
@@ -276,6 +280,25 @@ associated with the study it originated from.
 
 #+RESULTS: sca_load_pool
 
+To get a first impression of the data, we count the number of somatic variants
+per study and their predicted effects.
+
+#+NAME: sca_study_table
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value vector :rownames yes
+  sort(table(sca_merge$study), decreasing = TRUE)
+#+END_SRC
+
+#+RESULTS: sca_study_table
+| luad | 208724 |
+| skcm | 200589 |
+| hnsc |  67125 |
+| lusc |  61485 |
+| kirc |  24158 |
+| gbm  |  19938 |
+| thca |   6716 |
+| ov   |   5872 |
+
+
 #+NAME: sca_variant_classification_table
 #+BEGIN_SRC R :exports none :session *R-ss-vignette* :exports both :results value vector :rownames yes
   sort(table(sca_merge$Variant_Classification), decreasing = TRUE)
@@ -299,28 +322,14 @@ associated with the study it originated from.
 | In_Frame_Del           |      0 |
 | In_Frame_Ins           |      0 |
 
-#+NAME: sca_study_table
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value vector :rownames yes
-  sort(table(sca_merge$study), decreasing = TRUE)
-#+END_SRC
-
-#+RESULTS: sca_study_table
-| luad | 208724 |
-| skcm | 200589 |
-| hnsc |  67125 |
-| lusc |  61485 |
-| kirc |  24158 |
-| gbm  |  19938 |
-| thca |   6716 |
-| ov   |   5872 |
 
 The starting point of the analysis is a =VRanges= object which describes the
 somatic variants in terms of their genomic locations as well as reference and
 alternative alleles.  For more details about this class and how to construct it,
-please see the =VariantAnnotation= documentation.  Since the genomic positions
-are given in the /NCBI/ notation and the references used later are in /UCSC/
-notation, the functions =ucsc= and =ncbi= are used to easily transform between
-the two notations.
+please see the documentation of the =VariantAnnotation= package
+[[cite:obenchain_variantannotation:_2011]].  Since the genomic positions are given
+in the /NCBI/ notation and the references used later are in /UCSC/ notation, the
+functions =ucsc= and =ncbi= are used to easily switch between the two notations.
 
 #+NAME: sca_to_vranges
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
@@ -366,7 +375,7 @@ VRanges with 3 ranges and 0 metadata columns:
 In a first step, the sequence motif for each variant is extracted based on the
 reference sequence.  Here, the =BSgenomes= object for the human hg19 reference
 is used.  However, all objects with a defined =getSeq= method can serve as the
-reference, e.g. an indexed fasta file.  Additionally, we transform all motifs to
+reference, e.g. an indexed FASTA file.  Additionally, we transform all motifs to
 have a pyrimidine base (=C= or =T=) as a reference base
 [[cite:alexandrov_signatures_2013]].
 
@@ -410,7 +419,7 @@ VRanges with 3 ranges and 3 metadata columns:
 #+end_example
 
 To continue with the estimation of the somatic signatures, the matrix $M$ of the
-form motifs \times studies is constructed.  The =normalize= argument specifies
+form {motifs \times studies} is constructed.  The =normalize= argument specifies
 that frequencies rather than the actual counts are returned.
 
 #+NAME: sca_motif_occurrence
@@ -430,12 +439,12 @@ that frequencies rather than the actual counts are returned.
 | CA C.A | 0.0075 | 0.0143 | 0.0215 | 0.0414 |  0.039 | 0.0128 |  0.006 | 0.0112 |
 | CA C.C | 0.0075 | 0.0111 | 0.0138 | 0.0415 | 0.0275 | 0.0143 | 0.0018 | 0.0063 |
 
-The observed occurrence of the motifs, also termed somatic spectrum, can be
+The observed occurrence of the motifs, also termed /somatic spectrum/, can be
 visualized across studies, which gives a first impression of the data.  The
 distribution of the motifs clearly varies between the studies.
 
 #+NAME: sca_plot_samples_observed
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_observed.svg :ravel fig.cap='Observed frequency of somatic motifs across studies.'
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_observed.svg :ravel fig.cap='Observed frequency of somatic motifs, also termed somatic spectrum, across studies.'
   plotSamplesObserved(sca_motifs)
 #+END_SRC
 
@@ -564,11 +573,11 @@ Comparing the results of the two methods, we can see similar characteristics
 between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
 
 
-** Extensions: Normalization of Sequence Motif Frequency and Batch Effects
+** Extensions: Normalization of Sequence Motif Frequencies and Batch Effects
 
 When investigating somatic signatures between samples from different studies,
 corrections for technical confounding factors should be considered.  In our use
-case of the TCGA WES studies shown before, this is of minor influence due to
+case of the TCGA WES studies, this is of minor influence due to
 similar sequencing technology and variant calling methods across the studies.
 Approaches for the identification of so termed batch effects have been proposed
 cite:leek_capturing_2007 [[cite:sun_multiple_2012]] and could be adapted to the
@@ -595,7 +604,7 @@ If comparisons are performed across samples or studies with different capture
 targets, for example by comparing whole exome with whole genome sequencing,
 further corrections for the frequency of sequence motifs can be taken into
 account.  The =kmerFrequency= function provides the basis for calculating the
-occurance of k-mers over a set of ranges of a reference sequence.
+occurrence of k-mers over a set of ranges of a reference sequence.
 
 As an example, we compute the frequency of 3-mers for the human chromosome 1,
 based on a sample of 100'000 locations.  Analogously, the k-mer occurrence across
@@ -668,7 +677,7 @@ by the type of alteration.
 #+END_SRC
 
 
-* Alternatives: Infering Somatic Signatures with Different Approaches
+* Alternatives: Inferring Somatic Signatures with Different Approaches
 
 For the identification of somatic signatures, other methods and implementations
 exist.  The original framework [[cite:nik-zainal_mutational_2012]]
@@ -677,6 +686,8 @@ available for the Matlab programming language cite:alexandrov_wtsi_2012.  In
 extension, a probabilistic approach based on Poisson processes has been proposed
 [[cite:fischer_emu:_2013-1]] and implemented [[cite:fischer_emu:_2013]].
 
+
+#+LaTeX: \appendix
 
 * Session Info
 

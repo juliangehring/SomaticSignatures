@@ -18,11 +18,11 @@ plotRainfall <- function(x, group, size = 2, alpha = 0.5, space.skip = 0, ...) {
     y = mutationDistance(x)
 
     if(missing(group)) {
-        p = plotGrandLinear(y, aes_string(y = "distance"),
-            space.skip = space.skip, alpha = alpha, size = size, ...)
+        p = suppressMessages(plotGrandLinear(y, aes_string(y = "distance"),
+            space.skip = space.skip, alpha = alpha, size = size, ...))
     } else {
-        p = plotGrandLinear(y, aes_string(y = "distance", col = group),
-            space.skip = space.skip, alpha = alpha, size = size, ...)
+        p = suppressMessages(plotGrandLinear(y, aes_string(y = "distance", col = group),
+            space.skip = space.skip, alpha = alpha, size = size, ...))
     }
     p = p + theme_bw() + scale_y_log10() +
         theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
