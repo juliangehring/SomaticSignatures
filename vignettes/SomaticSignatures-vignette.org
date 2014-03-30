@@ -1,12 +1,12 @@
-#+TITLE: The SomaticSignatures Package 
+#+TITLE: Inferring Somatic Signatures from Single Nucleotide Variant Calls
 #+AUTHOR: Julian Gehring, EMBL Heidelberg
 
 #+LATEX_CLASS: biocKnitrRnwPlain
 #+LATEX_HEADER: \usepackage[nottoc,numbib]{tocbibind}
 #+LATEX_HEADER: \usepackage{helvet}
-
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.ebi.ac.uk/~jgehring/css/worg.css" />
-#+INFOJS_OPT: view:showall toc:t ftoc:t
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.ebi.ac.uk/~jgehring/css/bioc.css" />
+#+OPTIONS: html-postamble:t html-preamble:nil
+#+INFOJS_OPT: view:showall toc:t ftoc:t ltoc:nil
 
 #+MACRO: M @@latex:\$1{@@$2@@latex:}@@
 #+MACRO: R @@latex:\R{}@@
@@ -28,12 +28,29 @@
 -->
 #+END_HTML
 
-#+COMMENT: if ':exports none', the code block is not exported to the vignette templates 
-#+BEGIN_SRC R :ravel echo=FALSE, results='hide' :exports code
-set.seed(1)
-library(knitr)
-opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "0.7\\columnwidth", indent = 10) ## background = "#FFFFFF", dev = 'pdf'
+
+#+BEGIN_SRC R :exports code :ravel results='hide', echo=FALSE, message=FALSE, warning=FALSE
+  set.seed(1)
+  options(width = 120)
+  library(knitr)
+  opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "60%", indent = 10, cache = FALSE, cache.path = "../cache")
+  ## out.width = "1\\columnwidth"
+  ## uncomment options for HTML output, one of them breaks the image export
+  ## background = "#FFFFFF", dev = 'pdf'
 #+END_SRC
+
+#+BEGIN_HTML
+<!--begin.rcode setup, results='hide', echo=FALSE, message=FALSE, warning=FALSE
+library(knitr)
+# to base64 encode images
+opts_knit$set(upload.fun = image_uri)
+knit_hooks$set(fig.cap = function(before, options, envir) {
+if(!before) {
+paste('<p class="caption">',options$fig.cap,"</p>",sep="")
+}
+})
+end.rcode-->
+#+END_HTML
 
 
 * Motivation: The Concept Behind Mutational Signatures
@@ -687,14 +704,14 @@ extension, a probabilistic approach based on Poisson processes has been proposed
 [[cite:fischer_emu:_2013-1]] and implemented [[cite:fischer_emu:_2013]].
 
 
-#+LaTeX: \appendix
+* References
+
+#+BIBLIOGRAPHY: references unsrt limit:t option:-d option:-nobibsource option:-noabstract option:-nokeywords
+
 
 * Session Info
 
-#+BEGIN_SRC R :ravel echo=FALSE, results='asis'
-  toLatex(sessionInfo())
+#+BEGIN_SRC R :ravel echo=FALSE, results='markup'
+  sessionInfo()
 #+END_SRC
-
-
-#+BIBLIOGRAPHY: references unsrt limit:t option:-d option:-nobibsource option:-dl option:-noabstract option:-nokeywords
 

@@ -1,7 +1,12 @@
 NEWS: SomaticSignatures
 
+Version 0.99.1:
+
+    * Switch vignette format to HTML
+
+
 Version 0.3.5:
 
-* Represent ambigous base as '.' instead of 'N'.  This is now possible with the new version of the 'Biostrings' package.
+    * Represent ambigous base as '.' instead of 'N'.  This is now possible with the new version of the 'Biostrings' package.
 
-* Update of vignette
+    * Update of vignette
