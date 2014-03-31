@@ -4,6 +4,7 @@
 #+LATEX_CLASS: biocKnitrRnwPlain
 #+LATEX_HEADER: \usepackage[nottoc,numbib]{tocbibind}
 #+LATEX_HEADER: \usepackage{helvet}
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="bioc.css" />
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.ebi.ac.uk/~jgehring/css/bioc.css" />
 #+OPTIONS: html-postamble:t html-preamble:nil
 #+INFOJS_OPT: view:showall toc:t ftoc:t ltoc:nil
