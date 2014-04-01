@@ -21,7 +21,7 @@ plotRainfall <- function(x, group, size = 2, alpha = 0.5, space.skip = 0, ...) {
         p = suppressMessages(plotGrandLinear(y, aes_string(y = "distance"),
             space.skip = space.skip, alpha = alpha, size = size, ...))
     } else {
-        p = suppressMessages(plotGrandLinear(y, aes_string(y = "distance", col = group),
+        p = suppressMessages(plotGrandLinear(y, aes_string(y = "distance", color = group),
             space.skip = space.skip, alpha = alpha, size = size, ...))
     }
     p = p + theme_bw() + scale_y_log10() +

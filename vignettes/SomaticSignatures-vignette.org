@@ -691,7 +691,7 @@ by the type of alteration.
 
 #+NAME: sca_plot_rainfall_alteration
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_rainfall_alteration.svg :ravel fig.cap='Rainfall plot for the GBM study, colored by alteration.'
-  plotRainfall(sca_gbm, "alteration", size = 1)
+  plotRainfall(sca_gbm, group = "alteration", size = 1)
 #+END_SRC
 
 
