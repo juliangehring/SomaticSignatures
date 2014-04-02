@@ -674,7 +674,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 #+END_SRC
 
 
-** Visualization: Mutational Landscapes and Hypermutated Regions
+** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:
 
 Another relevant aspect of exploring mutational processes is also the
 distribution of variants across the genome, which can indicate local effects of
