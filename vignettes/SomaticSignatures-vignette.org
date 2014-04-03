@@ -34,7 +34,7 @@
   set.seed(1)
   options(width = 120)
   library(knitr)
-  opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "60%", indent = 10, cache = FALSE, cache.path = "../cache")
+  opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "60%", indent = 10, cache = FALSE, cache.path = "../cache", dpi = 300)
   ## out.width = "1\\columnwidth"
   ## uncomment options for HTML output, one of them breaks the image export
   ## background = "#FFFFFF", dev = 'pdf'
