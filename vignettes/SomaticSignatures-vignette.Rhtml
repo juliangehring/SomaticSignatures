@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-04-02 Wed 19:41 -->
+<!-- 2014-04-03 Thu 15:25 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -271,8 +271,13 @@ for the JavaScript code in this tag.
 </ul>
 </li>
 <li><a href="#sec-5">5. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
-<li><a href="#sec-6">6. References</a></li>
-<li><a href="#sec-7">7. Session Info</a></li>
+<li><a href="#sec-6">6. Frequently Asked Questions</a>
+<ul>
+<li><a href="#sec-6-1">6.1. Getting help</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7. References</a></li>
+<li><a href="#sec-8">8. Session Info</a></li>
 </ul>
 </div>
 </div>
@@ -287,7 +292,7 @@ for the JavaScript code in this tag.
 set.seed(1)
 options(width = 120)
 library(knitr)
-opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "60%", indent = 10, cache = FALSE, cache.path = "../cache")
+opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "60%", indent = 10, cache = FALSE, cache.path = "../cache", dpi = 300)
 ## out.width = "1\\columnwidth"
 ## uncomment options for HTML output, one of them breaks the image export
 ## background = "#FFFFFF", dev = 'pdf'
@@ -303,6 +308,8 @@ paste('<p class="caption">',options$fig.cap,"</p>",sep="")
 }
 })
 end.rcode-->
+
+<p class="author-top">Julian Gehring (EMBL Heidelberg)</p>
 
 
 <div id="outline-container-sec-1" class="outline-2">
@@ -782,8 +789,50 @@ extension, a probabilistic approach based on Poisson processes has been proposed
 </div>
 
 <div id="outline-container-sec-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> References</h2>
+<h2 id="sec-6"><span class="section-number-2">6</span> Frequently Asked Questions</h2>
 <div class="outline-text-2" id="text-6">
+</div><div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Getting help</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+We welcome emails with questions or suggestions about our software, and want to
+ensure that we eliminate issues if and when they appear.  We have a few requests
+to optimize the process:
+</p>
+
+<ul class="org-ul">
+<li>All emails and follow-up questions should take place over the <a href="http://bioconductor.org/help/mailing-list/">Bioconductor
+mailing list</a>, which serves as a repository of information.
+</li>
+
+<li>The subject line should contain <i>SomaticSignatures</i> and a few words describing
+the problem.  First search the <a href="http://bioconductor.org/help/mailing-list/">Bioconductor mailing list</a>, for past threads
+which might have answered your question.
+</li>
+
+<li>If you have a question about the behavior of a function, read the sections of
+the manual page for this function by typing a question mark and the function
+name, e.g. <code>?mutationContext</code>.  Additionally, read through the vignette to understand
+the interplay between different functions of the package.  We spend a lot of
+time documenting individual functions and the exact steps that the software is
+performing.
+</li>
+
+<li>Include all of your R code related to the question you are asking.
+</li>
+
+<li>Include complete warning or error messages, and conclude your message with the
+full output of <code>sessionInfo()</code>.
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> References</h2>
+<div class="outline-text-2" id="text-7">
 <div id="bibliography">
 
 </div>
@@ -1065,9 +1114,9 @@ Paul&nbsp;Theodor Pyl, Julian Gehring, Bernd Fischer, and Wolfgang Huber.
 </div>
 </div>
 
-<div id="outline-container-sec-7" class="outline-2">
-<h2 id="sec-7"><span class="section-number-2">7</span> Session Info</h2>
-<div class="outline-text-2" id="text-7">
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Session Info</h2>
+<div class="outline-text-2" id="text-8">
 <!--begin.rcode echo=FALSE, results='markup'
 sessionInfo()
 end.rcode-->
