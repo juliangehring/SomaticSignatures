@@ -59,8 +59,6 @@ for Incomplete Data." Bioinformatics 23, no. 9 (May 1, 2007):
 
 \examples{
 
-library(SomaticSignatures)
-
 vignette(package = "SomaticSignatures")
 
 }
