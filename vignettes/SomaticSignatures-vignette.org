@@ -752,6 +752,36 @@ release version of =SomaticSignatures=:
 #+END_SRC
 
 
+** Working with VRanges
+
+A central object in the workflow of =SomaticSignatures= is the =VRanges= class
+which is part of the =VariantAnnotation= package.  It builds upon the commonly
+used =GRanges= class of the =GenomicRanges= package.  Essentially, each row
+represents a variant in terms of its genomic location as well as its reference
+and alternative allele.  
+
+#+BEGIN_SRC R :exports code :ravel results='hide', message=FALSE
+  library(VariantAnnotation)
+#+END_SRC
+
+There are multiple ways of converting its own variant calls into a =VRanges=
+object.  One can for example import them from a =VCF= file with the =readVcf=
+function or employ the =readMutect= function for importing variant calls from
+the =MuTect= caller directly.  Further, one can also construct it from any other
+format in the form of:
+
+#+BEGIN_SRC R
+  vr = VRanges(
+      seqnames = "chr1",
+      ranges = IRanges(start = 1000, width = 1),
+      ref = "A",
+      alt = "C")
+
+  vr
+#+END_SRC
+
+
+
 * References
 
 #+BIBLIOGRAPHY: references unsrt limit:t option:-d option:-nobibsource option:-noabstract option:-nokeywords
