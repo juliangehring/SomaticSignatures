@@ -656,7 +656,7 @@ the estimated frequency of 3-mers across the human genome and exome.
   head(sca_occurrence)
   
   data(kmers)
-  norms = k3we / k3wg
+  norms = k3wg / k3we
   head(norms)
   
   sca_norm = normalizeMotifs(sca_occurrence, norms)
@@ -736,6 +736,20 @@ to optimize the process:
 - Include complete warning or error messages, and conclude your message with the
   full output of =sessionInfo()=.
 
+
+
+** Installing the package
+
+Before you want to install the =SomaticSignatures= package, please ensure that
+you have the latest version of =R= and =Bioconductor= installed.  For details on
+this, please have a look at the help packages for [[http://cran.r-project.org/][R]] and [[http://bioconductor.org/install/][Bioconductor]].  Then you
+can open =R= and run the following commands which will install the latest
+release version of =SomaticSignatures=:
+
+#+BEGIN_SRC R :eval no :ravel eval=FALSE
+  source("http://bioconductor.org/biocLite.R")
+  biocLite("SomaticSignatures")
+#+END_SRC
 
 
 * References
