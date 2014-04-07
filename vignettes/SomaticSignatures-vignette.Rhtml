@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-04-03 Thu 15:25 -->
+<!-- 2014-04-07 Mon 11:07 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -274,6 +274,7 @@ for the JavaScript code in this tag.
 <li><a href="#sec-6">6. Frequently Asked Questions</a>
 <ul>
 <li><a href="#sec-6-1">6.1. Getting help</a></li>
+<li><a href="#sec-6-2">6.2. Installing the package</a></li>
 </ul>
 </li>
 <li><a href="#sec-7">7. References</a></li>
@@ -763,7 +764,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 head(sca_occurrence)
 
 data(kmers)
-norms = k3we / k3wg
+norms = k3wg / k3we
 head(norms)
 
 sca_norm = normalizeMotifs(sca_occurrence, norms)
@@ -827,8 +828,26 @@ full output of <code>sessionInfo()</code>.
 </ul>
 </div>
 </div>
-</div>
 
+
+<div id="outline-container-sec-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Installing the package</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+Before you want to install the <code>SomaticSignatures</code> package, please ensure that
+you have the latest version of <code>R</code> and <code>Bioconductor</code> installed.  For details on
+this, please have a look at the help packages for <a href="http://cran.r-project.org/">R</a> and <a href="http://bioconductor.org/install/">Bioconductor</a>.  Then you
+can open <code>R</code> and run the following commands which will install the latest
+release version of <code>SomaticSignatures</code>:
+</p>
+
+<!--begin.rcode eval=FALSE
+source("http://bioconductor.org/biocLite.R")
+biocLite("SomaticSignatures")
+end.rcode-->
+</div>
+</div>
+</div>
 
 <div id="outline-container-sec-7" class="outline-2">
 <h2 id="sec-7"><span class="section-number-2">7</span> References</h2>
