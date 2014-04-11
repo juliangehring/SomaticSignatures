@@ -1,0 +1,7 @@
+## muTector v1.0.47986
+contig	position	context	ref_allele	alt_allele	tumor_name	normal_name	score	dbsnp_site	covered	power	tumor_power	normal_power	total_pairs	improper_pairs	map_Q0_reads	t_lod_fstar	tumor_f	contaminant_fraction	contaminant_lod	t_ref_count	t_alt_count	t_ref_sum	t_alt_sum	t_ref_max_mapq	t_alt_max_mapq	t_ins_count	t_del_count	normal_best_gt	init_n_lod	n_ref_count	n_alt_count	n_ref_sum	n_alt_sum	judgement
+chr1	57682	AACxTTC	T	C	Tumor	Normal	0	NOVEL	COVERED	0.196294	0.196312	0.999909	39	1	0	6.660801	0.142857	0.02	-0.122829	12	2	465	82	31	38	0	0	TT	7.22385	24	0	905	0	KEEP
+chr1	120335	GTAxCAT	C	T	Tumor	Normal	0	NOVEL	UNCOVERED	0	0	0.992708	13	0	1	7.924891	0.666667	0.02	-0.026321	1	2	38	78	50	49	0	0	CC	3.311084	11	0	426	0	KEEP
+chr1	663147	GGCxGTC	G	A	Tumor	Normal	0	NOVEL	COVERED	0.899314	0.899314	1	97	0	0	10.173672	0.095238	0.02	-0.368458	38	4	1397	140	50	58	0	0	GG	15.649645	52	0	1853	0	KEEP
+chr1	688994	GGGxAGT	T	C	Tumor	Normal	0	NOVEL	UNCOVERED	0.162114	0.162467	0.997832	37	1	2	6.330739	0.153846	0.02	-0.114029	11	2	363	78	20	48	0	0	TT	5.384249	18	0	553	0	KEEP
+chr1	924199	GGTxGAG	G	T	Tumor	Normal	0	NOVEL	UNCOVERED	0.043461	0.043787	0.99257	16	1	0	6.949996	0.5	0.02	-0.061414	2	2	82	72	99	99	0	0	GG	2.407624	8	0	284	0	KEEP
