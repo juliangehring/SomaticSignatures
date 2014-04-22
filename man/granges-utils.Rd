@@ -58,7 +58,9 @@ seqchar(x)
 
 \seealso{
   
-  'GenomicRanges' package: 'seqnameStyle', 'seqnames', 'mcols'
+  'GenomicRanges' package: 'seqnames', 'mcols'
+
+  'GenomeInfoDb' package: 'seqlevelsStyle'
 
 }
 

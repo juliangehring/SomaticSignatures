@@ -6,14 +6,14 @@ grangesPlain <- function(x) {
 
 
 ucsc <- function(x) {
-    suppressMessages(seqnameStyle(x) <- "UCSC") ## '<-' needed
+    suppressMessages(seqlevelsStyle(x) <- "UCSC") ## '<-' needed
     genome(x) = NA
     return(x)
 }
 
 
 ncbi <- function(x) {
-    suppressMessages(seqnameStyle(x) <- "NCBI") ## '<-' needed
+    suppressMessages(seqlevelsStyle(x) <- "NCBI") ## '<-' needed
     genome(x) = NA
     return(x)
 }
