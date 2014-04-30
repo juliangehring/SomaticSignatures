@@ -1,5 +1,5 @@
-import(GenomeInfoDb)
 import(GenomicRanges)
+import(GenomeInfoDb)
 import(VariantAnnotation)
 import(ggplot2)
 import(IRanges)
