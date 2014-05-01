@@ -1,30 +1,15 @@
 #+TITLE: Inferring Somatic Signatures from Single Nucleotide Variant Calls
 #+AUTHOR: Julian Gehring, EMBL Heidelberg
 
-#+LATEX_CLASS: biocKnitrRnwPlain
-#+LATEX_HEADER: \usepackage[nottoc,numbib]{tocbibind}
-#+LATEX_HEADER: \usepackage{helvet}
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="bioc.css" />
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.ebi.ac.uk/~jgehring/css/bioc.css" />
-#+OPTIONS: html-postamble:t html-preamble:nil
+#+OPTIONS: html-postamble:nil html-preamble:nil html-style:nil
 #+INFOJS_OPT: view:showall toc:t ftoc:t ltoc:nil
 
-#+MACRO: M @@latex:\$1{@@$2@@latex:}@@
-#+MACRO: R @@latex:\R{}@@
-#+MACRO: Bioconductor @@latex:\Bioconductor{}@@
+#+PROPERTY: tangle yes
 
-#+COMMENT: This is only present within latex
-#+BEGIN_LaTeX
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{SomaticSignatures - PDF}
-%\VignettePackage{SomaticSignatures}
-#+END_LaTeX
-
-#+COMMENT: This is only present within html
 #+BEGIN_HTML
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{SomaticSignatures - HTML}
+%\VignetteIndexEntry{SomaticSignatures}
 %\VignettePackage{SomaticSignatures}
 -->
 #+END_HTML
@@ -32,26 +17,33 @@
 
 #+BEGIN_SRC R :exports code :ravel results='hide', echo=FALSE, message=FALSE, warning=FALSE
   set.seed(1)
-  options(width = 120)
+
+  options(width = 70)
+
   library(knitr)
-  opts_chunk$set(comment = "  ", fig.path = "", fig.align = "center", out.width = "60%", indent = 10, cache = FALSE, cache.path = "../cache", dpi = 300)
-  ## out.width = "1\\columnwidth"
-  ## uncomment options for HTML output, one of them breaks the image export
-  ## background = "#FFFFFF", dev = 'pdf'
+
+  style = paste(readLines("bioc.css"), collapse = "\n")
+
+  opts_knit$set(self.contained = TRUE,
+                upload.fun = image_uri,
+                header = c(highlight = style))
+
+  opts_chunk$set(comment = "  ",
+                 fig.path = "",
+                 fig.align = "center",
+                 out.width = "60%",
+                 dpi = 300,
+                 indent = 10,
+                 cache = FALSE,
+                 cache.path = "../cache")
+
+  knit_hooks$set(fig.cap = function(before, options, envir) {
+      if(!before) {
+          paste('<p class="caption">',options$fig.cap,"</p>",sep="")
+      }
+  })
 #+END_SRC
 
-#+BEGIN_HTML
-<!--begin.rcode setup, results='hide', echo=FALSE, message=FALSE, warning=FALSE
-library(knitr)
-# to base64 encode images
-opts_knit$set(upload.fun = image_uri)
-knit_hooks$set(fig.cap = function(before, options, envir) {
-if(!before) {
-paste('<p class="caption">',options$fig.cap,"</p>",sep="")
-}
-})
-end.rcode-->
-#+END_HTML
 
 #+BEGIN_HTML
 <p class="author-top">Julian Gehring (EMBL Heidelberg)</p>
@@ -678,7 +670,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 #+END_SRC
 
 
-** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:
+** Visualization: Mutational Landscapes and Hypermutated Regions
 
 Another relevant aspect of exploring mutational processes is also the
 distribution of variants across the genome, which can indicate local effects of
@@ -696,6 +688,73 @@ by the type of alteration.
 #+NAME: sca_plot_rainfall_alteration
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_rainfall_alteration.svg :ravel fig.cap='Rainfall plot for the GBM study, colored by alteration.'
   plotRainfall(sca_gbm, group = "alteration", size = 1)
+#+END_SRC
+
+
+* Use case: Analyzing Own Mutation Calls
+
+If you have your own somatic SNV calls, you can import them as a =VRanges=
+object directly from a =VCF= file.  Here, we will import SNV from a VCF file of
+the COSMIC project, and select a set of mutations that fall within some genes of
+interest.  From there on, we can pursue an analysis as described before.
+
+#+NAME: load_ss
+#+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
+  library(SomaticSignatures)
+
+  library(COSMIC.67)
+  library(VariantAnnotation)
+#+END_SRC
+
+#+BEGIN_SRC R
+  vcf_path = COSMIC.67:::cosmicVcfPath()
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  genes = c("KRAS", "APC", "BRCA1", "BRCA2", "BRAF", "TP53")
+
+  vc = readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
+
+  vcs = vc[vc$GENE %in% genes]
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  head(vcs)
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  table(vcs$GENE)
+#+END_SRC
+
+
+** In more detail                                                 :noexport:
+
+#+BEGIN_SRC R :exports none
+  vcf_path = COSMIC.67:::cosmicVcfPath()
+
+  data(genesymbol, package = "biovizBase")
+
+  nice_genes = c("KRAS", "NRAS", "APC", "BRCA1", "BRCA2", "TP53")
+
+  roi = sort(ncbi(unstrand(genesymbol[nice_genes])))
+
+  param = ScanVcfParam(which = roi, info = "GENE")
+  vcf = readVcfAsVRanges(vcf_path, "ncbi37", param)
+  vcf$GENE = factor(sub("_.*", "", vcf$GENE))
+
+  vcf <- readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
+
+  table(vcf$GENE)
+#+END_SRC
+
+
+#+BEGIN_SRC R :exports none
+  library(BSgenome.Hsapiens.UCSC.hg19)
+
+  vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
 #+END_SRC
 
 
