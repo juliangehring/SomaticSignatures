@@ -4,6 +4,7 @@
 #+OPTIONS: html-postamble:nil html-preamble:nil html-style:nil
 #+INFOJS_OPT: view:showall toc:t ftoc:t ltoc:nil
 
+#+PROPERTY: tangle yes
 
 #+BEGIN_HTML
 <!--
@@ -669,7 +670,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 #+END_SRC
 
 
-** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:
+** Visualization: Mutational Landscapes and Hypermutated Regions
 
 Another relevant aspect of exploring mutational processes is also the
 distribution of variants across the genome, which can indicate local effects of
@@ -687,6 +688,73 @@ by the type of alteration.
 #+NAME: sca_plot_rainfall_alteration
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_rainfall_alteration.svg :ravel fig.cap='Rainfall plot for the GBM study, colored by alteration.'
   plotRainfall(sca_gbm, group = "alteration", size = 1)
+#+END_SRC
+
+
+* Use case: Analyzing Own Mutation Calls
+
+If you have your own somatic SNV calls, you can import them as a =VRanges=
+object directly from a =VCF= file.  Here, we will import SNV from a VCF file of
+the COSMIC project, and select a set of mutations that fall within some genes of
+interest.  From there on, we can pursue an analysis as described before.
+
+#+NAME: load_ss
+#+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
+  library(SomaticSignatures)
+
+  library(COSMIC.67)
+  library(VariantAnnotation)
+#+END_SRC
+
+#+BEGIN_SRC R
+  vcf_path = COSMIC.67:::cosmicVcfPath()
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  genes = c("KRAS", "APC", "BRCA1", "BRCA2", "BRAF", "TP53")
+
+  vc = readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
+
+  vcs = vc[vc$GENE %in% genes]
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  head(vcs)
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  table(vcs$GENE)
+#+END_SRC
+
+
+** In more detail                                                 :noexport:
+
+#+BEGIN_SRC R :exports none
+  vcf_path = COSMIC.67:::cosmicVcfPath()
+
+  data(genesymbol, package = "biovizBase")
+
+  nice_genes = c("KRAS", "NRAS", "APC", "BRCA1", "BRCA2", "TP53")
+
+  roi = sort(ncbi(unstrand(genesymbol[nice_genes])))
+
+  param = ScanVcfParam(which = roi, info = "GENE")
+  vcf = readVcfAsVRanges(vcf_path, "ncbi37", param)
+  vcf$GENE = factor(sub("_.*", "", vcf$GENE))
+
+  vcf <- readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
+
+  table(vcf$GENE)
+#+END_SRC
+
+
+#+BEGIN_SRC R :exports none
+  library(BSgenome.Hsapiens.UCSC.hg19)
+
+  vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
 #+END_SRC
 
 
