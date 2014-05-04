@@ -698,7 +698,6 @@ object directly from a =VCF= file.  Here, we will import SNV from a VCF file of
 the COSMIC project, and select a set of mutations that fall within some genes of
 interest.  From there on, we can pursue an analysis as described before.
 
-#+NAME: load_ss
 #+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
   library(SomaticSignatures)
 
