@@ -31,7 +31,7 @@
   opts_chunk$set(comment = "  ",
                  fig.path = "",
                  fig.align = "center",
-                 out.width = "60%",
+                 out.width = "100%",
                  dpi = 300,
                  indent = 10,
                  cache = FALSE,
@@ -670,7 +670,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 #+END_SRC
 
 
-** Visualization: Mutational Landscapes and Hypermutated Regions
+** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:
 
 Another relevant aspect of exploring mutational processes is also the
 distribution of variants across the genome, which can indicate local effects of
@@ -685,8 +685,11 @@ by the type of alteration.
   sca_gbm = sca_motifs[ names(sca_motifs) %in% "gbm"]
 #+END_SRC
 
+
+#+COMMENT: The plotting fails since 'plotGrandLinear' can't handle 'VRanges' object. Converting this to a 'GRanges' fixes the problem.
+
 #+NAME: sca_plot_rainfall_alteration
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_rainfall_alteration.svg :ravel fig.cap='Rainfall plot for the GBM study, colored by alteration.'
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_rainfall_alteration.svg :ravel fig.cap='Rainfall plot for the GBM study, colored by alteration type.'
   plotRainfall(sca_gbm, group = "alteration", size = 1)
 #+END_SRC
 
@@ -706,7 +709,7 @@ interest.  From there on, we can pursue an analysis as described before.
 #+END_SRC
 
 #+BEGIN_SRC R
-  vcf_path = COSMIC.67:::cosmicVcfPath()
+  vcf_path = system.file("vcf", "cosmic_67.vcf.gz", package = "COSMIC.67", mustWork = TRUE)
 #+END_SRC
 
 
