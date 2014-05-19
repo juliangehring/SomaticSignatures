@@ -698,8 +698,9 @@ by the type of alteration.
 
 If you have your own somatic SNV calls, you can import them as a =VRanges=
 object directly from a =VCF= file.  Here, we will import SNV from a VCF file of
-the COSMIC project, and select a set of mutations that fall within some genes of
-interest.  From there on, we can pursue an analysis as described before.
+the COSMIC project, and select a set of mutations that fall within a selection
+of cancer-related genes.  From there on, we can pursue an analysis as described
+before.
 
 #+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
   library(SomaticSignatures)
@@ -716,9 +717,9 @@ interest.  From there on, we can pursue an analysis as described before.
 #+BEGIN_SRC R
   genes = c("KRAS", "APC", "BRCA1", "BRCA2", "BRAF", "TP53")
 
-  vc = readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
+  vc = ucsc(readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE")))
 
-  vcs = vc[vc$GENE %in% genes]
+  vcs = vc[ vc$GENE %in% genes & isSNV(vc) ]
 #+END_SRC
 
 
@@ -727,8 +728,32 @@ interest.  From there on, we can pursue an analysis as described before.
 #+END_SRC
 
 
+We get an overview about how many SNVs are present in each gene.
+
 #+BEGIN_SRC R
   table(vcs$GENE)
+#+END_SRC
+
+
+#+BEGIN_SRC R
+  library(BSgenome.Hsapiens.UCSC.hg19)
+
+  vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+#+END_SRC
+
+
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports code :results value table :rownames yes :colnames yes
+  vcs_occurrence = mutationContextMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
+
+  head(round(vcs_occurrence, 4))
+#+END_SRC
+
+Please note that the occurence of motifs may be driven by the sequence of the genes.
+
+#+NAME: vcs_plot_samples_observed
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/vcs_samples_observed.svg :ravel fig.cap='Observed frequency of somatic motifs across genes.'
+  plotSamplesObserved(vcs_motifs, group = "GENE")
 #+END_SRC
 
 
@@ -750,13 +775,6 @@ interest.  From there on, we can pursue an analysis as described before.
   vcf <- readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
 
   table(vcf$GENE)
-#+END_SRC
-
-
-#+BEGIN_SRC R :exports none
-  library(BSgenome.Hsapiens.UCSC.hg19)
-
-  vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
 #+END_SRC
 
 

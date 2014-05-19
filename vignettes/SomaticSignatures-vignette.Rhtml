@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-05-10 Sa 15:58 -->
+<!-- 2014-05-19 Mo 21:55 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -676,8 +676,9 @@ end.rcode-->
 <p>
 If you have your own somatic SNV calls, you can import them as a <code>VRanges</code>
 object directly from a <code>VCF</code> file.  Here, we will import SNV from a VCF file of
-the COSMIC project, and select a set of mutations that fall within some genes of
-interest.  From there on, we can pursue an analysis as described before.
+the COSMIC project, and select a set of mutations that fall within a selection
+of cancer-related genes.  From there on, we can pursue an analysis as described
+before.
 </p>
 
 <!--begin.rcode results='hide',message=FALSE
@@ -695,9 +696,9 @@ end.rcode-->
 <!--begin.rcode 
 genes = c("KRAS", "APC", "BRCA1", "BRCA2", "BRAF", "TP53")
 
-vc = readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
+vc = ucsc(readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE")))
 
-vcs = vc[vc$GENE %in% genes]
+vcs = vc[ vc$GENE %in% genes & isSNV(vc) ]
 end.rcode-->
 
 
@@ -706,8 +707,35 @@ head(vcs)
 end.rcode-->
 
 
+<p>
+We get an overview about how many SNVs are present in each gene.
+</p>
+
 <!--begin.rcode 
 table(vcs$GENE)
+end.rcode-->
+
+
+<!--begin.rcode 
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+end.rcode-->
+
+
+
+<!--begin.rcode 
+vcs_occurrence = mutationContextMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
+
+head(round(vcs_occurrence, 4))
+end.rcode-->
+
+<p>
+Please note that the occurence of motifs may be driven by the sequence of the genes.
+</p>
+
+<!--begin.rcode vcs_plot_samples_observed, fig.cap='Observed frequency of somatic motifs across genes.'
+plotSamplesObserved(vcs_motifs, group = "GENE")
 end.rcode-->
 </div>
 </div>
