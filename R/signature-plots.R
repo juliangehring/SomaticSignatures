@@ -1,4 +1,4 @@
-plotSamplesObserved <- function(s, group = "study") {
+plotSamplesObserved <- function(s, group = "sample") {
 
     df = as(mcols(s), "data.frame")
     facet_string = paste0(group, " ~ alteration")

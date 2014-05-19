@@ -1,6 +1,6 @@
 mutationContextMatrix <- function(x, group = "sample", normalize = TRUE) {
 
-    d = as(mcols(x), "data.frame")
+    d = as(unname(x), "data.frame")
     group_string = paste0(group, " ~ motif")
     d$motif = factor(paste(d$alteration, d$context))
     y = t(acast(d, group_string, value.var = "motif", fun.aggregate = length))

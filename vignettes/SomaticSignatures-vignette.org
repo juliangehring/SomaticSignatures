@@ -459,7 +459,7 @@ distribution of the motifs clearly varies between the studies.
 
 #+NAME: sca_plot_samples_observed
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_observed.svg :ravel fig.cap='Observed frequency of somatic motifs, also termed somatic spectrum, across studies.'
-  plotSamplesObserved(sca_motifs)
+  plotSamplesObserved(sca_motifs, group = "study")
 #+END_SRC
 
 #+RESULTS: sca_plot_samples_observed

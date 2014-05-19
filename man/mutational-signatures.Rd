@@ -30,7 +30,7 @@ nmfSignatures(x, r, seed = "ica", ...)
 kmeansSignatures(x, r, ...)
 pcaSignatures(x, r, ...)
 
-plotSamplesObserved(s, group = "study")
+plotSamplesObserved(s, group = "sample")
 plotSignatureMap(s)
 plotSignatures(s)
 plotSampleMap(s)
