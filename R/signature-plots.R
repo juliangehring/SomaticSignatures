@@ -1,6 +1,10 @@
 plotSamplesObserved <- function(s, group = "sample") {
 
-    df = as(mcols(s), "data.frame")
+    df = as(unname(s), "data.frame")
+    if(!(group %in% colnames(df))) {
+        stop(sprintf("Column '%s' not present in input object.", group))
+    }
+
     facet_string = paste0(group, " ~ alteration")
     p = ggplot(df) + geom_bar(aes_string(x = "context", fill = "alteration")) +
         facet_grid(facet_string, scales = "free_y") +
