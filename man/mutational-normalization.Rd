@@ -17,7 +17,7 @@ normalizeMotifs(x, norms)
 
 \arguments{
 
-  \item{x}{Matrix, as returned by 'mutationContextMatrix' [required]}
+  \item{x}{Matrix, as returned by 'motifMatrix' [required]}
 
   \item{norms}{Vector with normalization factors [required].  The names
     must match the base sequence names in 'x'.}
@@ -32,6 +32,6 @@ normalizeMotifs(x, norms)
 
 \seealso{
 
-  mutationContextMatrix
+  motifMatrix
   
 }

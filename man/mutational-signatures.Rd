@@ -1,7 +1,7 @@
 \name{mutational-signatures}
 
 \alias{mutational-signatures}
-\alias{mutationContextMatrix}
+\alias{motifMatrix}
 \alias{findSignatures}
 \alias{nmfSignatures}
 \alias{kmeansSignatures}
@@ -23,7 +23,7 @@
 }
 
 \usage{
-mutationContextMatrix(x, group = "sample", normalize = TRUE)
+motifMatrix(x, group = "sample", normalize = TRUE)
 
 findSignatures(x, r, method = c("nmf", "pca", "kmeans"), ...)
 nmfSignatures(x, r, seed = "ica", ...)
@@ -59,7 +59,7 @@ plotSamples(s)
 
 \details{
 
-  The 'mutationContextMatrix' function transforms the metadata columns
+  The 'motifMatrix' function transforms the metadata columns
   of a 'VRanges' object, as returned by the 'mutationContext' function,
   to a matrix of the form 'motifs x samples'.  This constitutes the
   bases for the estimation of the signatures.

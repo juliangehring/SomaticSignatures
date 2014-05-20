@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-05-19 Mo 21:55 -->
+<!-- 2014-05-20 Di 10:04 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -291,7 +291,7 @@ Generally, the individual steps of the analysis can be summarized as:
 <ol class="org-ol">
 <li>The somatic motifs for each variant are retrieved from the reference sequence
 with the <code>mutationContext</code> function and converted to a matrix representation
-with the <code>mutationContextMatrix</code> function.
+with the <code>motifMatrix</code> function.
 </li>
 
 <li>Somatic signatures are estimated with a method of choice (currently
@@ -464,7 +464,7 @@ that frequencies rather than the actual counts are returned.
 </p>
 
 <!--begin.rcode sca_motif_occurrence
-sca_occurrence = mutationContextMatrix(sca_motifs, group = "study", normalize = TRUE)
+sca_occurrence = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
 
 head(round(sca_occurrence, 4))
 end.rcode-->
@@ -725,7 +725,7 @@ end.rcode-->
 
 
 <!--begin.rcode 
-vcs_occurrence = mutationContextMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
+vcs_occurrence = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
 
 head(round(vcs_occurrence, 4))
 end.rcode-->

@@ -113,7 +113,7 @@ Generally, the individual steps of the analysis can be summarized as:
 
 1. The somatic motifs for each variant are retrieved from the reference sequence
    with the =mutationContext= function and converted to a matrix representation
-   with the =mutationContextMatrix= function.
+   with the =motifMatrix= function.
 
 2. Somatic signatures are estimated with a method of choice (currently
    =nmfSignatures=, =pcaSignatures=, or =kmeansSignatures=).
@@ -438,7 +438,7 @@ that frequencies rather than the actual counts are returned.
 
 #+NAME: sca_motif_occurrence
 #+BEGIN_SRC R :session *R-ss-vignette* :exports code :results value table :rownames yes :colnames yes
-  sca_occurrence = mutationContextMatrix(sca_motifs, group = "study", normalize = TRUE)
+  sca_occurrence = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
   
   head(round(sca_occurrence, 4))
 #+END_SRC
@@ -744,7 +744,7 @@ We get an overview about how many SNVs are present in each gene.
 
 
 #+BEGIN_SRC R :session *R-ss-vignette* :exports code :results value table :rownames yes :colnames yes
-  vcs_occurrence = mutationContextMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
+  vcs_occurrence = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
 
   head(round(vcs_occurrence, 4))
 #+END_SRC

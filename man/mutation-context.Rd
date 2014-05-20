@@ -105,7 +105,7 @@ mutationContextH5vc(vc, ms, unify = TRUE)
   vc = variantCalls
 
   vr2 = mutationContextH5vc(vc, ms)
-  ct2 = mutationContextMatrix(vr2, "sampleNames")
+  ct2 = motifMatrix(vr2, "sampleNames")
 
 }
  
