@@ -1,18 +1,18 @@
-findSignatures <- function(x, r, method = c("nmf", "pca", "kmeans"), ...) {
+findSignatures <- function(x, r, method = c("nmf", "pca", "kmeans"), includeRaw = FALSE, ...) {
 
     method = match.arg(method)
     
     y = switch(method,
-        nmf = nmfSignatures(x, r, ...),
-        pca = pcaSignatures(x, r, ...),
-        kmeans = kmeansSignatures(x, r, ...)
+        nmf = nmfSignatures(x, r, includeRaw, ...),
+        pca = pcaSignatures(x, r, includeRaw, ...),
+        kmeans = kmeansSignatures(x, r, includeRaw, ...)
         )
     
     return(y)
 }
 
 
-nmfSignatures <- function(x, r, seed = "ica", ...) {
+nmfSignatures <- function(x, r, seed = "ica", includeRaw = FALSE, ...) {
     
     y = nmf(x, r, seed = seed, ...)
 
@@ -22,13 +22,15 @@ nmfSignatures <- function(x, r, seed = "ica", ...) {
     sig_names = paste0("S", 1:r)
     colnames(w) = colnames(h) = sig_names
     v = fitted(y)
-    res = list(w = w, h = h, v = v, raw = y)
+    res = list(w = w, h = h, v = v, m = x, r = r)
+    if(includeRaw)
+        res[["raw"]] = y
 
     return(res)
 }
 
 
-kmeansSignatures <- function(x, r, ...) {
+kmeansSignatures <- function(x, r, includeRaw = FALSE, ...) {
 
     y = kmeans(t(x), centers = r)
     
@@ -43,13 +45,15 @@ kmeansSignatures <- function(x, r, ...) {
     sig_names = paste0("S", 1:r)
     colnames(w) = colnames(h) = sig_names
     v = fitted(y)
-    res = list(w = w, h = h, v = v, raw = y)
+    res = list(w = w, h = h, v = v, m = x, r = r)
+    if(includeRaw)
+        res[["raw"]] = y
 
     return(res)    
 }
 
 
-pcaSignatures <- function(x, r, ...) {
+pcaSignatures <- function(x, r, includeRaw = FALSE, ...) {
   
     #pca = pr    #w = pca$rotation ## signatures x k
     #h = pca$x ## samples x k
@@ -62,7 +66,9 @@ pcaSignatures <- function(x, r, ...) {
     
     sig_names = paste0("S", 1:r)      
     colnames(w) = colnames(h) = sig_names
-    res = list(w = w, h = h, v = v, raw = y)
-  
+    res = list(w = w, h = h, v = v, m = x, r = r)
+    if(includeRaw)
+        res[["raw"]] = y
+
     return(res)    
 }

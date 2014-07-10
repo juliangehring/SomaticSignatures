@@ -22,8 +22,11 @@
 
   library(knitr)
 
-  style = paste(readLines("bioc.css"), collapse = "\n")
-
+  style_sheet = "bioc.css"
+  style = if(file.exists(style_sheet)) {
+      paste(readLines(style_sheet), collapse = "\n")
+  }
+      
   opts_knit$set(self.contained = TRUE,
                 upload.fun = image_uri,
                 header = c(highlight = style))

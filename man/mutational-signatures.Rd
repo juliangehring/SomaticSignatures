@@ -1,7 +1,6 @@
 \name{mutational-signatures}
 
 \alias{mutational-signatures}
-\alias{motifMatrix}
 \alias{findSignatures}
 \alias{nmfSignatures}
 \alias{kmeansSignatures}
@@ -23,12 +22,10 @@
 }
 
 \usage{
-motifMatrix(x, group = "sample", normalize = TRUE)
-
-findSignatures(x, r, method = c("nmf", "pca", "kmeans"), ...)
-nmfSignatures(x, r, seed = "ica", ...)
-kmeansSignatures(x, r, ...)
-pcaSignatures(x, r, ...)
+findSignatures(x, r, method = c("nmf", "pca", "kmeans"), includeRaw = FALSE, ...)
+nmfSignatures(x, r, seed = "ica", includeRaw = FALSE, ...)
+kmeansSignatures(x, r, includeRaw = FALSE, ...)
+pcaSignatures(x, r, includeRaw = FALSE, ...)
 
 plotSamplesObserved(s, group = "sample")
 plotSignatureMap(s)
@@ -43,13 +40,14 @@ plotSamples(s)
 
   \item{group}{Grouping variable name [character, default: 'sample']}
 
-  \item{normalize}{Normalize to frequency}
-
   \item{r}{Number of signatures [integer, required]}
 
   \item{method}{Method to apply (currently: 'nmf' or 'kmeans')}
 
   \item{seed}{seed for NMF, default: "ica"}
+
+  \item{includeRaw}{Include the raw object returned by the low-level
+    decomposition function in the output.}
 
   \item{...}{Additional arguments passed to 'NMF::nmf'}
 
@@ -58,11 +56,6 @@ plotSamples(s)
 }
 
 \details{
-
-  The 'motifMatrix' function transforms the metadata columns
-  of a 'VRanges' object, as returned by the 'mutationContext' function,
-  to a matrix of the form 'motifs x samples'.  This constitutes the
-  bases for the estimation of the signatures.
   
   The 'nmfSignatures', 'pcaSignatures', and 'kmeansSignatures' functions
   estimate a set of 'r' somatic signatures using the NMF, PCA, or
@@ -74,6 +67,31 @@ plotSamples(s)
   'plotSamples').
   
 }
+
+\value{
+
+  The 'signature' functions return a list with the elements:
+
+  \itemize{
+    
+    \item{w}{Matrix of the form 'motif x signature'}
+    
+    \item{h}{Matrix of the form 'sample x signature'}
+    
+    \item{v}{Matrix of the form 'motif x sample', containing the
+      reconstruction of 'm' from 'w' and 'h'.}
+    
+    \item{m}{Input matrix 'm'}
+    
+    \item{r}{Number of signatures.}
+    
+    \item{raw}{Raw object returned by the low-level decomposition
+      function, if 'includeRaw' is true.}
+
+  }
+  
+}
+
 
 \seealso{
 
