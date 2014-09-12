@@ -34,7 +34,7 @@
   opts_chunk$set(comment = "  ",
                  fig.path = "",
                  fig.align = "center",
-                 out.width = "100%",
+                 out.width = "80%",
                  dpi = 300,
                  indent = 10,
                  cache = FALSE,
@@ -171,22 +171,12 @@ Atlas (TCGA) project will be used, which are part of the
 
 #+NAME: load_supporting_packages
 #+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
-  library(GenomicRanges)
-  library(VariantAnnotation)
   library(ggplot2)
-  library(stringr)
 #+END_SRC
 
 
 #+RESULTS: load_supporting_packages
-| stringr           |
 | ggplot2           |
-| VariantAnnotation |
-| Rsamtools         |
-| Biostrings        |
-| GenomicRanges     |
-| XVector           |
-| IRanges           |
 | SomaticSignatures |
 | Biobase           |
 | BiocGenerics      |
@@ -209,15 +199,13 @@ Atlas (TCGA) project will be used, which are part of the
 #+RESULTS: load_data_package
 | BSgenome.Hsapiens.UCSC.hg19 |
 | BSgenome                    |
-| SomaticCancerAlterations    |
-| stringr                     |
-| ggplot2                     |
-| VariantAnnotation           |
-| Rsamtools                   |
 | Biostrings                  |
-| GenomicRanges               |
 | XVector                     |
+| GenomicRanges               |
+| GenomeInfoDb                |
 | IRanges                     |
+| SomaticCancerAlterations    |
+| ggplot2                     |
 | SomaticSignatures           |
 | Biobase                     |
 | BiocGenerics                |
@@ -241,7 +229,7 @@ summarizes the biological and experimental settings of each study.
 #+NAME: sca_metadata
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
   sca_metadata = scaMetadata()
-  
+
   print(sca_metadata)
 #+END_SRC
 
@@ -286,9 +274,9 @@ associated with the study it originated from.
 #+NAME: sca_load_pool
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
   sca_all = scaLoadDatasets()
-  
+
   sca_merge = unlist(sca_all)
-  short_names = str_split_fixed(rownames(sca_metadata), "_", 2)[ ,1]
+  short_names = gsub("(.*)_(.*)", "\\1", rownames(sca_metadata))
   names(sca_merge) = sca_merge$study = factor(rep(short_names, times = elementLengths(sca_all)))
     
   sca_merge = sca_merge[ sca_merge$Variant_Type %in% "SNP" ]
@@ -355,15 +343,17 @@ functions =ucsc= and =ncbi= are used to easily switch between the two notations.
       ranges(sca_merge),
       ref = sca_merge$Reference_Allele,
       alt = sca_merge$Tumor_Seq_Allele2,
-      seqinfo = seqinfo(sca_merge))
+      sampleNames = sca_merge$Patient_ID,
+      seqinfo = seqinfo(sca_merge),
+      study = sca_merge$study)
   sca_vr = ucsc(sca_vr)
-  
+
   head(sca_vr, 3)
 #+END_SRC
 
 #+RESULTS: sca_to_vranges
 #+begin_example
-VRanges with 3 ranges and 0 metadata columns:
+VRanges with 3 ranges and 1 metadata column:
       seqnames           ranges strand         ref              alt
          <Rle>        <IRanges>  <Rle> <character> <characterOrRle>
   gbm     chr1 [887446, 887446]      +           G                A
@@ -371,19 +361,19 @@ VRanges with 3 ranges and 0 metadata columns:
   gbm     chr1 [978952, 978952]      +           C                T
           totalDepth       refDepth       altDepth   sampleNames
       <integerOrRle> <integerOrRle> <integerOrRle> <factorOrRle>
-  gbm           <NA>           <NA>           <NA>          <NA>
-  gbm           <NA>           <NA>           <NA>          <NA>
-  gbm           <NA>           <NA>           <NA>          <NA>
-      softFilterMatrix
-              <matrix>
-  gbm                 
-  gbm                 
-  gbm                 
+  gbm           <NA>           <NA>           <NA>  TCGA-06-5858
+  gbm           <NA>           <NA>           <NA>  TCGA-32-1977
+  gbm           <NA>           <NA>           <NA>  TCGA-06-0237
+      softFilterMatrix |    study
+              <matrix> | <factor>
+  gbm                  |      gbm
+  gbm                  |      gbm
+  gbm                  |      gbm
   ---
   seqlengths:
         chr1      chr2      chr3      chr4 ...     chr20     chr21     chr22
    249250621 243199373 198022430 191154276 ...  63025520  48129895  51304566
-  hardFilters(0):
+  hardFilters: NULL
 #+end_example
 
 
@@ -403,47 +393,15 @@ have a pyrimidine base (=C= or =T=) as a reference base
 
 #+RESULTS: sca_vr_to_motifs
 
-#+NAME: sca_add_vars
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output     
-  sca_motifs$study = sca_merge$study
-  
-  head(sca_motifs, 3)
-#+END_SRC
-
-#+RESULTS: sca_add_vars
-#+begin_example
-VRanges with 3 ranges and 3 metadata columns:
-      seqnames           ranges strand         ref              alt
-         <Rle>        <IRanges>  <Rle> <character> <characterOrRle>
-  gbm     chr1 [887446, 887446]      +           G                A
-  gbm     chr1 [909247, 909247]      +           C                T
-  gbm     chr1 [978952, 978952]      +           C                T
-          totalDepth       refDepth       altDepth   sampleNames
-      <integerOrRle> <integerOrRle> <integerOrRle> <factorOrRle>
-  gbm           <NA>           <NA>           <NA>          <NA>
-  gbm           <NA>           <NA>           <NA>          <NA>
-  gbm           <NA>           <NA>           <NA>          <NA>
-      softFilterMatrix |     alteration        context    study
-              <matrix> | <DNAStringSet> <DNAStringSet> <factor>
-  gbm                  |             CT            GNG      gbm
-  gbm                  |             CT            ANG      gbm
-  gbm                  |             CT            GNG      gbm
-  ---
-  seqlengths:
-        chr1      chr2      chr3      chr4 ...     chr20     chr21     chr22
-   249250621 243199373 198022430 191154276 ...  63025520  48129895  51304566
-  hardFilters(0):
-#+end_example
-
 To continue with the estimation of the somatic signatures, the matrix $M$ of the
 form {motifs \times studies} is constructed.  The =normalize= argument specifies
 that frequencies rather than the actual counts are returned.
 
 #+NAME: sca_motif_occurrence
 #+BEGIN_SRC R :session *R-ss-vignette* :exports code :results value table :rownames yes :colnames yes
-  sca_occurrence = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
+  sca_mm = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
   
-  head(round(sca_occurrence, 4))
+  head(round(sca_mm, 4))
 #+END_SRC
 
 #+RESULTS: sca_motif_occurrence
@@ -456,17 +414,15 @@ that frequencies rather than the actual counts are returned.
 | CA C.A | 0.0075 | 0.0143 | 0.0215 | 0.0414 |  0.039 | 0.0128 |  0.006 | 0.0112 |
 | CA C.C | 0.0075 | 0.0111 | 0.0138 | 0.0415 | 0.0275 | 0.0143 | 0.0018 | 0.0063 |
 
+
 The observed occurrence of the motifs, also termed /somatic spectrum/, can be
 visualized across studies, which gives a first impression of the data.  The
 distribution of the motifs clearly varies between the studies.
 
-#+NAME: sca_plot_samples_observed
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_observed.svg :ravel fig.cap='Observed frequency of somatic motifs, also termed somatic spectrum, across studies.'
-  plotSamplesObserved(sca_motifs, group = "study")
+#+NAME: sca_mutation_spectrum
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_mutation_spectrum.svg :ravel fig.cap='Mutation spectrum over studies'
+  plotMutationSpectrum(sca_motifs, "study")
 #+END_SRC
-
-#+RESULTS: sca_plot_samples_observed
-[[file:report/p_samples_observed.svg]]
 
 
 ** Decomposition: Inferring Somatic Signatures
@@ -479,10 +435,10 @@ be fixed; in this example, the data will be decomposed into 5 signatures.
 #+NAME: sca_nmf_pca
 #+BEGIN_SRC R :session *R-ss-vignette* :results output
   n_sigs = 5
-  
-  sigs_nmf = nmfSignatures(sca_occurrence, r = n_sigs)
-  
-  sigs_pca = pcaSignatures(sca_occurrence, r = n_sigs)
+
+  sigs_nmf = identifySignatures(sca_mm, n_sigs, "nmf")
+
+  sigs_pca = identifySignatures(sca_mm, n_sigs, "pca")
 #+END_SRC
 
 The results contains the decomposed matrices stored in a list and can be
@@ -490,13 +446,12 @@ accessed using standard R accessor functions.
 
 #+NAME: sca_explore_nmf
 #+BEGIN_SRC R :session *R-ss-vignette* :results output
-  names(sigs_nmf)
-    
-  sapply(sigs_nmf, dim)
-  
-  head(sigs_nmf$w, 3)
-  
-  head(sigs_nmf$h, 3)
+  sigs_nmf
+#+END_SRC
+
+#+NAME: sca_explore_pca
+#+BEGIN_SRC R :session *R-ss-vignette* :results output
+  sigs_pca
 #+END_SRC
 
 
@@ -521,6 +476,17 @@ to S5) can be visualized either as a heatmap or as a barchart.
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_nmf_signatures.svg :ravel fig.cap='Composition of somatic signatures estimated with the NMF, represented as a barchart.'
   plotSignatures(sigs_nmf) + ggtitle("Somatic Signatures: NMF - Barchart")
 #+END_SRC
+
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_nmf_observed.svg
+  plotObservedSpectrum(sigs_nmf)
+#+END_SRC
+
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_nmf_fitted.svg
+  plotFittedSpectrum(sigs_nmf)
+#+END_SRC
+
 
 #+RESULTS: sca_plot_nmf_signatures
 [[file:report/p_nmf_signatures.svg]]
@@ -554,9 +520,14 @@ In the same way as before, the results of the PCA can be visualized.  In
 contrast to the NMF, the signatures also contain negative values, indicating the
 depletion of a somatic motif.
 
+Comparing the results of the two methods, we can see similar characteristics
+between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
+
+*** PCA
+
 #+NAME: sca_plot_pca_signatures_map
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_signatures_map.svg :ravel fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap'
-  plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA")
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_signatures_map.svg :ravel fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap.'
+  plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA - Heatmap")
 #+END_SRC
 
 #+RESULTS: sca_plot_pca_signatures_map
@@ -564,30 +535,19 @@ depletion of a somatic motif.
 
 #+NAME: sca_plot_pca_signatures
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_signatures.svg :ravel fig.cap='Composition of somatic signatures estimated with the PCA, represented as a barchart.'
-  plotSignatures(sigs_pca)
+  plotSignatures(sigs_pca) + ggtitle("Somatic Signatures: PCA - Barchart")
 #+END_SRC
 
-#+RESULTS: sca_plot_pca_signatures
-[[file:report/p_pca_signatures.svg]]
 
-#+NAME: sca_plot_pca_samples_map
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_samples_map.svg :ravel fig.cap='Occurrence of signatures estimated with the PCA, represented as a heatmap.'
-  plotSampleMap(sigs_pca)
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_observed.svg
+  plotObservedSpectrum(sigs_pca)
 #+END_SRC
 
-#+RESULTS: sca_plot_pca_samples_map
-[[file:report/p_pca_samples_map.svg]]
 
-#+NAME: sca_plot_pca_samples
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_samples.svg :ravel fig.cap='Occurrence of signatures estimated with the PCA, represented as a barchart.'
-  plotSamples(sigs_pca)
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_fitted.svg
+  plotFittedSpectrum(sigs_pca)
 #+END_SRC
 
-#+RESULTS: sca_plot_pca_samples
-[[file:report/p_pca_samples.svg]]
-
-Comparing the results of the two methods, we can see similar characteristics
-between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
 
 
 ** Extensions: Normalization of Sequence Motif Frequencies and Batch Effects
@@ -606,15 +566,14 @@ account.
 #+NAME: sva_batch_not_run
 #+BEGIN_SRC R :exports code :eval no :ravel eval=FALSE
   library(sva)
-  library(stringr)
   
   df = as(sca_metadata, "data.frame") ## sample x covariable
   pheno = data.frame(s = unlist(df[ ,"Sequence_Source"]), c = unlist(df[ ,"Cancer_Type"]))
-  rownames(pheno) = str_split_fixed(rownames(pheno), "_", 2)[ ,1]
+  rownames(pheno) = gsub("(.*)_.*", "\\1", rownames(pheno))
   mod = model.matrix(~ s + c, data = pheno)
   mod0 = model.matrix(~ c, data = pheno)
   
-  sv = sva(sca_occurrence, mod, mod0, method = "irw")
+  sv = sva(sca_mm, mod, mod0, method = "irw")
 #+END_SRC
 
 If comparisons are performed across samples or studies with different capture
@@ -647,14 +606,14 @@ motif distribution as of a whole-genome analysis.  The =kmers= dataset contains
 the estimated frequency of 3-mers across the human genome and exome.
 
 #+NAME: normalize_motifs
-#+BEGIN_SRC R
-  head(sca_occurrence)
+#+BEGIN_SRC R :ravel eval=FALSE
+  head(sca_mm)
   
   data(kmers)
   norms = k3wg / k3we
   head(norms)
   
-  sca_norm = normalizeMotifs(sca_occurrence, norms)
+  sca_norm = normalizeMotifs(sca_mm, norms)
   
   head(sca_norm)
 #+END_SRC
@@ -664,7 +623,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 
 #+NAME: sca_plot_samples_unnorm
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_unnorm.svg :ravel fig.cap='Before normalization',out.width='0.49\\columnwidth'
-  plotSamplesObserved(sca_occurrence, group = "study")
+  plotSamplesObserved(sca_mm, group = "study")
 #+END_SRC
 
 #+NAME: sca_plot_samples_norm
@@ -697,7 +656,7 @@ by the type of alteration.
 #+END_SRC
 
 
-* Use case: Analyzing Own Mutation Calls
+* Use case: Analyzing Own Mutation Calls                           :noexport:
 
 If you have your own somatic SNV calls, you can import them as a =VRanges=
 object directly from a =VCF= file.  Here, we will import SNV from a VCF file of
@@ -747,9 +706,9 @@ We get an overview about how many SNVs are present in each gene.
 
 
 #+BEGIN_SRC R :session *R-ss-vignette* :exports code :results value table :rownames yes :colnames yes
-  vcs_occurrence = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
+  vcs_mm = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
 
-  head(round(vcs_occurrence, 4))
+  head(round(vcs_mm, 4))
 #+END_SRC
 
 Please note that the occurence of motifs may be driven by the sequence of the genes.

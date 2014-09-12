@@ -7,7 +7,7 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
         stop("'k' must be odd.")
     mid = (k + 1)/2
 
-    gr = grangesPlain(vr)
+    gr = granges(vr) ## drop mcols
     s = strand(gr)
     if(any(s == "*"))
         stop("The strand must be explicit, in order to read the correct strand.")
@@ -20,15 +20,14 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
     
     ## check against ref
     if(check) {
-        ref0 = subseq(context, mid, mid) ## ref from 'ref', for checking
+        ref0 = subseq(context, mid, mid) ## reference base from 'ref', for checking
         idx_invalid = ( ref0 != ref_base )
         if(any(idx_invalid))
             warning(sprintf("References do not match in %d cases",
                             sum(idx_invalid)))
     }
     
-    ## convert to the plus strand
-    ## TODO: check
+    ## convert to the plus strand, generally not needed
     if(strand) {
         idx_minus = (s == "-")
         context[idx_minus] = reverseComplement(context[idx_minus])
@@ -47,7 +46,6 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
     subseq(context, mid, mid) = "."
     alteration = xscat(ref_base, alt_base)
 
-    ## CHCK: assign individually ?
     vr$alteration = alteration
     vr$context = context
 

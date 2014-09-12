@@ -4,10 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-05-21 Mi 16:24 -->
+<!-- 2014-09-11 Do 23:16 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
+<link rel="stylesheet" type="text/css" href="https://julian-gehring.github.io/bioc.css" />
 
 <script type="text/javascript" src="http://orgmode.org/org-info.js">
 /**
@@ -26,7 +27,7 @@ JavaScript code in this tag.
 for the JavaScript code in this tag.
 */
 <!--/*--><![CDATA[/*><!--*/
-org_html_manager.set("TOC_DEPTH", "4");
+org_html_manager.set("TOC_DEPTH", "6");
 org_html_manager.set("LINK_HOME", "");
 org_html_manager.set("LINK_UP", "");
 org_html_manager.set("LOCAL_TOC", "0");
@@ -142,21 +143,24 @@ for the JavaScript code in this tag.
 <li><a href="#sec-4-1">4.1. Data: Preproccessing of the TCGA WES Studies</a></li>
 <li><a href="#sec-4-2">4.2. Motifs: Extracting the Sequence Context of Somatic Variants</a></li>
 <li><a href="#sec-4-3">4.3. Decomposition: Inferring Somatic Signatures</a></li>
-<li><a href="#sec-4-4">4.4. Visualization: Exploration of Signatures and Samples</a></li>
+<li><a href="#sec-4-4">4.4. Visualization: Exploration of Signatures and Samples</a>
+<ul>
+<li><a href="#sec-4-4-1">4.4.1. PCA</a></li>
+</ul>
+</li>
 <li><a href="#sec-4-5">4.5. Extensions: Normalization of Sequence Motif Frequencies and Batch Effects</a></li>
 </ul>
 </li>
-<li><a href="#sec-5">5. Use case: Analyzing Own Mutation Calls</a></li>
-<li><a href="#sec-6">6. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
-<li><a href="#sec-7">7. Frequently Asked Questions</a>
+<li><a href="#sec-5">5. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
+<li><a href="#sec-6">6. Frequently Asked Questions</a>
 <ul>
-<li><a href="#sec-7-1">7.1. Getting help</a></li>
-<li><a href="#sec-7-2">7.2. Installing the package</a></li>
-<li><a href="#sec-7-3">7.3. Working with VRanges</a></li>
+<li><a href="#sec-6-1">6.1. Getting help</a></li>
+<li><a href="#sec-6-2">6.2. Installing the package</a></li>
+<li><a href="#sec-6-3">6.3. Working with VRanges</a></li>
 </ul>
 </li>
-<li><a href="#sec-8">8. References</a></li>
-<li><a href="#sec-9">9. Session Info</a></li>
+<li><a href="#sec-7">7. References</a></li>
+<li><a href="#sec-8">8. Session Info</a></li>
 </ul>
 </div>
 </div>
@@ -174,7 +178,10 @@ options(width = 70)
 
 library(knitr)
 
-style = paste(readLines("bioc.css"), collapse = "\n")
+style_sheet = "bioc.css"
+style = if(file.exists(style_sheet)) {
+    paste(readLines(style_sheet), collapse = "\n")
+}
 
 opts_knit$set(self.contained = TRUE,
               upload.fun = image_uri,
@@ -183,7 +190,7 @@ opts_knit$set(self.contained = TRUE,
 opts_chunk$set(comment = "  ",
                fig.path = "",
                fig.align = "center",
-               out.width = "100%",
+               out.width = "80%",
                dpi = 300,
                indent = 10,
                cache = FALSE,
@@ -346,10 +353,7 @@ library(SomaticSignatures)
 end.rcode-->
 
 <!--begin.rcode load_supporting_packages, results='hide',message=FALSE
-library(GenomicRanges)
-library(VariantAnnotation)
 library(ggplot2)
-library(stringr)
 end.rcode-->
 
 
@@ -388,7 +392,7 @@ associated with the study it originated from.
 sca_all = scaLoadDatasets()
 
 sca_merge = unlist(sca_all)
-short_names = str_split_fixed(rownames(sca_metadata), "_", 2)[ ,1]
+short_names = gsub("(.*)_(.*)", "\\1", rownames(sca_metadata))
 names(sca_merge) = sca_merge$study = factor(rep(short_names, times = elementLengths(sca_all)))
 
 sca_merge = sca_merge[ sca_merge$Variant_Type %in% "SNP" ]
@@ -426,7 +430,9 @@ sca_vr = VRanges(
     ranges(sca_merge),
     ref = sca_merge$Reference_Allele,
     alt = sca_merge$Tumor_Seq_Allele2,
-    seqinfo = seqinfo(sca_merge))
+    sampleNames = sca_merge$Patient_ID,
+    seqinfo = seqinfo(sca_merge),
+    study = sca_merge$study)
 sca_vr = ucsc(sca_vr)
 
 head(sca_vr, 3)
@@ -451,12 +457,6 @@ have a pyrimidine base (<code>C</code> or <code>T</code>) as a reference base
 sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
 end.rcode-->
 
-<!--begin.rcode sca_add_vars
-sca_motifs$study = sca_merge$study
-
-head(sca_motifs, 3)
-end.rcode-->
-
 <p>
 To continue with the estimation of the somatic signatures, the matrix \(M\) of the
 form {motifs &times; studies} is constructed.  The <code>normalize</code> argument specifies
@@ -464,10 +464,11 @@ that frequencies rather than the actual counts are returned.
 </p>
 
 <!--begin.rcode sca_motif_occurrence
-sca_occurrence = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
+sca_mm = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
 
-head(round(sca_occurrence, 4))
+head(round(sca_mm, 4))
 end.rcode-->
+
 
 <p>
 The observed occurrence of the motifs, also termed <i>somatic spectrum</i>, can be
@@ -475,8 +476,8 @@ visualized across studies, which gives a first impression of the data.  The
 distribution of the motifs clearly varies between the studies.
 </p>
 
-<!--begin.rcode sca_plot_samples_observed, fig.cap='Observed frequency of somatic motifs, also termed somatic spectrum, across studies.'
-plotSamplesObserved(sca_motifs, group = "study")
+<!--begin.rcode sca_mutation_spectrum, fig.cap='Mutation spectrum over studies'
+plotMutationSpectrum(sca_motifs, "study")
 end.rcode-->
 </div>
 </div>
@@ -495,9 +496,9 @@ be fixed; in this example, the data will be decomposed into 5 signatures.
 <!--begin.rcode sca_nmf_pca
 n_sigs = 5
 
-sigs_nmf = nmfSignatures(sca_occurrence, r = n_sigs)
+sigs_nmf = identifySignatures(sca_mm, n_sigs, "nmf")
 
-sigs_pca = pcaSignatures(sca_occurrence, r = n_sigs)
+sigs_pca = identifySignatures(sca_mm, n_sigs, "pca")
 end.rcode-->
 
 <p>
@@ -506,13 +507,11 @@ accessed using standard R accessor functions.
 </p>
 
 <!--begin.rcode sca_explore_nmf
-names(sigs_nmf)
+sigs_nmf
+end.rcode-->
 
-sapply(sigs_nmf, dim)
-
-head(sigs_nmf$w, 3)
-
-head(sigs_nmf$h, 3)
+<!--begin.rcode sca_explore_pca
+sigs_pca
 end.rcode-->
 </div>
 </div>
@@ -539,6 +538,17 @@ end.rcode-->
 <!--begin.rcode sca_plot_nmf_signatures, fig.cap='Composition of somatic signatures estimated with the NMF, represented as a barchart.'
 plotSignatures(sigs_nmf) + ggtitle("Somatic Signatures: NMF - Barchart")
 end.rcode-->
+
+
+<!--begin.rcode 
+plotObservedSpectrum(sigs_nmf)
+end.rcode-->
+
+
+<!--begin.rcode 
+plotFittedSpectrum(sigs_nmf)
+end.rcode-->
+
 
 <p>
 Each signature represents different properties of the somatic spectrum observed
@@ -567,28 +577,36 @@ contrast to the NMF, the signatures also contain negative values, indicating the
 depletion of a somatic motif.
 </p>
 
-<!--begin.rcode sca_plot_pca_signatures_map, fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap'
-plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA")
-end.rcode-->
-
-<!--begin.rcode sca_plot_pca_signatures, fig.cap='Composition of somatic signatures estimated with the PCA, represented as a barchart.'
-plotSignatures(sigs_pca)
-end.rcode-->
-
-<!--begin.rcode sca_plot_pca_samples_map, fig.cap='Occurrence of signatures estimated with the PCA, represented as a heatmap.'
-plotSampleMap(sigs_pca)
-end.rcode-->
-
-<!--begin.rcode sca_plot_pca_samples, fig.cap='Occurrence of signatures estimated with the PCA, represented as a barchart.'
-plotSamples(sigs_pca)
-end.rcode-->
-
 <p>
 Comparing the results of the two methods, we can see similar characteristics
 between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
 </p>
 </div>
+
+<div id="outline-container-sec-4-4-1" class="outline-4">
+<h4 id="sec-4-4-1"><span class="section-number-4">4.4.1</span> PCA</h4>
+<div class="outline-text-4" id="text-4-4-1">
+<!--begin.rcode sca_plot_pca_signatures_map, fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap.'
+plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA - Heatmap")
+end.rcode-->
+
+<!--begin.rcode sca_plot_pca_signatures, fig.cap='Composition of somatic signatures estimated with the PCA, represented as a barchart.'
+plotSignatures(sigs_pca) + ggtitle("Somatic Signatures: PCA - Barchart")
+end.rcode-->
+
+
+<!--begin.rcode 
+plotObservedSpectrum(sigs_pca)
+end.rcode-->
+
+
+<!--begin.rcode 
+plotFittedSpectrum(sigs_pca)
+end.rcode-->
 </div>
+</div>
+</div>
+
 
 
 <div id="outline-container-sec-4-5" class="outline-3">
@@ -609,15 +627,14 @@ account.
 
 <!--begin.rcode sva_batch_not_run, eval=FALSE
 library(sva)
-library(stringr)
 
 df = as(sca_metadata, "data.frame") ## sample x covariable
 pheno = data.frame(s = unlist(df[ ,"Sequence_Source"]), c = unlist(df[ ,"Cancer_Type"]))
-rownames(pheno) = str_split_fixed(rownames(pheno), "_", 2)[ ,1]
+rownames(pheno) = gsub("(.*)_.*", "\\1", rownames(pheno))
 mod = model.matrix(~ s + c, data = pheno)
 mod0 = model.matrix(~ c, data = pheno)
 
-sv = sva(sca_occurrence, mod, mod0, method = "irw")
+sv = sva(sca_mm, mod, mod0, method = "irw")
 end.rcode-->
 
 <p>
@@ -654,14 +671,14 @@ motif distribution as of a whole-genome analysis.  The <code>kmers</code> datase
 the estimated frequency of 3-mers across the human genome and exome.
 </p>
 
-<!--begin.rcode normalize_motifs
-head(sca_occurrence)
+<!--begin.rcode normalize_motifs, eval=FALSE
+head(sca_mm)
 
 data(kmers)
 norms = k3wg / k3we
 head(norms)
 
-sca_norm = normalizeMotifs(sca_occurrence, norms)
+sca_norm = normalizeMotifs(sca_mm, norms)
 
 head(sca_norm)
 end.rcode-->
@@ -671,78 +688,8 @@ end.rcode-->
 
 
 <div id="outline-container-sec-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Use case: Analyzing Own Mutation Calls</h2>
+<h2 id="sec-5"><span class="section-number-2">5</span> Alternatives: Inferring Somatic Signatures with Different Approaches</h2>
 <div class="outline-text-2" id="text-5">
-<p>
-If you have your own somatic SNV calls, you can import them as a <code>VRanges</code>
-object directly from a <code>VCF</code> file.  Here, we will import SNV from a VCF file of
-the COSMIC project, and select a set of mutations that fall within a selection
-of cancer-related genes.  From there on, we can pursue an analysis as described
-before.
-</p>
-
-<!--begin.rcode results='hide',message=FALSE
-library(SomaticSignatures)
-
-library(COSMIC.67)
-library(VariantAnnotation)
-end.rcode-->
-
-<!--begin.rcode 
-vcf_path = system.file("vcf", "cosmic_67.vcf.gz", package = "COSMIC.67", mustWork = TRUE)
-end.rcode-->
-
-
-<!--begin.rcode 
-genes = c("KRAS", "APC", "BRCA1", "BRCA2", "BRAF", "TP53")
-
-vc = ucsc(readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE")))
-
-vcs = vc[ vc$GENE %in% genes & isSNV(vc) ]
-end.rcode-->
-
-
-<!--begin.rcode 
-head(vcs)
-end.rcode-->
-
-
-<p>
-We get an overview about how many SNVs are present in each gene.
-</p>
-
-<!--begin.rcode 
-table(vcs$GENE)
-end.rcode-->
-
-
-<!--begin.rcode 
-library(BSgenome.Hsapiens.UCSC.hg19)
-
-vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
-end.rcode-->
-
-
-
-<!--begin.rcode 
-vcs_occurrence = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
-
-head(round(vcs_occurrence, 4))
-end.rcode-->
-
-<p>
-Please note that the occurence of motifs may be driven by the sequence of the genes.
-</p>
-
-<!--begin.rcode vcs_plot_samples_observed, fig.cap='Observed frequency of somatic motifs across genes.'
-plotSamplesObserved(vcs_motifs, group = "GENE")
-end.rcode-->
-</div>
-</div>
-
-<div id="outline-container-sec-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> Alternatives: Inferring Somatic Signatures with Different Approaches</h2>
-<div class="outline-text-2" id="text-6">
 <p>
 For the identification of somatic signatures, other methods and implementations
 exist.  The original framework [<a href="#nik-zainal_mutational_2012">6</a>]
@@ -755,12 +702,12 @@ extension, a probabilistic approach based on Poisson processes has been proposed
 </div>
 
 
-<div id="outline-container-sec-7" class="outline-2">
-<h2 id="sec-7"><span class="section-number-2">7</span> Frequently Asked Questions</h2>
-<div class="outline-text-2" id="text-7">
-</div><div id="outline-container-sec-7-1" class="outline-3">
-<h3 id="sec-7-1"><span class="section-number-3">7.1</span> Getting help</h3>
-<div class="outline-text-3" id="text-7-1">
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Frequently Asked Questions</h2>
+<div class="outline-text-2" id="text-6">
+</div><div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Getting help</h3>
+<div class="outline-text-3" id="text-6-1">
 <p>
 We welcome emails with questions or suggestions about our software, and want to
 ensure that we eliminate issues if and when they appear.  We have a few requests
@@ -797,9 +744,9 @@ full output of <code>sessionInfo()</code>.
 
 
 
-<div id="outline-container-sec-7-2" class="outline-3">
-<h3 id="sec-7-2"><span class="section-number-3">7.2</span> Installing the package</h3>
-<div class="outline-text-3" id="text-7-2">
+<div id="outline-container-sec-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Installing the package</h3>
+<div class="outline-text-3" id="text-6-2">
 <p>
 Before you want to install the <code>SomaticSignatures</code> package, please ensure that
 you have the latest version of <code>R</code> and <code>Bioconductor</code> installed.  For details on
@@ -816,9 +763,9 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-7-3" class="outline-3">
-<h3 id="sec-7-3"><span class="section-number-3">7.3</span> Working with VRanges</h3>
-<div class="outline-text-3" id="text-7-3">
+<div id="outline-container-sec-6-3" class="outline-3">
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Working with VRanges</h3>
+<div class="outline-text-3" id="text-6-3">
 <p>
 A central object in the workflow of <code>SomaticSignatures</code> is the <code>VRanges</code> class
 which is part of the <code>VariantAnnotation</code> package.  It builds upon the commonly
@@ -854,9 +801,9 @@ end.rcode-->
 
 
 
-<div id="outline-container-sec-8" class="outline-2">
-<h2 id="sec-8"><span class="section-number-2">8</span> References</h2>
-<div class="outline-text-2" id="text-8">
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> References</h2>
+<div class="outline-text-2" id="text-7">
 <div id="bibliography">
 <h2>References</h2>
 
@@ -1140,9 +1087,9 @@ Paul&nbsp;Theodor Pyl, Julian Gehring, Bernd Fischer, and Wolfgang Huber.
 </div>
 
 
-<div id="outline-container-sec-9" class="outline-2">
-<h2 id="sec-9"><span class="section-number-2">9</span> Session Info</h2>
-<div class="outline-text-2" id="text-9">
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Session Info</h2>
+<div class="outline-text-2" id="text-8">
 <!--begin.rcode echo=FALSE, results='markup'
 sessionInfo()
 end.rcode-->

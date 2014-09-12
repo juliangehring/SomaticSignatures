@@ -1,16 +1,8 @@
 \name{mutational-signatures}
 
 \alias{mutational-signatures}
-\alias{findSignatures}
-\alias{nmfSignatures}
-\alias{kmeansSignatures}
-\alias{pcaSignatures}
+\alias{identifySignatures}
 \alias{extractSignatures}
-\alias{plotSamplesObserved}
-\alias{plotSignatureMap}
-\alias{plotSignatures}
-\alias{plotSampleMap}
-\alias{plotSamples}
 
 \title{Estimate Somatic Signatures}
 
@@ -22,36 +14,21 @@
 }
 
 \usage{
-findSignatures(x, r, method = c("nmf", "pca", "kmeans"), includeRaw = FALSE, ...)
-nmfSignatures(x, r, seed = "ica", includeRaw = FALSE, ...)
-kmeansSignatures(x, r, includeRaw = FALSE, ...)
-pcaSignatures(x, r, includeRaw = FALSE, ...)
-
-plotSamplesObserved(s, group = "sample")
-plotSignatureMap(s)
-plotSignatures(s)
-plotSampleMap(s)
-plotSamples(s)
+identifySignatures(m, nSigs, decomposition = c("nmf", "pca"), ..., includeFit = FALSE)
 }
 
 \arguments{
 
-  \item{x}{GRanges object [required]}
+  \item{m}{GRanges object [required]}
 
-  \item{group}{Grouping variable name [character, default: 'sample']}
+  \item{nSigs}{Number of signatures [integer, required]}
 
-  \item{r}{Number of signatures [integer, required]}
-
-  \item{method}{Method to apply (currently: 'nmf' or 'kmeans')}
-
-  \item{seed}{seed for NMF, default: "ica"}
-
-  \item{includeRaw}{Include the raw object returned by the low-level
-    decomposition function in the output.}
+  \item{decomposition}{Method to apply (currently: 'nmf' or 'pca')}
 
   \item{...}{Additional arguments passed to 'NMF::nmf'}
 
-  \item{s}{results signature object}
+  \item{includeFit}{Include the fit object returned by the low-level
+    decomposition function in the output.}
 
 }
 
@@ -60,11 +37,6 @@ plotSamples(s)
   The 'nmfSignatures', 'pcaSignatures', and 'kmeansSignatures' functions
   estimate a set of 'r' somatic signatures using the NMF, PCA, or
   k-means clustering, respectively.
-
-  With the plotting function, the obtained signatures and their
-  occurrance in the samples can be visualized either as a heatmap
-  ('plotSignatureMap', 'plotSampleMap') or a barchart ('plotSignature',
-  'plotSamples').
   
 }
 
@@ -85,8 +57,8 @@ plotSamples(s)
     
     \item{r}{Number of signatures.}
     
-    \item{raw}{Raw object returned by the low-level decomposition
-      function, if 'includeRaw' is true.}
+    \item{fit}{Fit object returned by the low-level decomposition
+      function, if 'includeFit' is true.}
 
   }
   
@@ -96,6 +68,8 @@ plotSamples(s)
 \seealso{
 
   'mutationContext', 'mutationContextMutect'
+
+  'motifMatrix'
 
   'NMF' package, 'pcaMethods' package, 'prcomp', 'kmeans'
 

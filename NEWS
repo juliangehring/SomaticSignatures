@@ -1,5 +1,13 @@
 NEWS: SomaticSignatures
 
+Version 2.0.0:
+
+o Major refractioning
+
+o Reduce external dependenies:
+  stringr, h5vc, h5vcData
+
+
 Version 1.0.0:
 
 o First stable release with Bioconductor 2.14 (2014-04)

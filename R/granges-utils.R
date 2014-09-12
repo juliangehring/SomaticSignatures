@@ -1,10 +1,3 @@
-grangesPlain <- function(x) {
-    mcols(x) = NULL
-    x = as(x, "GRanges")
-    return(x)
-}
-
-
 ucsc <- function(x) {
     suppressMessages(seqlevelsStyle(x) <- "UCSC") ## '<-' needed
     genome(x) = NA

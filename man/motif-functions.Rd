@@ -11,14 +11,14 @@
 }
 
 \usage{
-motifMatrix(x, group = "sample", normalize = TRUE)
+motifMatrix(vr, group = "sampleNames", normalize = TRUE)
 }
 
 \arguments{
 
-  \item{x}{GRanges object [required]}
+  \item{vr}{GRanges object [required]}
 
-  \item{group}{Grouping variable name [character, default: 'sample']}
+  \item{group}{Grouping variable name [character, default: 'sampleNames']}
 
   \item{normalize}{Normalize to frequency}
 

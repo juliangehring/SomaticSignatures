@@ -1,6 +1,5 @@
 \name{GRanges-converters}
 
-\alias{grangesPlain}
 \alias{ncbi}
 \alias{ucsc}
 \alias{seqchar}
@@ -15,7 +14,6 @@
 }
 
 \usage{
-  grangesPlain(x)
   ncbi(x)
   ucsc(x)
   seqchar(x)
@@ -32,9 +30,8 @@
   
   \itemize{
     
-    \item{grangesPlain}{Extracts only the 'GRanges' information by
-      dropping the metadata columns of the object.  The 'seqinfo' slot
-      is kept.}
+    \item{granges}{Extracts only the 'GRanges' information by dropping
+      the metadata columns of the object.  The 'seqinfo' slot is kept.}
     
     \item{ncbi, ucsc}{Shorthand for converting the seqnames notation to
       'UCSC' (e.g. 'chr1', 'chrM') or 'NCBI' (e.g. '1', 'MT'') notation,
@@ -47,8 +44,6 @@
 }
 
 \value{
-  
-  For 'grangesPlain': A GRanges object without metadata.
   
   For 'ncbi', 'ucsc': An object of the same class as the input.
   
@@ -65,12 +60,12 @@
 }
 
 \examples{
-  
+
   mutect_path = system.file("examples", "mutect.tsv", package = "SomaticSignatures")
   vr1 = readMutect(mutect_path, strip = TRUE)
   
   ## extract the GRanges
-  gr = grangesPlain(vr1)
+  gr = granges(vr1)
   
   ## convert back and forth
   gr_ncbi = ncbi(gr)
