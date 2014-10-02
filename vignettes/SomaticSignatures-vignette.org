@@ -587,7 +587,7 @@ based on a sample of 100'000 locations.  Analogously, the k-mer occurrence acros
 the human exome can be obtained easily.
 
 #+NAME: kmer_chr1
-#+BEGIN_SRC R
+#+BEGIN_SRC R :exports code :eval no :ravel eval=FALSE
   k = 3
   n = 1e5
   chrs = "chr1"
