@@ -27,34 +27,36 @@
 
 \author{
 
-  Julian Gehring, with contributions from Bernd Fischer and Wolfgang
-  Huber.
+  Julian Gehring, Bernd Fischer, Michael Lawrence, Wolfgang Huber:
+  SomaticSignatures: Inferring Mutational Signatures from Single
+  Nucleotide Variants. 2014, bioRxiv preprint,
+  \url{http://dx.doi.org/10.1101/010686}
 
   Maintainer: Julian Gehring, EMBL Heidelberg <julian.gehring@embl.de>
 
 }
 
 \references{
+  
+  Nik-Zainal, Serena, Ludmil B. Alexandrov, David C. Wedge, Peter Van Loo,
+  Christopher D. Greenman, Keiran Raine, David Jones, et al. "Mutational
+  Processes Molding the Genomes of 21 Breast Cancers." Cell 149, no. 5
+  (May 25, 2012): 979-993. doi:10.1016/j.cell.2012.04.024.
+  
+  Alexandrov, Ludmil B., Serena Nik-Zainal, David C. Wedge, Samuel
+  A. J. R. Aparicio, Sam Behjati, Andrew V. Biankin, Graham R. Bignell, et
+  al. "Signatures of Mutational Processes in Human Cancer." Nature 500,
+  no. 7463 (August 22, 2013): 415-421. doi:10.1038/nature12477.
 
-Nik-Zainal, Serena, Ludmil B. Alexandrov, David C. Wedge, Peter Van Loo,
-Christopher D. Greenman, Keiran Raine, David Jones, et al. "Mutational
-Processes Molding the Genomes of 21 Breast Cancers." Cell 149, no. 5
-(May 25, 2012): 979-993. doi:10.1016/j.cell.2012.04.024.
-
-Alexandrov, Ludmil B., Serena Nik-Zainal, David C. Wedge, Samuel
-A. J. R. Aparicio, Sam Behjati, Andrew V. Biankin, Graham R. Bignell, et
-al. "Signatures of Mutational Processes in Human Cancer." Nature 500,
-no. 7463 (August 22, 2013): 415-421. doi:10.1038/nature12477.
-
-Gaujoux, Renaud, and Cathal Seoighe. "A Flexible R Package for
-Nonnegative Matrix Factorization." BMC Bioinformatics 11, no. 1 (July 2,
-2010): 367. doi:10.1186/1471-2105-11-367.
-
-Stacklies, Wolfram, Henning Redestig, Matthias Scholz, Dirk Walther, and
-Joachim Selbig. "pcaMethods - A Bioconductor Package Providing PCA Methods
-for Incomplete Data." Bioinformatics 23, no. 9 (May 1, 2007):
-1164-1167. doi:10.1093/bioinformatics/btm069.
-
+  Gaujoux, Renaud, and Cathal Seoighe. "A Flexible R Package for
+  Nonnegative Matrix Factorization." BMC Bioinformatics 11, no. 1 (July 2,
+  2010): 367. doi:10.1186/1471-2105-11-367.
+  
+  Stacklies, Wolfram, Henning Redestig, Matthias Scholz, Dirk Walther, and
+  Joachim Selbig. "pcaMethods - A Bioconductor Package Providing PCA Methods
+  for Incomplete Data." Bioinformatics 23, no. 9 (May 1, 2007):
+  1164-1167. doi:10.1093/bioinformatics/btm069.
+  
 }
 
 \examples{

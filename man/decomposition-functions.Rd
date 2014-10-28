@@ -1,6 +1,8 @@
 \name{decomposition-signatures}
 
 \alias{decomposition-signatures}
+\alias{nmfDecomposition}
+\alias{pcaDecomposition}
 \alias{nmfSignatures}
 \alias{pcaSignatures}
 
@@ -14,8 +16,8 @@
 }
 
 \usage{
-  nmfSignatures(x, r, ..., includeFit = FALSE)
-  pcaSignatures(x, r, ..., includeFit = FALSE)
+  nmfDecomposition(x, r, ..., includeFit = FALSE)
+  pcaDecomposition(x, r, ..., includeFit = FALSE)
 }
 
 \arguments{
@@ -34,8 +36,12 @@
 
 \details{
   
-  The 'nmfSignatures' and 'pcaSignatures' functions estimate a set of
-  'r' somatic signatures using the NMF or PCA, respectively.
+  The 'nmfDecomposition' and 'pcaDecomposition' functions estimate a set
+  of 'r' somatic signatures using the NMF or PCA, respectively.
+
+  In previous versions of the package, these functions were known as
+  'nmfSignatures' and 'pcaSignatures', respectively.  While they are
+  still available, we recommend using the new naming convention.
   
 }
 

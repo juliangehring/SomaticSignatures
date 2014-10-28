@@ -1,4 +1,4 @@
-nmfSignatures <- function(x, r, ..., includeFit = FALSE) {
+nmfDecomposition <- function(x, r, ..., includeFit = FALSE) {
     
     y = nmf(x, r, ...)
 
@@ -21,8 +21,11 @@ nmfSignatures <- function(x, r, ..., includeFit = FALSE) {
     return(res)
 }
 
+nmfSignatures <- function(x, r, ..., includeFit = FALSE) {
+    nmfDecomposition(x, r, ..., includeFit = FALSE)
+}
 
-kmeansSignatures <- function(x, r, ..., includeFit = FALSE) {
+kmeansDecomposition <- function(x, r, ..., includeFit = FALSE) {
 
     y = kmeans(t(x), centers = r)
     
@@ -44,8 +47,11 @@ kmeansSignatures <- function(x, r, ..., includeFit = FALSE) {
     return(res)    
 }
 
+kmeansSignatures <- function(x, r, ..., includeFit = FALSE) {
+    kmeansDecomposition(x, r, ..., includeFit = FALSE)
+}
 
-pcaSignatures <- function(x, r, ..., includeFit = FALSE) {
+pcaDecomposition <- function(x, r, ..., includeFit = FALSE) {
   
     y = pca(x, "svd", r, scale = "uv", ...)
     w = scores(y) ## signatures x k
@@ -60,4 +66,8 @@ pcaSignatures <- function(x, r, ..., includeFit = FALSE) {
         res[["raw"]] = y
     
     return(res)    
+}
+
+pcaSignatures <- function(x, r, ..., includeFit = FALSE) {
+    pcaDecomposition(x, r, ..., includeFit = FALSE)
 }

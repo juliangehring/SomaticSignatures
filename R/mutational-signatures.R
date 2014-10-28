@@ -1,4 +1,4 @@
-identifySignaturesVRanges <- function(vr, group, nSigs, decomposition = nmfSignatures, ...) {
+identifySignaturesVRanges <- function(vr, group, nSigs, decomposition = nmfDecomposition, ...) {
 
     m = motifMatrix(vr, group, normalize = TRUE)
     
@@ -10,7 +10,7 @@ identifySignaturesVRanges <- function(vr, group, nSigs, decomposition = nmfSigna
 }
 
 
-identifySignatures <- function(m, nSigs, decomposition = nmfSignatures, ...) {
+identifySignatures <- function(m, nSigs, decomposition = nmfDecomposition, ...) {
 
     res = findSignatures(m, nSigs, decomposition, ...)
 
@@ -18,7 +18,11 @@ identifySignatures <- function(m, nSigs, decomposition = nmfSignatures, ...) {
 }
 
 
-findSignatures <- function(x, r, decomposition = nmfSignatures, ...) {
+findSignatures <- function(x, r, decomposition = nmfDecomposition, ...) {
+
+    ## check input arguments
+    if(!( length(r) == 1 & all.equal(r, as.integer(r)) & r > 0 ))
+        stop("'nSigs | r' must be a single, positive integer.")
 
     if(!is.function(decomposition))
         stop("'decomposition' must be a function.")

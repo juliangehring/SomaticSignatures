@@ -119,12 +119,12 @@ Generally, the individual steps of the analysis can be summarized as:
    with the =motifMatrix= function.
 
 2. Somatic signatures are estimated with a method of choice (currently
-   =nmfSignatures=, =pcaSignatures=, or =kmeansSignatures=).
+   =nmfDecomposition= and =pcaDecomposition=).
 
 3. The somatic signatures and their representation in the samples are assessed
    with a set of accessor and plotting functions.
 
-To decompose $M$, the =SomaticSignatures= package implements three methods:
+To decompose $M$, the =SomaticSignatures= package implements two methods:
 
 - Non-negative matrix factorization (NMF) :: The NMF decomposes $M$ with the
      constraint of positive components in $W$ and $H$
@@ -137,9 +137,8 @@ To decompose $M$, the =SomaticSignatures= package implements three methods:
      cite:stacklies_pcamethodsbioconductor_2007.  While this is related to the
      NMF, no constraint on the sign of the elements of $W$ and $H$ exists.
 
-- K-means clustering :: In contrast to the NMF and PCA, the k-means clustering
-     assigns each sample to a single somatic signature, such that $H$ can only
-     contain the value 0 and 1.  This approach is suited for large data sets.
+Other methods can be supplied through the =decomposition= argument of the
+=identifySignatures= function.
 
 
 * Use case: Estimating Somatic Signatures from TCGA WES Studies
@@ -386,9 +385,9 @@ be fixed; in this example, the data will be decomposed into 5 signatures.
 #+BEGIN_SRC R :session *R-ss-vignette* :results output
   n_sigs = 5
 
-  sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfSignatures)
+  sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfDecomposition)
 
-  sigs_pca = identifySignatures(sca_mm, n_sigs, pcaSignatures)
+  sigs_pca = identifySignatures(sca_mm, n_sigs, pcaDecomposition)
 #+END_SRC
 
 The results contains the decomposed matrices stored in a list and can be

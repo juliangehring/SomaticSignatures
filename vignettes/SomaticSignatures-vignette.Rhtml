@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-10-27 Mo 16:01 -->
+<!-- 2014-10-28 Di 13:11 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -303,7 +303,7 @@ with the <code>motifMatrix</code> function.
 </li>
 
 <li>Somatic signatures are estimated with a method of choice (currently
-<code>nmfSignatures</code>, <code>pcaSignatures</code>, or <code>kmeansSignatures</code>).
+<code>nmfDecomposition</code> and <code>pcaDecomposition</code>).
 </li>
 
 <li>The somatic signatures and their representation in the samples are assessed
@@ -312,7 +312,7 @@ with a set of accessor and plotting functions.
 </ol>
 
 <p>
-To decompose \(M\), the <code>SomaticSignatures</code> package implements three methods:
+To decompose \(M\), the <code>SomaticSignatures</code> package implements two methods:
 </p>
 
 <dl class="org-dl">
@@ -328,12 +328,12 @@ decomposition and is therefore suitable for large data sets
 [<a href="#stacklies_pcamethodsbioconductor_2007">2</a>].  While this is related to the
 NMF, no constraint on the sign of the elements of \(W\) and \(H\) exists.
 </dd>
-
-<dt> K-means clustering </dt><dd>In contrast to the NMF and PCA, the k-means clustering
-assigns each sample to a single somatic signature, such that \(H\) can only
-contain the value 0 and 1.  This approach is suited for large data sets.
-</dd>
 </dl>
+
+<p>
+Other methods can be supplied through the <code>decomposition</code> argument of the
+<code>identifySignatures</code> function.
+</p>
 </div>
 </div>
 
@@ -467,9 +467,9 @@ be fixed; in this example, the data will be decomposed into 5 signatures.
 <!--begin.rcode sca_nmf_pca
 n_sigs = 5
 
-sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfSignatures)
+sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfDecomposition)
 
-sigs_pca = identifySignatures(sca_mm, n_sigs, pcaSignatures)
+sigs_pca = identifySignatures(sca_mm, n_sigs, pcaDecomposition)
 end.rcode-->
 
 <p>
