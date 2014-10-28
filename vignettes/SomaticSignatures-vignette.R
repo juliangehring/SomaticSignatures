@@ -34,46 +34,54 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 sca_metadata = scaMetadata()
 
 print(sca_metadata)
-sca_all = scaLoadDatasets()
-
-sca_merge = unlist(sca_all)
-short_names = gsub("(.*)_(.*)", "\\1", rownames(sca_metadata))
-names(sca_merge) = sca_merge$study = factor(rep(short_names, times = elementLengths(sca_all)))
-  
-sca_merge = sca_merge[ sca_merge$Variant_Type %in% "SNP" ]
-sca_merge = keepSeqlevels(sca_merge, hsAutosomes())
-sort(table(sca_merge$study), decreasing = TRUE)
-sort(table(sca_merge$Variant_Classification), decreasing = TRUE)
-sca_vr = VRanges(
-    seqnames(sca_merge),
-    ranges(sca_merge),
-    ref = sca_merge$Reference_Allele,
-    alt = sca_merge$Tumor_Seq_Allele2,
-    sampleNames = sca_merge$Patient_ID,
-    seqinfo = seqinfo(sca_merge),
-    study = sca_merge$study)
-sca_vr = ucsc(sca_vr)
+sca_vr = scaSNVRanges()
 
 head(sca_vr, 3)
+sort(table(sca_vr$study), decreasing = TRUE)
 sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+sca_mm = motifMatrix(sca_motifs, group = "study", normalize = TRUE)
+
+head(round(sca_mm, 4))
+svg(file="report/p_mutation_spectrum.svg")
 plotMutationSpectrum(sca_motifs, "study")
+dev.off()
 n_sigs = 5
 
-sigs_nmf = identifySignaturesVRanges(sca_motifs, "study", n_sigs, "nmf")
+sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfSignatures)
 
-sigs_pca = identifySignaturesVRanges(sca_motifs, "study", n_sigs, "pca")
+sigs_pca = identifySignatures(sca_mm, n_sigs, pcaSignatures)
 sigs_nmf
 sigs_pca
+svg(file="report/p_nmf_signatures_map.svg")
 plotSignatureMap(sigs_nmf) + ggtitle("Somatic Signatures: NMF - Heatmap")
+dev.off()
+svg(file="report/p_nmf_signatures.svg")
 plotSignatures(sigs_nmf) + ggtitle("Somatic Signatures: NMF - Barchart")
+dev.off()
+svg(file="report/p_nmf_observed.svg")
 plotObservedSpectrum(sigs_nmf)
+dev.off()
+svg(file="report/p_nmf_fitted.svg")
 plotFittedSpectrum(sigs_nmf)
+dev.off()
+svg(file="report/p_nmf_samples_map.svg")
 plotSampleMap(sigs_nmf)
+dev.off()
+svg(file="report/p_nmf_samples.svg")
 plotSamples(sigs_nmf)
+dev.off()
+svg(file="report/p_pca_signatures_map.svg")
 plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA - Heatmap")
+dev.off()
+svg(file="report/p_pca_signatures.svg")
 plotSignatures(sigs_pca) + ggtitle("Somatic Signatures: PCA - Barchart")
+dev.off()
+svg(file="report/p_pca_observed.svg")
 plotObservedSpectrum(sigs_pca)
+dev.off()
+svg(file="report/p_pca_fitted.svg")
 plotFittedSpectrum(sigs_pca)
+dev.off()
 library(sva)
 
 df = as(sca_metadata, "data.frame") ## sample x covariable
@@ -82,7 +90,7 @@ rownames(pheno) = gsub("(.*)_.*", "\\1", rownames(pheno))
 mod = model.matrix(~ s + c, data = pheno)
 mod0 = model.matrix(~ c, data = pheno)
 
-sv = sva(sca_occurrence, mod, mod0, method = "irw")
+sv = sva(sca_mm, mod, mod0, method = "irw")
 k = 3
 n = 1e5
 chrs = "chr1"
@@ -93,19 +101,25 @@ chr1_ranges = keepSeqlevels(chr1_ranges, chrs)
 k3_chr1 = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, chr1_ranges)
 
 k3_chr1
-head(sca_occurrence)
+head(sca_mm)
 
 data(kmers)
 norms = k3wg / k3we
 head(norms)
 
-sca_norm = normalizeMotifs(sca_occurrence, norms)
+sca_norm = normalizeMotifs(sca_mm, norms)
 
 head(sca_norm)
-plotSamplesObserved(sca_occurrence, group = "study")
+svg(file="report/p_samples_unnorm.svg")
+plotSamplesObserved(sca_mm, group = "study")
+dev.off()
+svg(file="report/p_samples_norm.svg")
 plotSamplesObserved(sca_norm, group = "study")
+dev.off()
 sca_gbm = sca_motifs[ names(sca_motifs) %in% "gbm"]
+svg(file="report/p_rainfall_alteration.svg")
 plotRainfall(sca_gbm, group = "alteration", size = 1)
+dev.off()
 library(SomaticSignatures)
 
 library(COSMIC.67)
@@ -121,10 +135,12 @@ table(vcs$GENE)
 library(BSgenome.Hsapiens.UCSC.hg19)
 
 vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
-vcs_occurrence = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
+vcs_mm = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
 
-head(round(vcs_occurrence, 4))
+head(round(vcs_mm, 4))
+svg(file="report/vcs_samples_observed.svg")
 plotSamplesObserved(vcs_motifs, group = "GENE")
+dev.off()
 vcf_path = COSMIC.67:::cosmicVcfPath()
 
 data(genesymbol, package = "biovizBase")

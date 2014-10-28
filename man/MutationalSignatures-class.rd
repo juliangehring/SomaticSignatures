@@ -1,6 +1,6 @@
 \name{MutationalSignatures}
 
-\docType{methods}
+\docType{class}
       
 \alias{MutationalSignatures}
 \alias{MutationalSignatures-class}
@@ -40,5 +40,17 @@
 \arguments{
 
   \item{object}{'MutationalSignatures' object}
+
+}
+
+\seealso{
+
+  identifySignatures
+ 
+}
+
+\value{
+
+  help("MutationalSignatures")
 
 }

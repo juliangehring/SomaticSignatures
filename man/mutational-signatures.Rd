@@ -2,7 +2,7 @@
 
 \alias{mutational-signatures}
 \alias{identifySignatures}
-\alias{extractSignatures}
+\alias{findSignatures}
 
 \title{Estimate Somatic Signatures}
 
@@ -14,63 +14,53 @@
 }
 
 \usage{
-identifySignatures(m, nSigs, decomposition = c("nmf", "pca"), ..., includeFit = FALSE)
+identifySignatures(m, nSigs, decomposition = nmfSignatures, ...)
 }
 
 \arguments{
 
-  \item{m}{GRanges object [required]}
+  \item{m}{Motif matrix, as returned by 'motifMatrix' [required].}
 
-  \item{nSigs}{Number of signatures [integer, required]}
+  \item{nSigs}{Number of signatures [integer, required].}
 
-  \item{decomposition}{Method to apply (currently: 'nmf' or 'pca')}
+  \item{decomposition}{Function to apply for the matrix
+    decompositon. The methods NMF and PCA are already implemented in the
+    functions 'nmfSignatures' and 'pcaSignatures', respectively.}
 
-  \item{...}{Additional arguments passed to 'NMF::nmf'}
-
-  \item{includeFit}{Include the fit object returned by the low-level
-    decomposition function in the output.}
+  \item{...}{Additional arguments passed to the 'decomposition'
+    function.}
 
 }
 
 \details{
   
-  The 'nmfSignatures', 'pcaSignatures', and 'kmeansSignatures' functions
-  estimate a set of 'r' somatic signatures using the NMF, PCA, or
-  k-means clustering, respectively.
+  'identifySignatures' estimate a set of 'r' somatic signatures, based
+  on a matrix decompositon method (such as NMF, PCA).
   
 }
 
 \value{
 
-  The 'signature' functions return a list with the elements:
+  An object of class 'MutationalSignatures'.
 
-  \itemize{
-    
-    \item{w}{Matrix of the form 'motif x signature'}
-    
-    \item{h}{Matrix of the form 'sample x signature'}
-    
-    \item{v}{Matrix of the form 'motif x sample', containing the
-      reconstruction of 'm' from 'w' and 'h'.}
-    
-    \item{m}{Input matrix 'm'}
-    
-    \item{r}{Number of signatures.}
-    
-    \item{fit}{Fit object returned by the low-level decomposition
-      function, if 'includeFit' is true.}
-
-  }
-  
 }
 
 
 \seealso{
 
+  The predefined decomposition functions: 'nmfSignatures' and 'pcaSignatures'
+
   'mutationContext', 'mutationContextMutect'
 
   'motifMatrix'
 
-  'NMF' package, 'pcaMethods' package, 'prcomp', 'kmeans'
+  class 'MutationalSignatures'
+  
+}
 
+
+\examples{
+data("sca_mm", package = "SomaticSignatures")
+
+sigs = identifySignatures(sca_mm, 5)
 }

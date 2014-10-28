@@ -1,0 +1,71 @@
+\name{decomposition-signatures}
+
+\alias{decomposition-signatures}
+\alias{nmfSignatures}
+\alias{pcaSignatures}
+
+\title{Decomposition Functions for Somatic Signatures}
+
+\description{
+
+  Estimate somatic signatures from sequence motifs with a selection of
+  statistical methods.
+
+}
+
+\usage{
+  nmfSignatures(x, r, ..., includeFit = FALSE)
+  pcaSignatures(x, r, ..., includeFit = FALSE)
+}
+
+\arguments{
+
+  \item{x}{GRanges object [required]}
+
+  \item{r}{Number of signatures [integer, required]}
+
+  \item{...}{Additional arguments passed to 'NMF::nmf' or
+    'pcaMethods::pca'.}
+
+  \item{includeFit}{Include the fit object returned by the low-level
+    decomposition function in the output.}
+
+}
+
+\details{
+  
+  The 'nmfSignatures' and 'pcaSignatures' functions estimate a set of
+  'r' somatic signatures using the NMF or PCA, respectively.
+  
+}
+
+\value{
+
+  The 'signature' functions return a list with the elements:
+
+  \itemize{
+    
+    \item{w}{Matrix of the form 'motif x signature'}
+    
+    \item{h}{Matrix of the form 'sample x signature'}
+    
+    \item{v}{Matrix of the form 'motif x sample', containing the
+      reconstruction of 'm' from 'w' and 'h'.}
+    
+    \item{m}{Input matrix 'm'}
+    
+    \item{r}{Number of signatures.}
+    
+    \item{fit}{Fit object returned by the low-level decomposition
+      function, if 'includeFit' is true.}
+
+  }
+  
+}
+
+
+\seealso{
+  
+  'NMF' package, 'pcaMethods' package, 'prcomp'
+
+}

@@ -1,0 +1,18 @@
+citEntry(
+    entry = "article",
+    title = "SomaticSignatures: Inferring Mutational Signatures from Single Nucleotide Variants",
+    author = personList(
+        as.person("Julian Gehring"),
+        as.person("Bernd Fischer"),
+        as.person("Michael Lawrence"),
+        as.person("Wolfgang Huber")
+    ),
+    year = 2014,
+    journal = "bioRxiv",
+    doi = "10.1101/010686",
+    url = "http://dx.doi.org/10.1101/010686",
+    textVersion = 
+        paste("Julian Gehring, Bernd Fischer, Michael Lawrence, Wolfgang Huber (2014):", 
+              "SomaticSignatures: Inferring Mutational Signatures from Single Nucleotide Variants",
+              "bioRxiv preprint")
+)

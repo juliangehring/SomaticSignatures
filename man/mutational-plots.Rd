@@ -37,5 +37,7 @@ plotVariantAbundance(x, group = NULL, alpha = 0.5, size = 2)
 }
 
 \value{
+
   A 'ggplot' object.
+
 }

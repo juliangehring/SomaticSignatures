@@ -28,7 +28,7 @@ plotSignatureMap(s)
 plotSignatures(s, normalize = TRUE, percent = FALSE)
 
 plotSampleMap(s)
-plotSamples(s, normalize = TRUE, percent = FALSE)
+plotSamples(s, normalize = FALSE, percent = FALSE)
 }
 
 \arguments{
@@ -40,7 +40,8 @@ plotSamples(s, normalize = TRUE, percent = FALSE)
   \item{colorby}{Which variable to use for the coloring in the spectra
     representation.}
 
-  \item{normalize}{Relative contribution}
+  \item{normalize}{Plot relative constributions (TRUE) instead of
+    absolute (TRUE) ones.}
 
   \item{percent}{Display the results as fraction (FALSE) or percent
     (TRUE)}.
@@ -69,4 +70,13 @@ plotSamples(s, normalize = TRUE, percent = FALSE)
 
   'ggplot2' package
 
+}
+
+
+\examples{
+data("sca_sigs", package = "SomaticSignatures")
+
+plotSamples(sigs_nmf)
+
+plotSignatures(sigs_nmf)
 }

@@ -24,6 +24,12 @@
   
 }
 
+\value{
+
+  Vectors with frequency of k-mers.
+
+}
+
 \examples{
 
 data(kmers, package = "SomaticSignatures")  

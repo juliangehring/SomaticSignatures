@@ -36,8 +36,20 @@ motifMatrix(vr, group = "sampleNames", normalize = TRUE)
   
 }
 
+\value{
+
+  Occurance matrix with motifs in rows and samples in columns.
+
+}
+
 \seealso{
 
   'mutationContext', 'mutationContextMutect'
 
+}
+
+\examples{
+\dontrun{
+motifMatrix(sca_motifs, group = "study")
+}
 }

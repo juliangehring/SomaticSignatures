@@ -93,7 +93,7 @@ plotSampleMap <- function(s) {
 }
 
 
-plotSamples <- function(s, normalize = TRUE, percent = FALSE) {
+plotSamples <- function(s, normalize = FALSE, percent = FALSE) {
 
     h = samples(s)
     if(normalize) {

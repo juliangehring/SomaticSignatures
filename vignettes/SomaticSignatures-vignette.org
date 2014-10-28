@@ -34,7 +34,7 @@
   opts_chunk$set(comment = "  ",
                  fig.path = "",
                  fig.align = "center",
-                 out.width = "80%",
+                 out.width = "50%",
                  dpi = 300,
                  indent = 10,
                  cache = FALSE,
@@ -264,70 +264,6 @@ skcm_tcga               Skin Cutaneous Melanoma
 thca_tcga                    Thyroid carcinoma
 #+end_example
 
-In this example, all mutational calls of a study will be pooled together, in
-order to find signatures related to a specific cancer type.  The data of all
-studies is loaded and merged into a single =GRanges= object, with each entry
-describing a somatic variant call.  Further on, only SNVs located on the human
-autosomes will be considered.  For later analyzes, each variant is also
-associated with the study it originated from.
-
-#+NAME: sca_load_pool
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
-  sca_all = scaLoadDatasets()
-
-  sca_merge = unlist(sca_all)
-  short_names = gsub("(.*)_(.*)", "\\1", rownames(sca_metadata))
-  names(sca_merge) = sca_merge$study = factor(rep(short_names, times = elementLengths(sca_all)))
-    
-  sca_merge = sca_merge[ sca_merge$Variant_Type %in% "SNP" ]
-  sca_merge = keepSeqlevels(sca_merge, hsAutosomes())
-#+END_SRC
-
-#+RESULTS: sca_load_pool
-
-To get a first impression of the data, we count the number of somatic variants
-per study and their predicted effects.
-
-#+NAME: sca_study_table
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value vector :rownames yes
-  sort(table(sca_merge$study), decreasing = TRUE)
-#+END_SRC
-
-#+RESULTS: sca_study_table
-| luad | 208724 |
-| skcm | 200589 |
-| hnsc |  67125 |
-| lusc |  61485 |
-| kirc |  24158 |
-| gbm  |  19938 |
-| thca |   6716 |
-| ov   |   5872 |
-
-
-#+NAME: sca_variant_classification_table
-#+BEGIN_SRC R :exports none :session *R-ss-vignette* :exports both :results value vector :rownames yes
-  sort(table(sca_merge$Variant_Classification), decreasing = TRUE)
-#+END_SRC
-
-#+RESULTS: sca_variant_classification_table
-| Missense_Mutation      | 377800 |
-| Silent                 | 163535 |
-| Nonsense_Mutation      |  27299 |
-| Splice_Site            |  13934 |
-| RNA                    |  11285 |
-| Nonstop_Mutation       |    441 |
-| Translation_Start_Site |    270 |
-| Intron                 |     33 |
-| IGR                    |      5 |
-| 3'UTR                  |      3 |
-| 5'Flank                |      1 |
-| 5'UTR                  |      1 |
-| Frame_Shift_Del        |      0 |
-| Frame_Shift_Ins        |      0 |
-| In_Frame_Del           |      0 |
-| In_Frame_Ins           |      0 |
-
-
 The starting point of the analysis is a =VRanges= object which describes the
 somatic variants in terms of their genomic locations as well as reference and
 alternative alleles.  For more details about this class and how to construct it,
@@ -335,18 +271,12 @@ please see the documentation of the =VariantAnnotation= package
 [[cite:obenchain_variantannotation:_2011]].  Since the genomic positions are given
 in the /NCBI/ notation and the references used later are in /UCSC/ notation, the
 functions =ucsc= and =ncbi= are used to easily switch between the two notations.
+In this example, all mutational calls of a study will be pooled together, in
+order to find signatures related to a specific cancer type.
 
 #+NAME: sca_to_vranges
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
-  sca_vr = VRanges(
-      seqnames(sca_merge),
-      ranges(sca_merge),
-      ref = sca_merge$Reference_Allele,
-      alt = sca_merge$Tumor_Seq_Allele2,
-      sampleNames = sca_merge$Patient_ID,
-      seqinfo = seqinfo(sca_merge),
-      study = sca_merge$study)
-  sca_vr = ucsc(sca_vr)
+  sca_vr = scaSNVRanges()
 
   head(sca_vr, 3)
 #+END_SRC
@@ -375,6 +305,26 @@ VRanges with 3 ranges and 1 metadata column:
    249250621 243199373 198022430 191154276 ...  63025520  48129895  51304566
   hardFilters: NULL
 #+end_example
+
+
+To get a first impression of the data, we count the number of somatic variants
+per study.
+
+#+NAME: sca_study_table
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value vector :rownames yes
+  sort(table(sca_vr$study), decreasing = TRUE)
+#+END_SRC
+
+#+RESULTS: sca_study_table
+| luad | 208724 |
+| skcm | 200589 |
+| hnsc |  67125 |
+| lusc |  61485 |
+| kirc |  24158 |
+| gbm  |  19938 |
+| thca |   6716 |
+| ov   |   5872 |
+
 
 
 ** Motifs: Extracting the Sequence Context of Somatic Variants
@@ -436,9 +386,9 @@ be fixed; in this example, the data will be decomposed into 5 signatures.
 #+BEGIN_SRC R :session *R-ss-vignette* :results output
   n_sigs = 5
 
-  sigs_nmf = identifySignatures(sca_mm, n_sigs, "nmf")
+  sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfSignatures)
 
-  sigs_pca = identifySignatures(sca_mm, n_sigs, "pca")
+  sigs_pca = identifySignatures(sca_mm, n_sigs, pcaSignatures)
 #+END_SRC
 
 The results contains the decomposed matrices stored in a list and can be
@@ -751,6 +701,15 @@ extension, a probabilistic approach based on Poisson processes has been proposed
 
 
 * Frequently Asked Questions
+
+** Citing SomaticSignatures
+
+If you use the =SomaticSignatures= package in your work, please cite it:
+
+#+BEGIN_SRC R
+  citation("SomaticSignatures")
+#+END_SRC
+
 
 ** Getting help
 
