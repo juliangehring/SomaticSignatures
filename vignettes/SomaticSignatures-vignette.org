@@ -71,6 +71,10 @@ implementation for the extraction of somatic motifs based on a list of
 somatically mutated genomic sites and the estimation of somatic signatures with
 a number of statistical approaches.
 
+The package does not, at least not yet, provide a 1:1 implementation of the algorithms
+described by L. Alexandrov and coworkers. Rather, it provides a software infrastructure
+for exploring these and related ideas, and a few simple matrix decomposition algorithms.
+
 
 * Methodology: From Mutations to Somatic Signatures
 
