@@ -90,9 +90,9 @@ as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples.
 In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
 and $H$
 
-$$M_{ij} = \sum_{k=1}^{R} W_{ik} H_{jk}$$
+$$M_{ij} = \sum_{k=1}^{r} W_{ik} H_{kj}$$
 
-for a fixed number $R$ of signatures.  While $W$ describes the composition of
+for a fixed number $r$ of signatures.  While $W$ describes the composition of
 each signature in term of somatic motifs, $H$ shows the contribution of the
 signature to the alterations present in each sample.
 
@@ -382,7 +382,7 @@ distribution of the motifs clearly varies between the studies.
 
 The somatic signatures can be estimated with each of the statistical methods
 implemented in the package.  Here, we will use the =NMF= and =PCA=, and compare
-the results.  Prior to the estimation, the number $R$ of signatures to obtain has to
+the results.  Prior to the estimation, the number $r$ of signatures to obtain has to
 be fixed; in this example, the data will be decomposed into 5 signatures.
 
 #+NAME: sca_nmf_pca
