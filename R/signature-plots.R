@@ -18,9 +18,9 @@ plotSpectrum <- function(x, colorby = c("sample", "alteration")) {
 }
 
 
-plotMutationSpectrum <- function(vr, group, colorby = c("sample", "alteration")) {
+plotMutationSpectrum <- function(vr, group, colorby = c("sample", "alteration"), normalize = TRUE) {
 
-    m = motifMatrix(vr, group, normalize = TRUE)
+    m = motifMatrix(vr, group, normalize = normalize)
     
     p = plotSpectrum(m, colorby)
 
@@ -54,7 +54,7 @@ plotSignatureMap <- function(s) {
 }
 
 
-plotSignatures <- function(s, normalize = TRUE, percent = FALSE) {
+plotSignatures <- function(s, normalize = FALSE, percent = FALSE) {
 
     h = signatures(s)
     if(normalize) {

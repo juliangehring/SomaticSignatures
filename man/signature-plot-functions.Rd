@@ -22,10 +22,10 @@
 plotObservedSpectrum(s, colorby = c("sample", "alteration"))
 plotFittedSpectrum(s, colorby = c("sample", "alteration"))
 
-plotMutationSpectrum(vr, group, colorby = c("sample", "alteration"))
+plotMutationSpectrum(vr, group, colorby = c("sample", "alteration"), normalize = TRUE)
 
 plotSignatureMap(s)
-plotSignatures(s, normalize = TRUE, percent = FALSE)
+plotSignatures(s, normalize = FALSE, percent = FALSE)
 
 plotSampleMap(s)
 plotSamples(s, normalize = FALSE, percent = FALSE)
