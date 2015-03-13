@@ -256,11 +256,11 @@ and \(H\)
 </p>
 
 <p>
-$$M_{ij} = \sum_{k=1}^{R} W_{ik} H_{jk}$$
+$$M_{ij} = \sum_{k=1}^{r} W_{ik} H_{kj}$$
 </p>
 
 <p>
-for a fixed number \(R\) of signatures.  While \(W\) describes the composition of
+for a fixed number \(r\) of signatures.  While \(W\) describes the composition of
 each signature in term of somatic motifs, \(H\) shows the contribution of the
 signature to the alterations present in each sample.
 </p>
@@ -460,7 +460,7 @@ end.rcode-->
 <p>
 The somatic signatures can be estimated with each of the statistical methods
 implemented in the package.  Here, we will use the <code>NMF</code> and <code>PCA</code>, and compare
-the results.  Prior to the estimation, the number \(R\) of signatures to obtain has to
+the results.  Prior to the estimation, the number \(r\) of signatures to obtain has to
 be fixed; in this example, the data will be decomposed into 5 signatures.
 </p>
 
