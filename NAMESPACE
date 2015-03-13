@@ -6,13 +6,13 @@ import(ggplot2)
 import(IRanges)
 import(Biostrings)
 import(methods)
-import(proxy)
 
 importFrom(reshape2, melt, acast)
 importFrom(ggbio, plotGrandLinear)
 importFrom(NMF, nmf, basis, coef, fitted)
 importFrom(pcaMethods, pca, scores, loadings) ## fitted comes from 'stats'
 importFrom(Biobase, selectSome)
+importFrom(proxy, dist)
 
 exportClass(MutationalSignatures)
 
