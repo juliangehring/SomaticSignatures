@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2014-10-28 Di 13:11 -->
+<!-- 2015-03-13 Fr 10:19 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -228,7 +228,8 @@ their generating processes.
 The <code>SomaticSignatures</code> package provides an efficient and user-friendly
 implementation for the extraction of somatic motifs based on a list of
 somatically mutated genomic sites and the estimation of somatic signatures with
-a number of statistical approaches.
+different matrix decomposition algorithms.  Methodologically, this is based on
+the work of Nik-Zainal and colleagues [<a href="#nik-zainal_mutational_2012">6</a>].
 </p>
 </div>
 </div>
@@ -302,8 +303,9 @@ with the <code>mutationContext</code> function and converted to a matrix represe
 with the <code>motifMatrix</code> function.
 </li>
 
-<li>Somatic signatures are estimated with a method of choice (currently
-<code>nmfDecomposition</code> and <code>pcaDecomposition</code>).
+<li>Somatic signatures are estimated with a method of choice (the package
+provides with <code>nmfDecomposition</code> and <code>pcaDecomposition</code> two approaches for
+the NMF and PCA).
 </li>
 
 <li>The somatic signatures and their representation in the samples are assessed

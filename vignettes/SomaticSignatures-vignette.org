@@ -69,11 +69,8 @@ their generating processes.
 The =SomaticSignatures= package provides an efficient and user-friendly
 implementation for the extraction of somatic motifs based on a list of
 somatically mutated genomic sites and the estimation of somatic signatures with
-a number of statistical approaches.
-
-The package does not, at least not yet, provide a 1:1 implementation of the algorithms
-described by L. Alexandrov and coworkers. Rather, it provides a software infrastructure
-for exploring these and related ideas, and a few simple matrix decomposition algorithms.
+different matrix decomposition algorithms.  Methodologically, this is based on
+the work of Nik-Zainal and colleagues cite:nik-zainal_mutational_2012.
 
 
 * Methodology: From Mutations to Somatic Signatures
@@ -122,8 +119,9 @@ Generally, the individual steps of the analysis can be summarized as:
    with the =mutationContext= function and converted to a matrix representation
    with the =motifMatrix= function.
 
-2. Somatic signatures are estimated with a method of choice (currently
-   =nmfDecomposition= and =pcaDecomposition=).
+2. Somatic signatures are estimated with a method of choice (the package
+   provides with =nmfDecomposition= and =pcaDecomposition= two approaches for
+   the NMF and PCA).
 
 3. The somatic signatures and their representation in the samples are assessed
    with a set of accessor and plotting functions.
