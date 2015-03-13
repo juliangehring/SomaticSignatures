@@ -1,7 +1,7 @@
 scaSNVRanges <- function(chrs = hsAutosomes()) {
 
-    sca_all = scaLoadDatasets()
-    sca_metadata = scaMetadata()
+    sca_all = SomaticCancerAlterations::scaLoadDatasets()
+    sca_metadata = SomaticCancerAlterations::scaMetadata()
 
     sca_merge = unlist(sca_all)
     short_names = gsub("(.*)_(.*)", "\\1", rownames(sca_metadata))
