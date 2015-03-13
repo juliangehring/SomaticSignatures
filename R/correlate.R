@@ -26,7 +26,7 @@ correlateSignatures <- function(m, s, method = c("cospos", "cosine", "spearman",
         cospos = coscor(m, s, cospos),
         cosine = coscor(m, s, cossim),
         spearman = cor(m, s, method = "spearman"),
-        pearson = cor(m, s))
+        pearson = cor(m, s, method = "pearson"))
 
     rownames(cc) = colnames(m)
     colnames(cc) = colnames(s)
