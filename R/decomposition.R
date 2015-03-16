@@ -1,6 +1,6 @@
 nmfDecomposition <- function(x, r, ..., includeFit = FALSE) {
     
-    y = nmf(x, r, ...)
+    y = NMF::nmf(x, r, ...)
 
     w = basis(y) ## signatures x k
     h = t(coef(y)) ## samples x k

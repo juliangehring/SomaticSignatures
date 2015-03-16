@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-03-13 Fr 10:19 -->
+<!-- 2015-03-16 Mo 15:40 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -149,6 +149,7 @@ for the JavaScript code in this tag.
 </ul>
 </li>
 <li><a href="#sec-4-5">4.5. Extensions: Normalization of Sequence Motif Frequencies and Batch Effects</a></li>
+<li><a href="#sec-4-6">4.6. Clustering: Grouping by motifs or samples</a></li>
 </ul>
 </li>
 <li><a href="#sec-5">5. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
@@ -657,6 +658,33 @@ head(sca_norm)
 end.rcode-->
 </div>
 </div>
+
+
+
+<div id="outline-container-sec-4-6" class="outline-3">
+<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Clustering: Grouping by motifs or samples</h3>
+<div class="outline-text-3" id="text-4-6">
+<p>
+An alternative approach to interpreting the mutational spectrum by decomposition
+is clustering.  With the <code>clusterSpectrum</code> function, the clustering is computed,
+by grouping either by the <code>sample</code> or <code>motif</code> dimension of the spectrum.  By
+default, the Euclidean distance is used; other distance measures, as for example
+cosine similarity, are implemented is the <code>proxy</code> package and can be passed as
+an optional argument.
+</p>
+
+<!--begin.rcode 
+clu_motif = clusterSpectrum(sca_mm, "motif")
+end.rcode-->
+
+<!--begin.rcode fig.cap='Hierachical clustering of the mutational spectrum, according to motif.'
+library(ggdendro)
+
+p = ggdendrogram(clu_motif, rotate = TRUE)
+p
+end.rcode-->
+</div>
+</div>
 </div>
 
 
@@ -702,15 +730,13 @@ to optimize the process:
 </p>
 
 <ul class="org-ul">
-<li>All emails and follow-up questions should take place over the <a href="http://bioconductor.org/help/mailing-list/">Bioconductor
-mailing list</a>, which serves as a repository of information.
+<li>All emails and follow-up questions should take place over the <a href="http://support.bioconductor.org/">Bioconductor
+support site</a>, which serves as a repository of information.  First search the
+site for past threads which might have answered your question.
 </li>
-
 <li>The subject line should contain <i>SomaticSignatures</i> and a few words describing
-the problem.  First search the <a href="http://bioconductor.org/help/mailing-list/">Bioconductor mailing list</a>, for past threads
-which might have answered your question.
+the problem.  
 </li>
-
 <li>If you have a question about the behavior of a function, read the sections of
 the manual page for this function by typing a question mark and the function
 name, e.g. <code>?mutationContext</code>.  Additionally, read through the vignette to understand

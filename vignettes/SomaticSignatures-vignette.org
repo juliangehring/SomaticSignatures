@@ -583,6 +583,28 @@ the estimated frequency of 3-mers across the human genome and exome.
 #+END_SRC
 
 
+
+** Clustering: Grouping by motifs or samples
+
+An alternative approach to interpreting the mutational spectrum by decomposition
+is clustering.  With the =clusterSpectrum= function, the clustering is computed,
+by grouping either by the =sample= or =motif= dimension of the spectrum.  By
+default, the Euclidean distance is used; other distance measures, as for example
+cosine similarity, are implemented is the =proxy= package and can be passed as
+an optional argument.
+
+#+BEGIN_SRC R :session *R-ss-vignette*
+  clu_motif = clusterSpectrum(sca_mm, "motif")
+#+END_SRC
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file p_cluster_motifs.svg :ravel fig.cap='Hierachical clustering of the mutational spectrum, according to motif.'
+  library(ggdendro)
+
+  p = ggdendrogram(clu_motif, rotate = TRUE)
+  p
+#+END_SRC
+
+
 ** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:
 
 Another relevant aspect of exploring mutational processes is also the
@@ -718,13 +740,11 @@ We welcome emails with questions or suggestions about our software, and want to
 ensure that we eliminate issues if and when they appear.  We have a few requests
 to optimize the process:
 
--  All emails and follow-up questions should take place over the [[http://bioconductor.org/help/mailing-list/][Bioconductor
-   mailing list]], which serves as a repository of information.
-
+-  All emails and follow-up questions should take place over the [[http://support.bioconductor.org/][Bioconductor
+   support site]], which serves as a repository of information.  First search the
+   site for past threads which might have answered your question.
 - The subject line should contain /SomaticSignatures/ and a few words describing
-  the problem.  First search the [[http://bioconductor.org/help/mailing-list/][Bioconductor mailing list]], for past threads
-  which might have answered your question.
-
+  the problem.  
 - If you have a question about the behavior of a function, read the sections of
   the manual page for this function by typing a question mark and the function
   name, e.g. =?mutationContext=.  Additionally, read through the vignette to understand
