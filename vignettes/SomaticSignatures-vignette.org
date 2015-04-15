@@ -535,7 +535,7 @@ the estimated frequency of 3-mers across the human genome and exome.
 
 
 
-** Clustering: Grouping by motifs or samples
+** Clustering: Grouping by Motifs or Samples
 
 An alternative approach to interpreting the mutational spectrum by decomposition
 is clustering.  With the =clusterSpectrum= function, the clustering is computed,
@@ -685,7 +685,7 @@ If you use the =SomaticSignatures= package in your work, please cite it:
 #+END_SRC
 
 
-** Getting help
+** Getting Help
 
 We welcome emails with questions or suggestions about our software, and want to
 ensure that we eliminate issues if and when they appear.  We have a few requests
@@ -709,8 +709,7 @@ to optimize the process:
   full output of =sessionInfo()=.
 
 
-
-** Installing the package
+** Installing and Upgrading
 
 Before you want to install the =SomaticSignatures= package, please ensure that
 you have the latest version of =R= and =Bioconductor= installed.  For details on
