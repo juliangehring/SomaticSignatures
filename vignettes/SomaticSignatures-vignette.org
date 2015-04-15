@@ -156,69 +156,11 @@ Atlas (TCGA) project will be used, which are part of the
   library(SomaticSignatures)
 #+END_SRC
 
-#+RESULTS: load_ss
-| SomaticSignatures |
-| Biobase           |
-| BiocGenerics      |
-| parallel          |
-| stats             |
-| graphics          |
-| grDevices         |
-| utils             |
-| datasets          |
-| BiocInstaller     |
-| methods           |
-| base              |
-
-#+NAME: load_supporting_packages
-#+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
-  library(ggplot2)
-#+END_SRC
-
-
-#+RESULTS: load_supporting_packages
-| ggplot2           |
-| SomaticSignatures |
-| Biobase           |
-| BiocGenerics      |
-| parallel          |
-| stats             |
-| graphics          |
-| grDevices         |
-| utils             |
-| datasets          |
-| BiocInstaller     |
-| methods           |
-| base              |
-
 #+NAME: load_data_package
 #+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
   library(SomaticCancerAlterations)
   library(BSgenome.Hsapiens.UCSC.hg19)
 #+END_SRC
-
-#+RESULTS: load_data_package
-| BSgenome.Hsapiens.UCSC.hg19 |
-| BSgenome                    |
-| Biostrings                  |
-| XVector                     |
-| GenomicRanges               |
-| GenomeInfoDb                |
-| IRanges                     |
-| SomaticCancerAlterations    |
-| ggplot2                     |
-| SomaticSignatures           |
-| Biobase                     |
-| BiocGenerics                |
-| parallel                    |
-| stats                       |
-| graphics                    |
-| grDevices                   |
-| utils                       |
-| datasets                    |
-| BiocInstaller               |
-| methods                     |
-| base                        |
 
 
 ** Data: Preproccessing of the TCGA WES Studies
@@ -410,7 +352,13 @@ accessed using standard R accessor functions.
 
 To explore the results for the TCGA data set, we will use the plotting
 functions.  All figures are generated with the =ggplot2= package, and thus,
-their properties and appearances can also be modified at a later stage.
+their properties and appearances can directly be modified, even at a later
+stage.
+
+#+NAME: load_supporting_packages
+#+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
+  library(ggplot2)
+#+END_SRC
 
 Focusing on the results of the NMF first, the five somatic signatures (named S1
 to S5) can be visualized either as a heatmap or as a barchart.
@@ -467,14 +415,15 @@ association with a single cancer type.
 #+RESULTS: sca_plot_nmf_samples
 [[file:report/p_nmf_samples.svg]]
 
+
+*** PCA
+
 In the same way as before, the results of the PCA can be visualized.  In
 contrast to the NMF, the signatures also contain negative values, indicating the
 depletion of a somatic motif.
 
 Comparing the results of the two methods, we can see similar characteristics
 between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
-
-*** PCA
 
 #+NAME: sca_plot_pca_signatures_map
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_signatures_map.svg :ravel fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap.'
@@ -490,13 +439,15 @@ between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
 #+END_SRC
 
 
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_observed.svg
-  plotObservedSpectrum(sigs_pca)
-#+END_SRC
-
-
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_fitted.svg
   plotFittedSpectrum(sigs_pca)
+#+END_SRC
+
+Since the observed mutational spectrum is defined by the data alone, it is
+identical for both all decomposition methods.
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_pca_observed.svg
+  plotObservedSpectrum(sigs_pca)
 #+END_SRC
 
 

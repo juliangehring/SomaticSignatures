@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-03-16 Mo 15:40 -->
+<!-- 2015-04-15 Mi 13:52 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -356,11 +356,6 @@ Atlas (TCGA) project will be used, which are part of the
 library(SomaticSignatures)
 end.rcode-->
 
-<!--begin.rcode load_supporting_packages, results='hide',message=FALSE
-library(ggplot2)
-end.rcode-->
-
-
 <!--begin.rcode load_data_package, results='hide',message=FALSE
 library(SomaticCancerAlterations)
 library(BSgenome.Hsapiens.UCSC.hg19)
@@ -497,8 +492,13 @@ end.rcode-->
 <p>
 To explore the results for the TCGA data set, we will use the plotting
 functions.  All figures are generated with the <code>ggplot2</code> package, and thus,
-their properties and appearances can also be modified at a later stage.
+their properties and appearances can directly be modified, even at a later
+stage.
 </p>
+
+<!--begin.rcode load_supporting_packages, results='hide',message=FALSE
+library(ggplot2)
+end.rcode-->
 
 <p>
 Focusing on the results of the NMF first, the five somatic signatures (named S1
@@ -544,7 +544,12 @@ end.rcode-->
 <!--begin.rcode sca_plot_nmf_samples, fig.cap='Occurrence of signatures estimated with the NMF, represented as a barchart.'
 plotSamples(sigs_nmf)
 end.rcode-->
+</div>
 
+
+<div id="outline-container-sec-4-4-1" class="outline-4">
+<h4 id="sec-4-4-1"><span class="section-number-4">4.4.1</span> PCA</h4>
+<div class="outline-text-4" id="text-4-4-1">
 <p>
 In the same way as before, the results of the PCA can be visualized.  In
 contrast to the NMF, the signatures also contain negative values, indicating the
@@ -555,11 +560,7 @@ depletion of a somatic motif.
 Comparing the results of the two methods, we can see similar characteristics
 between the sets of signatures, for example S1 of the NMF and S2 of the PCA.
 </p>
-</div>
 
-<div id="outline-container-sec-4-4-1" class="outline-4">
-<h4 id="sec-4-4-1"><span class="section-number-4">4.4.1</span> PCA</h4>
-<div class="outline-text-4" id="text-4-4-1">
 <!--begin.rcode sca_plot_pca_signatures_map, fig.cap='Composition of somatic signatures estimated with the PCA, represented as a heatmap.'
 plotSignatureMap(sigs_pca) + ggtitle("Somatic Signatures: PCA - Heatmap")
 end.rcode-->
@@ -570,12 +571,16 @@ end.rcode-->
 
 
 <!--begin.rcode 
-plotObservedSpectrum(sigs_pca)
+plotFittedSpectrum(sigs_pca)
 end.rcode-->
 
+<p>
+Since the observed mutational spectrum is defined by the data alone, it is
+identical for both all decomposition methods.
+</p>
 
 <!--begin.rcode 
-plotFittedSpectrum(sigs_pca)
+plotObservedSpectrum(sigs_pca)
 end.rcode-->
 </div>
 </div>
