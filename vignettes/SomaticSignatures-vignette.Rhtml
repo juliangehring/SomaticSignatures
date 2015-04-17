@@ -4,41 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-04-15 Mi 13:52 -->
+<!-- 2015-04-18 Sa 12:16 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
-<meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
+<meta  name="author" content="Julian Gehring (EMBL Heidelberg)" />
 <link rel="stylesheet" type="text/css" href="https://julian-gehring.github.io/bioc.css" />
-
-<script type="text/javascript" src="http://orgmode.org/org-info.js">
-/**
- * @source: http://orgmode.org/org-info.js
- * @licstart  The following is the entire license notice for the
- *  JavaScript code in http://orgmode.org/org-info.js.
- * @licend  The above is the entire license notice
- * for the JavaScript code in http://orgmode.org/org-info.js.
- */
-</script>
-<script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
-<!--/*--><![CDATA[/*><!--*/
-org_html_manager.set("TOC_DEPTH", "6");
-org_html_manager.set("LINK_HOME", "");
-org_html_manager.set("LINK_UP", "");
-org_html_manager.set("LOCAL_TOC", "0");
-org_html_manager.set("VIEW_BUTTONS", "0");
-org_html_manager.set("MOUSE_HINT", "underline");
-org_html_manager.set("FIXED_TOC", "1");
-org_html_manager.set("TOC", "1");
-org_html_manager.set("VIEW", "showall");
-org_html_manager.setup();  // activate after the parameters are set
-/*]]>*///-->
-</script>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -143,21 +113,19 @@ for the JavaScript code in this tag.
 <li><a href="#sec-4-1">4.1. Data: Preproccessing of the TCGA WES Studies</a></li>
 <li><a href="#sec-4-2">4.2. Motifs: Extracting the Sequence Context of Somatic Variants</a></li>
 <li><a href="#sec-4-3">4.3. Decomposition: Inferring Somatic Signatures</a></li>
-<li><a href="#sec-4-4">4.4. Visualization: Exploration of Signatures and Samples</a>
-<ul>
-<li><a href="#sec-4-4-1">4.4.1. PCA</a></li>
-</ul>
-</li>
-<li><a href="#sec-4-5">4.5. Extensions: Normalization of Sequence Motif Frequencies and Batch Effects</a></li>
-<li><a href="#sec-4-6">4.6. Clustering: Grouping by motifs or samples</a></li>
+<li><a href="#sec-4-4">4.4. Assessment: Number of Signatures</a></li>
+<li><a href="#sec-4-5">4.5. Visualization: Exploration of Signatures and Samples</a></li>
+<li><a href="#sec-4-6">4.6. Clustering: Grouping by Motifs or Samples</a></li>
+<li><a href="#sec-4-7">4.7. Extension: Correction of Batch Effects</a></li>
+<li><a href="#sec-4-8">4.8. Extension: Normalization of Sequence Motif Frequencies</a></li>
 </ul>
 </li>
 <li><a href="#sec-5">5. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
 <li><a href="#sec-6">6. Frequently Asked Questions</a>
 <ul>
 <li><a href="#sec-6-1">6.1. Citing SomaticSignatures</a></li>
-<li><a href="#sec-6-2">6.2. Getting help</a></li>
-<li><a href="#sec-6-3">6.3. Installing the package</a></li>
+<li><a href="#sec-6-2">6.2. Getting Help</a></li>
+<li><a href="#sec-6-3">6.3. Installing and Upgrading</a></li>
 <li><a href="#sec-6-4">6.4. Working with VRanges</a></li>
 </ul>
 </li>
@@ -172,7 +140,6 @@ for the JavaScript code in this tag.
 %\VignettePackage{SomaticSignatures}
 -->
 
-
 <!--begin.rcode results='hide', echo=FALSE, message=FALSE, warning=FALSE
 set.seed(1)
 
@@ -180,19 +147,42 @@ options(width = 70)
 
 library(knitr)
 
-style_sheet = "bioc.css"
-style = if(file.exists(style_sheet)) {
-    paste(readLines(style_sheet), collapse = "\n")
+inlineCode <- function(file, format = c) {
+    file_exist = sapply(file, file.exists)
+    file = file[file_exist]
+    if(length(file) == 0)
+        return("")
+    style = sapply(file,
+        function(file) {
+            paste(readLines(file), collapse = "\n")},
+        USE.NAMES = FALSE)
+    style = sapply(style, format)
+    style = paste(style, "\n", collapse = "\n\n")
+    return(style)
 }
+
+knitrHeader <- function(css, js) {
+    header = opts_knit$get("header")
+    if(!missing(css) && !identical(css, character())) {
+        header["highlight"] = inlineCode(css)
+    }
+    if(!missing(js) && !identical(js, character())) {
+        header["js"] = inlineCode(js, formatInlineJS)
+    }
+    return(header)
+}
+
+base_dir = system.file(package = "SomaticSignatures")
+css_path = file.path(base_dir, "css", "bioc.css")
 
 opts_knit$set(self.contained = TRUE,
               upload.fun = image_uri,
-              header = c(highlight = style))
+              header = knitrHeader(css = css_path))
 
 opts_chunk$set(comment = "  ",
                fig.path = "",
                fig.align = "center",
-               out.width = "50%",
+               out.width = "65%",
                dpi = 300,
                indent = 10,
                cache = FALSE,
@@ -205,7 +195,6 @@ knit_hooks$set(fig.cap = function(before, options, envir) {
 })
 end.rcode-->
 
-
 <p class="author-top">Julian Gehring (EMBL Heidelberg)</p>
 
 
@@ -215,7 +204,7 @@ end.rcode-->
 <p>
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
-processes [<a href="#nik-zainal_mutational_2012">6</a>] [<a href="#alexandrov_signatures_2013">14</a>] [<a href="#alexandrov_deciphering_2013">11</a>].
+processes [<a href="#nik-zainal_mutational_2012">7</a>] [<a href="#alexandrov_signatures_2013">15</a>] [<a href="#alexandrov_deciphering_2013">12</a>].
 Conceptually, this relates somatically occurring <i>single nucleotide variants</i>
 (SNVs) to the surrounding sequence which will be referred to as <i>mutational</i> or
 <i>somatic motifs</i> in the following.  Based on the frequency of the motifs occurring
@@ -230,7 +219,7 @@ The <code>SomaticSignatures</code> package provides an efficient and user-friend
 implementation for the extraction of somatic motifs based on a list of
 somatically mutated genomic sites and the estimation of somatic signatures with
 different matrix decomposition algorithms.  Methodologically, this is based on
-the work of Nik-Zainal and colleagues [<a href="#nik-zainal_mutational_2012">6</a>].
+the work of Nik-Zainal and colleagues [<a href="#nik-zainal_mutational_2012">7</a>].
 </p>
 </div>
 </div>
@@ -290,8 +279,8 @@ reference sequence can be, for example, a <code>FaFile</code> object, representi
 indexed FASTA file, a <code>BSgenome</code> object, or a <code>GmapGenome</code> object.
 Alternatively, we provide functions to extract the relevant information from
 other sources of inputs.  At the moment, this covers the <i>MuTect</i>
-[<a href="#cibulskis_sensitive_2013">12</a>] variant caller and the <i>h5vc</i> package
-[<a href="#pyl_h5vc:_2014">15</a>] [<a href="#pyl_h5vc:_2013">9</a>].
+[<a href="#cibulskis_sensitive_2013">13</a>] variant caller and the <i>h5vc</i> package
+[<a href="#pyl_h5vc:_2014">pyl_h5vc:_2014</a>] [<a href="#pyl_h5vc:_2013">10</a>].
 </p>
 
 <p>
@@ -321,8 +310,8 @@ To decompose \(M\), the <code>SomaticSignatures</code> package implements two me
 <dl class="org-dl">
 <dt> Non-negative matrix factorization (NMF) </dt><dd>The NMF decomposes \(M\) with the
 constraint of positive components in \(W\) and \(H\)
-[<a href="#gaujoux_flexible_2010">4</a>].  The method was used
-[<a href="#nik-zainal_mutational_2012">6</a>] for the identification of mutational
+[<a href="#gaujoux_flexible_2010">5</a>].  The method was used
+[<a href="#nik-zainal_mutational_2012">7</a>] for the identification of mutational
 signatures, and can be computationally expensive for large data sets.
 </dd>
 
@@ -375,7 +364,7 @@ summarizes the biological and experimental settings of each study.
 <!--begin.rcode sca_metadata
 sca_metadata = scaMetadata()
 
-print(sca_metadata)
+sca_metadata
 end.rcode-->
 
 <p>
@@ -383,7 +372,7 @@ The starting point of the analysis is a <code>VRanges</code> object which descri
 somatic variants in terms of their genomic locations as well as reference and
 alternative alleles.  For more details about this class and how to construct it,
 please see the documentation of the <code>VariantAnnotation</code> package
-[<a href="#obenchain_variantannotation:_2011">5</a>].  Since the genomic positions are given
+[<a href="#obenchain_variantannotation:_2011">6</a>].  Since the genomic positions are given
 in the <i>NCBI</i> notation and the references used later are in <i>UCSC</i> notation, the
 functions <code>ucsc</code> and <code>ncbi</code> are used to easily switch between the two notations.
 In this example, all mutational calls of a study will be pooled together, in
@@ -391,7 +380,17 @@ order to find signatures related to a specific cancer type.
 </p>
 
 <!--begin.rcode sca_to_vranges
-sca_vr = scaSNVRanges()
+sca_data = unlist(scaLoadDatasets())
+
+sca_data$study = factor(gsub("(.*)_(.*)", "\\1", names(sca_data)))
+sca_data = unname(subset(sca_data, Variant_Type %in% "SNP"))
+sca_data = keepSeqlevels(sca_data, hsAutosomes())
+
+sca_vr = VRanges(seqnames(sca_data), ranges(sca_data), 
+    ref = sca_data$Reference_Allele, alt = sca_data$Tumor_Seq_Allele2, 
+    sampleNames = sca_data$Patient_ID, seqinfo = seqinfo(sca_data), 
+    study = sca_data$study)
+sca_vr = ucsc(sca_vr)
 
 head(sca_vr, 3)
 end.rcode-->
@@ -419,7 +418,7 @@ reference sequence.  Here, the <code>BSgenomes</code> object for the human hg19 
 is used.  However, all objects with a defined <code>getSeq</code> method can serve as the
 reference, e.g. an indexed FASTA file.  Additionally, we transform all motifs to
 have a pyrimidine base (<code>C</code> or <code>T</code>) as a reference base
-[<a href="#alexandrov_signatures_2013">14</a>].
+[<a href="#alexandrov_signatures_2013">15</a>].
 </p>
 
 <!--begin.rcode sca_vr_to_motifs
@@ -487,8 +486,61 @@ end.rcode-->
 
 
 <div id="outline-container-sec-4-4" class="outline-3">
-<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Visualization: Exploration of Signatures and Samples</h3>
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Assessment: Number of Signatures</h3>
 <div class="outline-text-3" id="text-4-4">
+<p>
+Up to now, we have performed the decomposition based on a known number \(r\) of
+signatures.  In many settings, prior biological knowledge or complementing
+experiments may allow to determine \(r\) independently.  If this is not the case,
+we can try to infer suitable estimates for \(r\) from the data and the
+decomposition method.
+</p>
+
+<p>
+With the <code>assesNumberSignatures</code> we can compute the residuals sum of squares and
+the explained variance between the observed and fitted mutational spectrum, for
+different number of signatures.  These measures are generally applicable to all
+kind of decomposition methods, and offer indications for a likely number of
+signatures.  The usage and arguments are analogous to the <code>identifySignatures</code>
+function.
+</p>
+
+<!--begin.rcode 
+n_sigs = 2:8
+
+gof_nmf= assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
+
+gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
+end.rcode-->
+
+<!--begin.rcode fig.cap='Summary statistics for selecting the the number of signatures in the NMF decomposition.'
+plotNumberSignatures(gof_nmf)
+end.rcode-->
+
+<!--begin.rcode fig.cap='Summary statistics for selecting the number of signatures in the PCA decomposition.'
+plotNumberSignatures(gof_pca)
+end.rcode-->
+
+<p>
+While decompositions with more signatures naturally approximate the data better,
+is the first inflection point of the statistics a robust measure for the number
+of features [<a href="#hutchins_position-dependent_2008">4</a>].  Within the range from 2 to
+8, no best solution for \(r\) can be inferred from the statistics alone for our
+dataset.  A possible explanation for this is that eight or more independent
+processes are reflected in the data.  However, a decomposition into a smaller
+number of components is nevertheless meaningful, as the most abundant mutational
+processes will still be reflected in the identified signatures.  In practice, a
+combination of a statistical assessment paired with biological knowledge about
+the nature of the data will yield the most reliable interpretation of the
+results.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4-5" class="outline-3">
+<h3 id="sec-4-5"><span class="section-number-3">4.5</span> Visualization: Exploration of Signatures and Samples</h3>
+<div class="outline-text-3" id="text-4-5">
 <p>
 To explore the results for the TCGA data set, we will use the plotting
 functions.  All figures are generated with the <code>ggplot2</code> package, and thus,
@@ -544,12 +596,8 @@ end.rcode-->
 <!--begin.rcode sca_plot_nmf_samples, fig.cap='Occurrence of signatures estimated with the NMF, represented as a barchart.'
 plotSamples(sigs_nmf)
 end.rcode-->
-</div>
 
 
-<div id="outline-container-sec-4-4-1" class="outline-4">
-<h4 id="sec-4-4-1"><span class="section-number-4">4.4.1</span> PCA</h4>
-<div class="outline-text-4" id="text-4-4-1">
 <p>
 In the same way as before, the results of the PCA can be visualized.  In
 contrast to the NMF, the signatures also contain negative values, indicating the
@@ -584,90 +632,10 @@ plotObservedSpectrum(sigs_pca)
 end.rcode-->
 </div>
 </div>
-</div>
-
-
-
-<div id="outline-container-sec-4-5" class="outline-3">
-<h3 id="sec-4-5"><span class="section-number-3">4.5</span> Extensions: Normalization of Sequence Motif Frequencies and Batch Effects</h3>
-<div class="outline-text-3" id="text-4-5">
-<p>
-When investigating somatic signatures between samples from different studies,
-corrections for technical confounding factors should be considered.  In our use
-case of the TCGA WES studies, this is of minor influence due to
-similar sequencing technology and variant calling methods across the studies.
-Approaches for the identification of so termed batch effects have been proposed
-[<a href="#leek_capturing_2007">3</a>] [<a href="#sun_multiple_2012">8</a>] and could be adapted to the
-setting of somatic signatures with existing implementations (the <code>sva</code> and
-<code>leapp</code> packages).  While this correction is not performed here, we exemplify
-the usage by taking the different sequencing technologies of the studies into
-account.
-</p>
-
-<!--begin.rcode sva_batch_not_run, eval=FALSE
-library(sva)
-
-df = as(sca_metadata, "data.frame") ## sample x covariable
-pheno = data.frame(s = unlist(df[ ,"Sequence_Source"]), c = unlist(df[ ,"Cancer_Type"]))
-rownames(pheno) = gsub("(.*)_.*", "\\1", rownames(pheno))
-mod = model.matrix(~ s + c, data = pheno)
-mod0 = model.matrix(~ c, data = pheno)
-
-sv = sva(sca_mm, mod, mod0, method = "irw")
-end.rcode-->
-
-<p>
-If comparisons are performed across samples or studies with different capture
-targets, for example by comparing whole exome with whole genome sequencing,
-further corrections for the frequency of sequence motifs can be taken into
-account.  The <code>kmerFrequency</code> function provides the basis for calculating the
-occurrence of k-mers over a set of ranges of a reference sequence.
-</p>
-
-<p>
-As an example, we compute the frequency of 3-mers for the human chromosome 1,
-based on a sample of 100'000 locations.  Analogously, the k-mer occurrence across
-the human exome can be obtained easily.
-</p>
-
-<!--begin.rcode kmer_chr1, eval=FALSE
-k = 3
-n = 1e5
-chrs = "chr1"
-
-chr1_ranges = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
-chr1_ranges = keepSeqlevels(chr1_ranges, chrs)
-
-k3_chr1 = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, chr1_ranges)
-
-k3_chr1
-end.rcode-->
-
-<p>
-With the <code>normalizeMotifs</code> function, the frequency of motifs can be adjusted.
-Here, we will transform our results of the TCGA WES studies to have the same
-motif distribution as of a whole-genome analysis.  The <code>kmers</code> dataset contains
-the estimated frequency of 3-mers across the human genome and exome.
-</p>
-
-<!--begin.rcode normalize_motifs, eval=FALSE
-head(sca_mm)
-
-data(kmers)
-norms = k3wg / k3we
-head(norms)
-
-sca_norm = normalizeMotifs(sca_mm, norms)
-
-head(sca_norm)
-end.rcode-->
-</div>
-</div>
-
 
 
 <div id="outline-container-sec-4-6" class="outline-3">
-<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Clustering: Grouping by motifs or samples</h3>
+<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Clustering: Grouping by Motifs or Samples</h3>
 <div class="outline-text-3" id="text-4-6">
 <p>
 An alternative approach to interpreting the mutational spectrum by decomposition
@@ -690,7 +658,113 @@ p
 end.rcode-->
 </div>
 </div>
+
+
+
+<div id="outline-container-sec-4-7" class="outline-3">
+<h3 id="sec-4-7"><span class="section-number-3">4.7</span> Extension: Correction of Batch Effects</h3>
+<div class="outline-text-3" id="text-4-7">
+<p>
+When investigating somatic signatures between samples from different studies,
+corrections for technical confounding factors should be considered.  In our use
+case of the TCGA WES studies, this is of minor influence due to similar
+sequencing technology and variant calling methods across the studies.
+Approaches for the identification of so termed batch effects have been proposed
+[<a href="#leek_capturing_2007">3</a>] [<a href="#sun_multiple_2012">9</a>] and existing implementations can
+be used in identifying confounding variables as well as correcting for them.
+The best strategy in addressing technical effects depends strongly on the
+experimental design; we recommend reading the respective literature and software
+documentation for finding an optimal solution in complex settings.
+</p>
+
+<p>
+From the metadata of the TCGA studies, we have noticed that two different
+sequencing approaches have been employed, constituting a potential technical
+batch effect.  The <code>ComBat</code> function of the <code>sva</code> package allows us to adjust
+for this covariate, which yields a mutational spectrum corrected for
+contributions related to sequencing technology.  We can then continue with the
+identification of somatic signatures as we have seen before.
+</p>
+
+<!--begin.rcode sva_load, results='hide',message=FALSE
+library(sva)
+end.rcode-->
+
+<!--begin.rcode sva_batch
+sca_anno = as.data.frame(lapply(sca_metadata, unlist))
+
+model_null = model.matrix(~ 1, sca_anno)
+
+sca_mm_batch = ComBat(sca_mm, batch = sca_anno$Sequence_Source, mod = model_null)
+end.rcode-->
 </div>
+</div>
+
+
+<div id="outline-container-sec-4-8" class="outline-3">
+<h3 id="sec-4-8"><span class="section-number-3">4.8</span> Extension: Normalization of Sequence Motif Frequencies</h3>
+<div class="outline-text-3" id="text-4-8">
+<p>
+If comparisons are performed across samples or studies with different capture
+targets, for example by comparing whole exome with whole genome sequencing,
+further corrections for the frequency of sequence motifs can be taken into
+account [<a href="#nik-zainal_mutational_2012">7</a>].  The <code>kmerFrequency</code> function provides
+the basis for calculating the occurrence of k-mers over a set of ranges of a
+reference sequence.
+</p>
+
+<p>
+As an example, we compute the frequency of 3-mers for the human toplevel
+chromosomes, based on a sample of 10'000 locations.
+</p>
+
+<!--begin.rcode kmer_hs_chrs, results='hide',message=FALSE
+k = 3
+n = 1e4
+
+hs_chrs = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
+hs_chrs = keepStandardChromosomes(hs_chrs)
+
+k3_hs_chrs = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_chrs)
+k3_hs_chrs
+end.rcode-->
+
+<p>
+Analogously, the k-mer occurrence across a set of enriched regions, such as in
+exome or targeted sequencing, can be obtained easily.  The following outlines
+how to apply the approach to the human exome.
+</p>
+
+<!--begin.rcode kmer_exons, eval=FALSE
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
+k = 3
+n = 1e4
+
+hs_exons = reduce(exons(TxDb.Hsapiens.UCSC.hg19.knownGene))
+hs_exons = keepStandardChromosomes(hs_exons)
+
+k3_exons = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_exons)
+end.rcode-->
+
+<p>
+With the <code>normalizeMotifs</code> function, the frequency of motifs can be adjusted.
+Here, we will transform our results of the TCGA WES studies to have the same
+motif distribution as of a whole-genome analysis.  The <code>kmers</code> dataset contains
+the estimated frequency of 3-mers across the human genome and exome.
+</p>
+
+<!--begin.rcode normalize_motifs
+data(kmers)
+norms = k3wg / k3we
+head(norms)
+
+sca_mm_norm = normalizeMotifs(sca_mm, norms)
+end.rcode-->
+</div>
+</div>
+</div>
+
 
 
 <div id="outline-container-sec-5" class="outline-2">
@@ -698,11 +772,11 @@ end.rcode-->
 <div class="outline-text-2" id="text-5">
 <p>
 For the identification of somatic signatures, other methods and implementations
-exist.  The original framework [<a href="#nik-zainal_mutational_2012">6</a>]
-[<a href="#alexandrov_deciphering_2013">11</a>] proposed for this is based on the NMF and
-available for the Matlab programming language [<a href="#alexandrov_wtsi_2012">7</a>].  In
+exist.  The original framework [<a href="#nik-zainal_mutational_2012">7</a>]
+[<a href="#alexandrov_deciphering_2013">12</a>] proposed for this is based on the NMF and
+available for the Matlab programming language [<a href="#alexandrov_wtsi_2012">8</a>].  In
 extension, a probabilistic approach based on Poisson processes has been proposed
-[<a href="#fischer_emu:_2013-1">13</a>] and implemented [<a href="#fischer_emu:_2013">10</a>].
+[<a href="#fischer_emu:_2013-1">11</a>] and implemented [<a href="#fischer_emu:_2013">14</a>].
 </p>
 </div>
 </div>
@@ -726,7 +800,7 @@ end.rcode-->
 
 
 <div id="outline-container-sec-6-2" class="outline-3">
-<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Getting help</h3>
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Getting Help</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 We welcome emails with questions or suggestions about our software, and want to
@@ -761,9 +835,8 @@ full output of <code>sessionInfo()</code>.
 </div>
 
 
-
 <div id="outline-container-sec-6-3" class="outline-3">
-<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Installing the package</h3>
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Installing and Upgrading</h3>
 <div class="outline-text-3" id="text-6-3">
 <p>
 Before you want to install the <code>SomaticSignatures</code> package, please ensure that
@@ -837,12 +910,11 @@ Robert&nbsp;C. Gentleman, Vincent&nbsp;J. Carey, Douglas&nbsp;M. Bates, Ben Bols
   Dettling, Sandrine Dudoit, Byron Ellis, Laurent Gautier, Yongchao Ge, Jeff
   Gentry, Kurt Hornik, Torsten Hothorn, Wolfgang Huber, Stefano Iacus, Rafael
   Irizarry, Friedrich Leisch, Cheng Li, Martin Maechler, Anthony&nbsp;J. Rossini,
-  Gunther Sawitzki, Colin Smith, Gordon Smyth, Luke Tierney, Jean&nbsp;YH Yang,
-  and Jianhua Zhang.
+  Gunther Sawitzki, Colin Smith, Gordon Smyth, Luke Tierney, Jean&nbsp;YH Yang, and
+  Jianhua Zhang.
  Bioconductor: open software development for computational biology and
   bioinformatics.
  <em>Genome Biology</em>, 5(10):R80, September 2004.
- PMID: 15461798.
 [&nbsp;<a href="http://dx.doi.org/10.1186/gb-2004-5-10-r80">DOI</a>&nbsp;| 
 <a href="http://genomebiology.com/2004/5/10/R80/abstract">http</a>&nbsp;]
 
@@ -860,7 +932,6 @@ Wolfram Stacklies, Henning Redestig, Matthias Scholz, Dirk Walther, and Joachim
  pcaMethodsa bioconductor package providing PCA
   methods for incomplete data.
  <em>Bioinformatics</em>, 23(9):1164-1167, May 2007.
- PMID: 17344241.
 [&nbsp;<a href="http://dx.doi.org/10.1093/bioinformatics/btm069">DOI</a>&nbsp;| 
 <a href="http://bioinformatics.oxfordjournals.org/content/23/9/1164">http</a>&nbsp;]
 
@@ -874,8 +945,8 @@ Wolfram Stacklies, Henning Redestig, Matthias Scholz, Dirk Walther, and Joachim
 </td>
 <td class="bibtexitem">
 Jeffrey&nbsp;T Leek and John&nbsp;D Storey.
- Capturing heterogeneity in gene expression studies by surrogate
-  variable analysis.
+ Capturing Heterogeneity in Gene Expression Studies by
+  Surrogate Variable Analysis.
  <em>PLoS Genet</em>, 3(9):e161, September 2007.
 [&nbsp;<a href="http://dx.doi.org/10.1371/journal.pgen.0030161">DOI</a>&nbsp;| 
 <a href="http://dx.plos.org/10.1371/journal.pgen.0030161">http</a>&nbsp;]
@@ -886,13 +957,28 @@ Jeffrey&nbsp;T Leek and John&nbsp;D Storey.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="gaujoux_flexible_2010">4</a>]
+[<a name="hutchins_position-dependent_2008">4</a>]
+</td>
+<td class="bibtexitem">
+Lucie&nbsp;N. Hutchins, Sean&nbsp;M. Murphy, Priyam Singh, and Joel&nbsp;H. Graber.
+ Position-dependent motif characterization using non-negative matrix
+  factorization.
+ <em>Bioinformatics</em>, 24(23):2684-2690, December 2008.
+[&nbsp;<a href="http://dx.doi.org/10.1093/bioinformatics/btn526">DOI</a>&nbsp;| 
+<a href="http://bioinformatics.oxfordjournals.org/content/24/23/2684">http</a>&nbsp;]
+
+</td>
+</tr>
+
+
+<tr valign="top">
+<td align="right" class="bibtexnumber">
+[<a name="gaujoux_flexible_2010">5</a>]
 </td>
 <td class="bibtexitem">
 Renaud Gaujoux and Cathal Seoighe.
- A flexible r package for nonnegative matrix factorization.
+ A flexible R package for nonnegative matrix factorization.
  <em>BMC Bioinformatics</em>, 11(1):367, July 2010.
- PMID: 20598126.
 [&nbsp;<a href="http://dx.doi.org/10.1186/1471-2105-11-367">DOI</a>&nbsp;| 
 <a href="http://www.biomedcentral.com/1471-2105/11/367/abstract">http</a>&nbsp;]
 
@@ -902,11 +988,11 @@ Renaud Gaujoux and Cathal Seoighe.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="obenchain_variantannotation:_2011">5</a>]
+[<a name="obenchain_variantannotation:_2011">6</a>]
 </td>
 <td class="bibtexitem">
 Valerie Obenchain, Martin Morgan, and Michael Lawrence.
- VariantAnnotation: annotation of genetic variants, 2011.
+ VariantAnnotation: Annotation of Genetic Variants, 2011.
 [&nbsp;<a href="http://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html">.html</a>&nbsp;]
 
 </td>
@@ -915,7 +1001,7 @@ Valerie Obenchain, Martin Morgan, and Michael Lawrence.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="nik-zainal_mutational_2012">6</a>]
+[<a name="nik-zainal_mutational_2012">7</a>]
 </td>
 <td class="bibtexitem">
 Serena Nik-Zainal, Ludmil&nbsp;B. Alexandrov, David&nbsp;C. Wedge, Peter Van&nbsp;Loo,
@@ -925,13 +1011,14 @@ Serena Nik-Zainal, Ludmil&nbsp;B. Alexandrov, David&nbsp;C. Wedge, Peter Van&nbs
   Laura&nbsp;J. Mudie, Ignacio Varela, David&nbsp;J. McBride, Graham&nbsp;R. Bignell,
   Susanna&nbsp;L. Cooke, Adam Shlien, John Gamble, Ian Whitmore, Mark Maddison,
   Patrick&nbsp;S. Tarpey, Helen&nbsp;R. Davies, Elli Papaemmanuil, Philip&nbsp;J. Stephens,
-  Stuart McLaren, Adam&nbsp;P. Butler, Jon&nbsp;W. Teague, G&ouml;ran J&ouml;nsson,
-  Judy&nbsp;E. Garber, Daniel Silver, Penelope Miron, Aquila Fatima, Sandrine
-  Boyault, Anita Langer&oslash;d, Andrew Tutt, John&nbsp;W.M. Martens, Samuel&nbsp;A.J.R.
-  Aparicio, Ake Borg, Anne&nbsp;Vincent Salomon, Gilles Thomas, Anne-Lise
-  B&oslash;rresen-Dale, Andrea&nbsp;L. Richardson, Michael&nbsp;S. Neuberger, P.&nbsp;Andrew
-  Futreal, Peter&nbsp;J. Campbell, and Michael&nbsp;R. Stratton.
- Mutational processes molding the genomes of 21 breast cancers.
+  Stuart McLaren, Adam&nbsp;P. Butler, Jon&nbsp;W. Teague, G&ouml;ran J&ouml;nsson, Judy&nbsp;E.
+  Garber, Daniel Silver, Penelope Miron, Aquila Fatima, Sandrine Boyault, Anita
+  Langer&oslash;d, Andrew Tutt, John&nbsp;W.M. Martens, Samuel&nbsp;A.J.R. Aparicio, Ake
+  Borg, Anne&nbsp;Vincent Salomon, Gilles Thomas, Anne-Lise B&oslash;rresen-Dale,
+  Andrea&nbsp;L. Richardson, Michael&nbsp;S. Neuberger, P.&nbsp;Andrew Futreal, Peter&nbsp;J.
+  Campbell, and Michael&nbsp;R. Stratton.
+ Mutational Processes Molding the Genomes of 21 Breast
+  Cancers.
  <em>Cell</em>, 149(5):979-993, May 2012.
 [&nbsp;<a href="http://dx.doi.org/10.1016/j.cell.2012.04.024">DOI</a>&nbsp;| 
 <a href="http://www.sciencedirect.com/science/article/pii/S0092867412005284">http</a>&nbsp;]
@@ -942,11 +1029,11 @@ Serena Nik-Zainal, Ludmil&nbsp;B. Alexandrov, David&nbsp;C. Wedge, Peter Van&nbs
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="alexandrov_wtsi_2012">7</a>]
+[<a name="alexandrov_wtsi_2012">8</a>]
 </td>
 <td class="bibtexitem">
 Ludmil Alexandrov.
- WTSI mutational signature framework, October 2012.
+ WTSI Mutational Signature Framework, October 2012.
 [&nbsp;<a href="http://www.mathworks.de/matlabcentral/fileexchange/38724-wtsi-mutational-signature-framework">http</a>&nbsp;]
 
 </td>
@@ -955,7 +1042,7 @@ Ludmil Alexandrov.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="sun_multiple_2012">8</a>]
+[<a name="sun_multiple_2012">9</a>]
 </td>
 <td class="bibtexitem">
 Yunting Sun, Nancy&nbsp;R. Zhang, and Art&nbsp;B. Owen.
@@ -974,7 +1061,7 @@ Yunting Sun, Nancy&nbsp;R. Zhang, and Art&nbsp;B. Owen.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="pyl_h5vc:_2013">9</a>]
+[<a name="pyl_h5vc:_2013">10</a>]
 </td>
 <td class="bibtexitem">
 Paul&nbsp;Theodor Pyl.
@@ -987,12 +1074,12 @@ Paul&nbsp;Theodor Pyl.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="fischer_emu:_2013">10</a>]
+[<a name="fischer_emu:_2013-1">11</a>]
 </td>
 <td class="bibtexitem">
 Andrej Fischer.
- EMu: expectation-maximisation inference of mutational signatures,
-  2013.
+ EMu: Expectation-Maximisation inference of mutational
+  signatures, 2013.
 [&nbsp;<a href="http://www.sanger.ac.uk/resources/software/emu/">http</a>&nbsp;]
 
 </td>
@@ -1001,13 +1088,13 @@ Andrej Fischer.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="alexandrov_deciphering_2013">11</a>]
+[<a name="alexandrov_deciphering_2013">12</a>]
 </td>
 <td class="bibtexitem">
 Ludmil&nbsp;B. Alexandrov, Serena Nik-Zainal, David&nbsp;C. Wedge, Peter&nbsp;J. Campbell, and
   Michael&nbsp;R. Stratton.
- Deciphering signatures of mutational processes operative in human
-  cancer.
+ Deciphering Signatures of Mutational Processes Operative in
+  Human Cancer.
  <em>Cell Reports</em>, 3(1):246-259, January 2013.
 [&nbsp;<a href="http://dx.doi.org/10.1016/j.celrep.2012.12.008">DOI</a>&nbsp;| 
 <a href="http://www.sciencedirect.com/science/article/pii/S2211124712004330">http</a>&nbsp;]
@@ -1018,7 +1105,7 @@ Ludmil&nbsp;B. Alexandrov, Serena Nik-Zainal, David&nbsp;C. Wedge, Peter&nbsp;J.
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="cibulskis_sensitive_2013">12</a>]
+[<a name="cibulskis_sensitive_2013">13</a>]
 </td>
 <td class="bibtexitem">
 Kristian Cibulskis, Michael&nbsp;S. Lawrence, Scott&nbsp;L. Carter, Andrey Sivachenko,
@@ -1037,7 +1124,7 @@ Kristian Cibulskis, Michael&nbsp;S. Lawrence, Scott&nbsp;L. Carter, Andrey Sivac
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="fischer_emu:_2013-1">13</a>]
+[<a name="fischer_emu:_2013">14</a>]
 </td>
 <td class="bibtexitem">
 Andrej Fischer, Christopher&nbsp;Jr Illingworth, Peter&nbsp;J Campbell, and Ville
@@ -1045,7 +1132,6 @@ Andrej Fischer, Christopher&nbsp;Jr Illingworth, Peter&nbsp;J Campbell, and Vill
  EMu: probabilistic inference of mutational processes and their
   localization in the cancer genome.
  <em>Genome biology</em>, 14(4):R39, April 2013.
- PMID: 23628380.
 [&nbsp;<a href="http://dx.doi.org/10.1186/gb-2013-14-4-r39">DOI</a>&nbsp;]
 
 </td>
@@ -1054,7 +1140,7 @@ Andrej Fischer, Christopher&nbsp;Jr Illingworth, Peter&nbsp;J Campbell, and Vill
 
 <tr valign="top">
 <td align="right" class="bibtexnumber">
-[<a name="alexandrov_signatures_2013">14</a>]
+[<a name="alexandrov_signatures_2013">15</a>]
 </td>
 <td class="bibtexitem">
 Ludmil&nbsp;B. Alexandrov, Serena Nik-Zainal, David&nbsp;C. Wedge, Samuel A. J.&nbsp;R.
@@ -1071,32 +1157,15 @@ Ludmil&nbsp;B. Alexandrov, Serena Nik-Zainal, David&nbsp;C. Wedge, Samuel A. J.&
   Schlesner, Ton&nbsp;N. Schumacher, Paul&nbsp;N. Span, Jon&nbsp;W. Teague, Yasushi Totoki,
   Andrew N.&nbsp;J. Tutt, Rafael Vald&eacute;s-Mas, Marit&nbsp;M. van Buuren, Laura
   van&nbsp;t Veer, Anne Vincent-Salomon, Nicola Waddell, Lucy&nbsp;R.
-  Yates, Australian Pancreatic Cancer Genome Initiative, ICGC Breast
-  Cancer Consortium, ICGC MMML-Seq Consortium, Icgc PedBrain,
-  Jessica Zucman-Rossi, P.&nbsp;Andrew&nbsp;Futreal, Ultan McDermott, Peter Lichter,
-  Matthew Meyerson, Sean&nbsp;M. Grimmond, Reiner Siebert, El&iacute;as Campo,
-  Tatsuhiro Shibata, Stefan&nbsp;M. Pfister, Peter&nbsp;J. Campbell, and Michael&nbsp;R.
-  Stratton.
+  Yates, Australian Pancreatic Cancer Genome Initiative, ICGC Breast Cancer
+  Consortium, ICGC MMML-Seq Consortium, Icgc PedBrain, Jessica
+  Zucman-Rossi, P.&nbsp;Andrew&nbsp;Futreal, Ultan McDermott, Peter Lichter, Matthew
+  Meyerson, Sean&nbsp;M. Grimmond, Reiner Siebert, El&iacute;as Campo, Tatsuhiro
+  Shibata, Stefan&nbsp;M. Pfister, Peter&nbsp;J. Campbell, and Michael&nbsp;R. Stratton.
  Signatures of mutational processes in human cancer.
  <em>Nature</em>, 500(7463):415-421, August 2013.
 [&nbsp;<a href="http://dx.doi.org/10.1038/nature12477">DOI</a>&nbsp;| 
 <a href="http://www.nature.com/nature/journal/v500/n7463/full/nature12477.html">.html</a>&nbsp;]
-
-</td>
-</tr>
-
-
-<tr valign="top">
-<td align="right" class="bibtexnumber">
-[<a name="pyl_h5vc:_2014">15</a>]
-</td>
-<td class="bibtexitem">
-Paul&nbsp;Theodor Pyl, Julian Gehring, Bernd Fischer, and Wolfgang Huber.
- h5vc: Scalable nucleotide tallies with HDF5.
- <em>Bioinformatics</em>, page btu026, January 2014.
- PMID: 24451629.
-[&nbsp;<a href="http://dx.doi.org/10.1093/bioinformatics/btu026">DOI</a>&nbsp;| 
-<a href="http://bioinformatics.oxfordjournals.org/content/early/2014/01/21/bioinformatics.btu026">http</a>&nbsp;]
 
 </td>
 </tr>

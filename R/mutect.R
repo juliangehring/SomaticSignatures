@@ -13,7 +13,8 @@ readMutect <- function(file, columns, strip = FALSE) {
                 sampleNames = x$tumor_name,
                 softFilterMatrix = matrix(x$judgement %in% "KEEP")
         )
-        
+
+    ## if no metadata is needed, exit here
     if(strip)
         return(vr)
 

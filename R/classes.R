@@ -57,7 +57,7 @@ setGeneric("observed",
 setMethod("observed",
           signature(object = "MutationalSignatures"),
           function(object) {
-              return(object@fitted)
+              return(object@observed)
           })
 
 

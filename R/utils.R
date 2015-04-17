@@ -10,10 +10,6 @@ setAs("character", "factor", function(from) {
 })
 
 
-cosineSimilarity <- function(x, y) {
-}
-
-
 showSome <- function(x, name, indent="") {
     res <- sprintf("%s%s (%d): %s\n",
                    indent,

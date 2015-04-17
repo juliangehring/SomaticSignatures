@@ -56,12 +56,7 @@ plotSamples(s, normalize = FALSE, percent = FALSE)
   occurrance in the samples can be visualized either as a heatmap
   ('plotSignatureMap', 'plotSampleMap') or a barchart ('plotSignature',
   'plotSamples').
-
-  Since the plots are created with the 'ggplot2' framework, all
-  properties of the plots, including labeling, annotation and coloring,
-  can be modified; please see the documentation of the 'ggplot2' package
-  for details.
-
+  
 }
 
 \value{
@@ -73,7 +68,7 @@ plotSamples(s, normalize = FALSE, percent = FALSE)
 
 \seealso{
 
-  'ggplot2' package for modifying plot properties
+  'ggplot2' package
 
 }
 
@@ -81,15 +76,7 @@ plotSamples(s, normalize = FALSE, percent = FALSE)
 \examples{
 data("sca_sigs", package = "SomaticSignatures")
 
-plotSignatures(sigs_nmf)
-
 plotSamples(sigs_nmf)
 
-## modifying plots
-library(ggplot2)
-
-## increase the axis labels, omit the legend
-plotSamples(sigs_nmf) + theme(axis.text = element_text(size = 12),
-legend.position = "none")
-
+plotSignatures(sigs_nmf)
 }

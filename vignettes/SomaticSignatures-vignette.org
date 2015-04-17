@@ -1,8 +1,7 @@
 #+TITLE: Inferring Somatic Signatures from Single Nucleotide Variant Calls
-#+AUTHOR: Julian Gehring, EMBL Heidelberg
+#+AUTHOR: Julian Gehring (EMBL Heidelberg)
 
 #+OPTIONS: html-postamble:nil html-preamble:nil html-style:nil
-#+INFOJS_OPT: view:showall toc:t ftoc:t ltoc:nil
 
 #+PROPERTY: tangle yes
 
@@ -14,7 +13,6 @@
 -->
 #+END_HTML
 
-
 #+BEGIN_SRC R :exports code :ravel results='hide', echo=FALSE, message=FALSE, warning=FALSE
   set.seed(1)
 
@@ -22,19 +20,42 @@
 
   library(knitr)
 
-  style_sheet = "bioc.css"
-  style = if(file.exists(style_sheet)) {
-      paste(readLines(style_sheet), collapse = "\n")
+  inlineCode <- function(file, format = c) {
+      file_exist = sapply(file, file.exists)
+      file = file[file_exist]
+      if(length(file) == 0)
+          return("")
+      style = sapply(file,
+          function(file) {
+              paste(readLines(file), collapse = "\n")},
+          USE.NAMES = FALSE)
+      style = sapply(style, format)
+      style = paste(style, "\n", collapse = "\n\n")
+      return(style)
   }
-      
+
+  knitrHeader <- function(css, js) {
+      header = opts_knit$get("header")
+      if(!missing(css) && !identical(css, character())) {
+          header["highlight"] = inlineCode(css)
+      }
+      if(!missing(js) && !identical(js, character())) {
+          header["js"] = inlineCode(js, formatInlineJS)
+      }
+      return(header)
+  }
+
+  base_dir = system.file(package = "SomaticSignatures")
+  css_path = file.path(base_dir, "css", "bioc.css")
+
   opts_knit$set(self.contained = TRUE,
                 upload.fun = image_uri,
-                header = c(highlight = style))
+                header = knitrHeader(css = css_path))
 
   opts_chunk$set(comment = "  ",
                  fig.path = "",
                  fig.align = "center",
-                 out.width = "50%",
+                 out.width = "65%",
                  dpi = 300,
                  indent = 10,
                  cache = FALSE,
@@ -46,7 +67,6 @@
       }
   })
 #+END_SRC
-
 
 #+BEGIN_HTML
 <p class="author-top">Julian Gehring (EMBL Heidelberg)</p>
@@ -173,7 +193,7 @@ summarizes the biological and experimental settings of each study.
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
   sca_metadata = scaMetadata()
 
-  print(sca_metadata)
+  sca_metadata
 #+END_SRC
 
 #+RESULTS: sca_metadata
@@ -219,7 +239,17 @@ order to find signatures related to a specific cancer type.
 
 #+NAME: sca_to_vranges
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
-  sca_vr = scaSNVRanges()
+  sca_data = unlist(scaLoadDatasets())
+
+  sca_data$study = factor(gsub("(.*)_(.*)", "\\1", names(sca_data)))
+  sca_data = unname(subset(sca_data, Variant_Type %in% "SNP"))
+  sca_data = keepSeqlevels(sca_data, hsAutosomes())
+
+  sca_vr = VRanges(seqnames(sca_data), ranges(sca_data), 
+      ref = sca_data$Reference_Allele, alt = sca_data$Tumor_Seq_Allele2, 
+      sampleNames = sca_data$Patient_ID, seqinfo = seqinfo(sca_data), 
+      study = sca_data$study)
+  sca_vr = ucsc(sca_vr)
 
   head(sca_vr, 3)
 #+END_SRC
@@ -348,6 +378,50 @@ accessed using standard R accessor functions.
 #+END_SRC
 
 
+** Assessment: Number of Signatures
+
+Up to now, we have performed the decomposition based on a known number $r$ of
+signatures.  In many settings, prior biological knowledge or complementing
+experiments may allow to determine $r$ independently.  If this is not the case,
+we can try to infer suitable estimates for $r$ from the data and the
+decomposition method.
+
+With the =assesNumberSignatures= we can compute the residuals sum of squares and
+the explained variance between the observed and fitted mutational spectrum, for
+different number of signatures.  These measures are generally applicable to all
+kind of decomposition methods, and offer indications for a likely number of
+signatures.  The usage and arguments are analogous to the =identifySignatures=
+function.
+
+#+BEGIN_SRC R
+  n_sigs = 2:8
+
+  gof_nmf= assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
+
+  gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
+#+END_SRC
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file p_gof_nmf.svg :ravel fig.cap='Summary statistics for selecting the the number of signatures in the NMF decomposition.'
+  plotNumberSignatures(gof_nmf)
+#+END_SRC
+
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file p_gof_pca.svg :ravel fig.cap='Summary statistics for selecting the number of signatures in the PCA decomposition.'
+  plotNumberSignatures(gof_pca)
+#+END_SRC
+
+While decompositions with more signatures naturally approximate the data better,
+is the first inflection point of the statistics a robust measure for the number
+of features [[cite:hutchins_position-dependent_2008]].  Within the range from 2 to
+8, no best solution for $r$ can be inferred from the statistics alone for our
+dataset.  A possible explanation for this is that eight or more independent
+processes are reflected in the data.  However, a decomposition into a smaller
+number of components is nevertheless meaningful, as the most abundant mutational
+processes will still be reflected in the identified signatures.  In practice, a
+combination of a statistical assessment paired with biological knowledge about
+the nature of the data will yield the most reliable interpretation of the
+results.
+
+
 ** Visualization: Exploration of Signatures and Samples
 
 To explore the results for the TCGA data set, we will use the plotting
@@ -416,8 +490,6 @@ association with a single cancer type.
 [[file:report/p_nmf_samples.svg]]
 
 
-*** PCA
-
 In the same way as before, the results of the PCA can be visualized.  In
 contrast to the NMF, the signatures also contain negative values, indicating the
 depletion of a somatic motif.
@@ -451,90 +523,6 @@ identical for both all decomposition methods.
 #+END_SRC
 
 
-
-** Extensions: Normalization of Sequence Motif Frequencies and Batch Effects
-
-When investigating somatic signatures between samples from different studies,
-corrections for technical confounding factors should be considered.  In our use
-case of the TCGA WES studies, this is of minor influence due to
-similar sequencing technology and variant calling methods across the studies.
-Approaches for the identification of so termed batch effects have been proposed
-cite:leek_capturing_2007 [[cite:sun_multiple_2012]] and could be adapted to the
-setting of somatic signatures with existing implementations (the =sva= and
-=leapp= packages).  While this correction is not performed here, we exemplify
-the usage by taking the different sequencing technologies of the studies into
-account.
-
-#+NAME: sva_batch_not_run
-#+BEGIN_SRC R :exports code :eval no :ravel eval=FALSE
-  library(sva)
-  
-  df = as(sca_metadata, "data.frame") ## sample x covariable
-  pheno = data.frame(s = unlist(df[ ,"Sequence_Source"]), c = unlist(df[ ,"Cancer_Type"]))
-  rownames(pheno) = gsub("(.*)_.*", "\\1", rownames(pheno))
-  mod = model.matrix(~ s + c, data = pheno)
-  mod0 = model.matrix(~ c, data = pheno)
-  
-  sv = sva(sca_mm, mod, mod0, method = "irw")
-#+END_SRC
-
-If comparisons are performed across samples or studies with different capture
-targets, for example by comparing whole exome with whole genome sequencing,
-further corrections for the frequency of sequence motifs can be taken into
-account.  The =kmerFrequency= function provides the basis for calculating the
-occurrence of k-mers over a set of ranges of a reference sequence.
-
-As an example, we compute the frequency of 3-mers for the human chromosome 1,
-based on a sample of 100'000 locations.  Analogously, the k-mer occurrence across
-the human exome can be obtained easily.
-
-#+NAME: kmer_chr1
-#+BEGIN_SRC R :exports code :eval no :ravel eval=FALSE
-  k = 3
-  n = 1e5
-  chrs = "chr1"
-      
-  chr1_ranges = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
-  chr1_ranges = keepSeqlevels(chr1_ranges, chrs)
-  
-  k3_chr1 = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, chr1_ranges)
-  
-  k3_chr1
-#+END_SRC
-
-With the =normalizeMotifs= function, the frequency of motifs can be adjusted.
-Here, we will transform our results of the TCGA WES studies to have the same
-motif distribution as of a whole-genome analysis.  The =kmers= dataset contains
-the estimated frequency of 3-mers across the human genome and exome.
-
-#+NAME: normalize_motifs
-#+BEGIN_SRC R :ravel eval=FALSE
-  head(sca_mm)
-  
-  data(kmers)
-  norms = k3wg / k3we
-  head(norms)
-  
-  sca_norm = normalizeMotifs(sca_mm, norms)
-  
-  head(sca_norm)
-#+END_SRC
-
-
-*** Outdated                                                     :noexport:
-
-#+NAME: sca_plot_samples_unnorm
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_unnorm.svg :ravel fig.cap='Before normalization',out.width='0.49\\columnwidth'
-  plotSamplesObserved(sca_mm, group = "study")
-#+END_SRC
-
-#+NAME: sca_plot_samples_norm
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_samples_norm.svg :ravel fig.cap='After normalization',out.width='0.49\\columnwidth'
-  plotSamplesObserved(sca_norm, group = "study")
-#+END_SRC
-
-
-
 ** Clustering: Grouping by Motifs or Samples
 
 An alternative approach to interpreting the mutational spectrum by decomposition
@@ -553,6 +541,98 @@ an optional argument.
 
   p = ggdendrogram(clu_motif, rotate = TRUE)
   p
+#+END_SRC
+
+
+
+** Extension: Correction of Batch Effects
+
+When investigating somatic signatures between samples from different studies,
+corrections for technical confounding factors should be considered.  In our use
+case of the TCGA WES studies, this is of minor influence due to similar
+sequencing technology and variant calling methods across the studies.
+Approaches for the identification of so termed batch effects have been proposed
+cite:leek_capturing_2007 [[cite:sun_multiple_2012]] and existing implementations can
+be used in identifying confounding variables as well as correcting for them.
+The best strategy in addressing technical effects depends strongly on the
+experimental design; we recommend reading the respective literature and software
+documentation for finding an optimal solution in complex settings.
+
+From the metadata of the TCGA studies, we have noticed that two different
+sequencing approaches have been employed, constituting a potential technical
+batch effect.  The =ComBat= function of the =sva= package allows us to adjust
+for this covariate, which yields a mutational spectrum corrected for
+contributions related to sequencing technology.  We can then continue with the
+identification of somatic signatures as we have seen before.
+
+#+NAME: sva_load
+#+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
+  library(sva)
+#+END_SRC
+
+#+NAME: sva_batch
+#+BEGIN_SRC R :session *R-ss-vignette*
+  sca_anno = as.data.frame(lapply(sca_metadata, unlist))
+
+  model_null = model.matrix(~ 1, sca_anno)
+
+  sca_mm_batch = ComBat(sca_mm, batch = sca_anno$Sequence_Source, mod = model_null)
+#+END_SRC
+
+
+** Extension: Normalization of Sequence Motif Frequencies
+
+If comparisons are performed across samples or studies with different capture
+targets, for example by comparing whole exome with whole genome sequencing,
+further corrections for the frequency of sequence motifs can be taken into
+account cite:nik-zainal_mutational_2012.  The =kmerFrequency= function provides
+the basis for calculating the occurrence of k-mers over a set of ranges of a
+reference sequence.
+ 
+As an example, we compute the frequency of 3-mers for the human toplevel
+chromosomes, based on a sample of 10'000 locations.
+
+#+NAME: kmer_hs_chrs
+#+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
+  k = 3
+  n = 1e4
+         
+  hs_chrs = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
+  hs_chrs = keepStandardChromosomes(hs_chrs)
+
+  k3_hs_chrs = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_chrs)
+  k3_hs_chrs
+ #+END_SRC
+
+Analogously, the k-mer occurrence across a set of enriched regions, such as in
+exome or targeted sequencing, can be obtained easily.  The following outlines
+how to apply the approach to the human exome.
+
+#+NAME: kmer_exons
+#+BEGIN_SRC R :exports code :eval no :ravel eval=FALSE
+  library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
+  k = 3
+  n = 1e4
+      
+  hs_exons = reduce(exons(TxDb.Hsapiens.UCSC.hg19.knownGene))
+  hs_exons = keepStandardChromosomes(hs_exons)
+
+  k3_exons = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_exons)
+#+END_SRC
+
+With the =normalizeMotifs= function, the frequency of motifs can be adjusted.
+Here, we will transform our results of the TCGA WES studies to have the same
+motif distribution as of a whole-genome analysis.  The =kmers= dataset contains
+the estimated frequency of 3-mers across the human genome and exome.
+
+#+NAME: normalize_motifs
+#+BEGIN_SRC R
+  data(kmers)
+  norms = k3wg / k3we
+  head(norms)
+
+  sca_mm_norm = normalizeMotifs(sca_mm, norms)
 #+END_SRC
 
 
@@ -579,89 +659,6 @@ by the type of alteration.
   plotRainfall(sca_gbm, group = "alteration", size = 1)
 #+END_SRC
 
-
-* Use case: Analyzing Own Mutation Calls                           :noexport:
-
-If you have your own somatic SNV calls, you can import them as a =VRanges=
-object directly from a =VCF= file.  Here, we will import SNV from a VCF file of
-the COSMIC project, and select a set of mutations that fall within a selection
-of cancer-related genes.  From there on, we can pursue an analysis as described
-before.
-
-#+BEGIN_SRC R :session *R-ss-vignette* :exports code :ravel results='hide',message=FALSE
-  library(SomaticSignatures)
-
-  library(COSMIC.67)
-  library(VariantAnnotation)
-#+END_SRC
-
-#+BEGIN_SRC R
-  vcf_path = system.file("vcf", "cosmic_67.vcf.gz", package = "COSMIC.67", mustWork = TRUE)
-#+END_SRC
-
-
-#+BEGIN_SRC R
-  genes = c("KRAS", "APC", "BRCA1", "BRCA2", "BRAF", "TP53")
-
-  vc = ucsc(readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE")))
-
-  vcs = vc[ vc$GENE %in% genes & isSNV(vc) ]
-#+END_SRC
-
-
-#+BEGIN_SRC R
-  head(vcs)
-#+END_SRC
-
-
-We get an overview about how many SNVs are present in each gene.
-
-#+BEGIN_SRC R
-  table(vcs$GENE)
-#+END_SRC
-
-
-#+BEGIN_SRC R
-  library(BSgenome.Hsapiens.UCSC.hg19)
-
-  vcs_motifs = mutationContext(ucsc(vcs), BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
-#+END_SRC
-
-
-
-#+BEGIN_SRC R :session *R-ss-vignette* :exports code :results value table :rownames yes :colnames yes
-  vcs_mm = motifMatrix(vcs_motifs, group = "GENE", normalize = TRUE)
-
-  head(round(vcs_mm, 4))
-#+END_SRC
-
-Please note that the occurence of motifs may be driven by the sequence of the genes.
-
-#+NAME: vcs_plot_samples_observed
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/vcs_samples_observed.svg :ravel fig.cap='Observed frequency of somatic motifs across genes.'
-  plotSamplesObserved(vcs_motifs, group = "GENE")
-#+END_SRC
-
-
-** In more detail                                                 :noexport:
-
-#+BEGIN_SRC R :exports none
-  vcf_path = COSMIC.67:::cosmicVcfPath()
-
-  data(genesymbol, package = "biovizBase")
-
-  nice_genes = c("KRAS", "NRAS", "APC", "BRCA1", "BRCA2", "TP53")
-
-  roi = sort(ncbi(unstrand(genesymbol[nice_genes])))
-
-  param = ScanVcfParam(which = roi, info = "GENE")
-  vcf = readVcfAsVRanges(vcf_path, "ncbi37", param)
-  vcf$GENE = factor(sub("_.*", "", vcf$GENE))
-
-  vcf <- readVcfAsVRanges(vcf_path, "ncbi37", ScanVcfParam(info = "GENE"))
-
-  table(vcf$GENE)
-#+END_SRC
 
 
 * Alternatives: Inferring Somatic Signatures with Different Approaches
