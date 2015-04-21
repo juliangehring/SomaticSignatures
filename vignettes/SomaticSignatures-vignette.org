@@ -241,17 +241,21 @@ order to find signatures related to a specific cancer type.
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
   sca_data = unlist(scaLoadDatasets())
 
-  sca_data$study = factor(gsub("(.*)_(.*)", "\\1", names(sca_data)))
+  sca_data$study = factor(gsub("(.*)_(.*)", "\\1", toupper(names(sca_data))))
   sca_data = unname(subset(sca_data, Variant_Type %in% "SNP"))
   sca_data = keepSeqlevels(sca_data, hsAutosomes())
 
-  sca_vr = VRanges(seqnames(sca_data), ranges(sca_data), 
-      ref = sca_data$Reference_Allele, alt = sca_data$Tumor_Seq_Allele2, 
-      sampleNames = sca_data$Patient_ID, seqinfo = seqinfo(sca_data), 
+  sca_vr = VRanges(
+      seqnames = seqnames(sca_data),
+      ranges = ranges(sca_data), 
+      ref = sca_data$Reference_Allele,
+      alt = sca_data$Tumor_Seq_Allele2, 
+      sampleNames = sca_data$Patient_ID,
+      seqinfo = seqinfo(sca_data), 
       study = sca_data$study)
   sca_vr = ucsc(sca_vr)
 
-  head(sca_vr, 3)
+  sca_vr
 #+END_SRC
 
 #+RESULTS: sca_to_vranges
@@ -300,14 +304,14 @@ per study.
 
 
 
-** Motifs: Extracting the Sequence Context of Somatic Variants
+** Motifs: Extracting the Sequence Context of Somatic Variants<<motifs>>
 
 In a first step, the sequence motif for each variant is extracted based on the
-reference sequence.  Here, the =BSgenomes= object for the human hg19 reference
-is used.  However, all objects with a defined =getSeq= method can serve as the
-reference, e.g. an indexed FASTA file.  Additionally, we transform all motifs to
-have a pyrimidine base (=C= or =T=) as a reference base
-[[cite:alexandrov_signatures_2013]].
+genomic sequence.  Here, the =BSgenomes= object of the human hg19 reference is
+used for all samples.  However, [[personalized_genomes][personalized genomes or other sources for
+sequences]], for example an indexed FASTA file, can be used naturally.
+Additionally, we transform all motifs to have a pyrimidine base (=C= or =T=) as
+a reference base [[cite:alexandrov_signatures_2013]].
 
 #+NAME: sca_vr_to_motifs
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
@@ -386,12 +390,13 @@ experiments may allow to determine $r$ independently.  If this is not the case,
 we can try to infer suitable estimates for $r$ from the data and the
 decomposition method.
 
-With the =assesNumberSignatures= we can compute the residuals sum of squares and
-the explained variance between the observed and fitted mutational spectrum, for
-different number of signatures.  These measures are generally applicable to all
-kind of decomposition methods, and offer indications for a likely number of
+With the =assessNumberSignatures= we can compute the residuals sum of squares
+and the explained variance between the observed and fitted mutational spectrum,
+for different numbers of signatures.  These measures are generally applicable to
+all kind of decomposition methods, and offer indications for a likely number of
 signatures.  The usage and arguments are analogous to the =identifySignatures=
-function.
+function.  We can visualize the results with the =plotNumberSignatures=
+function, 
 
 #+BEGIN_SRC R
   n_sigs = 2:8
@@ -401,7 +406,7 @@ function.
   gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
 #+END_SRC
 
-#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file p_gof_nmf.svg :ravel fig.cap='Summary statistics for selecting the the number of signatures in the NMF decomposition.'
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file p_gof_nmf.svg :ravel fig.cap='Summary statistics for selecting the number of signatures in the NMF decomposition.'
   plotNumberSignatures(gof_nmf)
 #+END_SRC
 
@@ -410,16 +415,17 @@ function.
 #+END_SRC
 
 While decompositions with more signatures naturally approximate the data better,
-is the first inflection point of the statistics a robust measure for the number
-of features [[cite:hutchins_position-dependent_2008]].  Within the range from 2 to
-8, no best solution for $r$ can be inferred from the statistics alone for our
-dataset.  A possible explanation for this is that eight or more independent
-processes are reflected in the data.  However, a decomposition into a smaller
-number of components is nevertheless meaningful, as the most abundant mutational
-processes will still be reflected in the identified signatures.  In practice, a
-combination of a statistical assessment paired with biological knowledge about
-the nature of the data will yield the most reliable interpretation of the
-results.
+is the first inflection point of the statistics, i.e. when it reaches a plateau,
+a good measure for the number of features [[cite:hutchins_position-dependent_2008]].
+Within the range from 2 to 8, no best solution for $r$ can be inferred from the
+statistics alone for our dataset.  A explanation for this is that eight or more
+independent processes are reflected in the data. This is reasonable given the
+high number of samples that would reflect a large degree of biological
+heterogeneity. However, a decomposition into a smaller number of components is
+nevertheless meaningful, as the most abundant mutational processes will still be
+reflected in the identified signatures.  In practice, a combination of a
+statistical assessment paired with biological knowledge about the nature of the
+data will yield the most reliable interpretation of the results.
 
 
 ** Visualization: Exploration of Signatures and Samples
@@ -429,7 +435,7 @@ functions.  All figures are generated with the =ggplot2= package, and thus,
 their properties and appearances can directly be modified, even at a later
 stage.
 
-#+NAME: load_supporting_packages
+#+NAME: load_ggplot2
 #+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
   library(ggplot2)
 #+END_SRC
@@ -523,6 +529,41 @@ identical for both all decomposition methods.
 #+END_SRC
 
 
+*** Customization: Changing Plot Properties
+
+As pointed out before, since all plots are generated with the =ggplot2=
+framework [[cite:wickham_ggplot2:_2010]], we can change all their properties.  To
+continue the example from before, we will visualize the relative contribution of
+the mutational signatures in the studies, and change the plot to fit our needs
+better.
+
+#+NAME: load_ggplot2_again
+#+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
+  library(ggplot2)
+#+END_SRC
+
+#+NAME: sca_plot_nmf_samples_mod
+#+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
+  p = plotSamples(sigs_nmf)
+
+  ## (re)move the legend
+  p = p + theme(legend.position = "none")
+  ## (re)label the axis
+  p = p + xlab("Studies")
+  ## add a title
+  p = p + ggtitle("Somatic Signatures in TGCA WES Data")
+  ## change the color scale
+  p = p + scale_fill_brewer(palette = "Blues")
+  ## decrease the size of x-axis labels
+  p = p + theme(axis.text.x = element_text(size = 9))
+#+END_SRC
+
+#+NAME: sca_plot_nmf_samples_mod_print
+#+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_nmf_samples.svg :ravel fig.cap='Occurrence of signatures estimated with the NMF, customized plot. See the original plot above for comparisons.'
+  p
+#+END_SRC
+
+
 ** Clustering: Grouping by Motifs or Samples
 
 An alternative approach to interpreting the mutational spectrum by decomposition
@@ -545,7 +586,7 @@ an optional argument.
 
 
 
-** Extension: Correction of Batch Effects
+** Extension: Correction for Batch Effects and Confounding Variables
 
 When investigating somatic signatures between samples from different studies,
 corrections for technical confounding factors should be considered.  In our use
@@ -636,6 +677,51 @@ the estimated frequency of 3-mers across the human genome and exome.
 #+END_SRC
 
 
+** Extension: Motifs from Non-Reference Genomes<<personalized_genomes>>
+
+When we [[motifs][determine the sequence context]] for each alteration, we typically use one
+of the reference BSgenome packages in Bioconductor.  But we are not restricted
+to those, and derive the somatic motifs from different types of sequence
+sources, for example 2bit and FASTA files.  More precisely, the
+=mutationContext= function will work on any object for which a =getSeq= method
+is defined.  You can get the full list available on your system, the results may
+vary depending on which packages you have loaded.
+
+#+BEGIN_SRC R
+  showMethods("getSeq")
+#+END_SRC
+
+This allows us to perform our analysis also on non-standard organisms and
+genomes, for which a BSgenome package is not available, for example the
+1000genomes human reference sequence.  Or we can generate genomic references for
+specific populations, by updating the standard genomes with a set of known
+variants; see the documentation of the =BSgenome= package and the =injectSNPs=
+function in particular for this.
+
+Taking further, we can base our analysis on the personalized genomic sequence
+for each individual, in case it is available.  If we imagined that we had a set
+of somatic variant calls as =VCF= files and the personalized genomic sequence as
+=FASTA= files for two individuals =A= and =B= at hand, here a simple example on
+how our analysis could work.
+
+#+BEGIN_SRC R :eval no :ravel eval=FALSE
+  ## Somatic variant calls
+  vr_A = readVcfAsVRanges(vcf_A_path, "GenomeA")
+  vr_B = readVcfAsVRanges(vcf_B_path, "GenomeB")
+
+  ## Genomic sequences
+  fa_A = FastaFile(fasta_A_path)
+  fa_B = FastaFile(fasta_B_path)
+
+  ## Somatic motifs
+  vr_A = mutationalContext(vr_A, fa_A)
+  vr_B = mutationalContext(vr_B, fa_B)
+
+  ## Combine for further analysis
+  vr = c(vr_A, vr_B)
+#+END_SRC
+
+
 ** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:
 
 Another relevant aspect of exploring mutational processes is also the
@@ -719,6 +805,14 @@ release version of =SomaticSignatures=:
   biocLite("SomaticSignatures")
 #+END_SRC
 
+Over time, the packages may also receive updates with bug fixes.  These
+installed packages can be updated with:
+
+#+BEGIN_SRC R :eval no :ravel eval=FALSE
+  source("http://bioconductor.org/biocLite.R")
+  biocLite()
+#+END_SRC
+
 
 ** Working with VRanges
 
@@ -752,7 +846,7 @@ format in the form of:
 
 * References
 
-#+BIBLIOGRAPHY: references unsrt limit:t option:-d option:-nobibsource option:-noabstract option:-nokeywords
+#+BIBLIOGRAPHY: references abbrv limit:t option:-u option:-nobibsource option:-noabstract option:-nokeywords
 
 
 * Session Info

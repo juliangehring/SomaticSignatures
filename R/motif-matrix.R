@@ -5,6 +5,7 @@ motifMatrix <- function(vr, group = "sampleNames", normalize = TRUE) {
         stop(sprintf("Column '%s' not present in input object.", group))
     }
 
+    ## form the matrix
     group_string = paste0(group, " ~ motif")
     df$motif = factor(constructMotif(df$alteration, df$context))
     y = t(acast(df, group_string, value.var = "motif", fun.aggregate = length))

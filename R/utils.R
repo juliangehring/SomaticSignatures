@@ -19,6 +19,3 @@ showSome <- function(x, name, indent="") {
                    )
     return(res)
 }
-
-
-dna_bases <- c("A", "C", "G", "T")

@@ -1,13 +1,13 @@
 ucsc <- function(x) {
     suppressMessages(seqlevelsStyle(x) <- "UCSC") ## '<-' needed
-    genome(x) = NA
+    genome(x) = NA ## avoid mismatches in 'genome' slots for overlaps
     return(x)
 }
 
 
 ncbi <- function(x) {
     suppressMessages(seqlevelsStyle(x) <- "NCBI") ## '<-' needed
-    genome(x) = NA
+    genome(x) = NA ## avoid mismatches in 'genome' slots for overlaps
     return(x)
 }
 

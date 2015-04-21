@@ -8,7 +8,7 @@
 
 \description{
   
-  Extract the sequence context surrounding a SNV from a genomic
+  Extract the sequence context surrounding SNVs from a genomic
   reference.
   
 }
@@ -25,9 +25,9 @@ mutationContextH5vc(vc, ms, unify = TRUE)
     [required].  For 'mutationContextMutect', an object as returned by
     the 'readMutect' function.}
   
-  \item{ref}{A 'BSgenome' or 'FaFile' object representing the reference
-    sequence [required].  More generally, any object with a defined
-    'getSeq' method can be used.}
+  \item{ref}{A 'BSgenome', 'FaFile' or 'TwoBitfile' object representing
+    the reference sequence [required].  More generally, any object with
+    a defined 'getSeq' method can be used.}
   
   \item{k}{The 'k'-mer size of the context, including the variant
     position [integer, default: 3].  The variant will be located at the
@@ -57,7 +57,13 @@ mutationContextH5vc(vc, ms, unify = TRUE)
   
   The somatic motifs of a SNV, composed out of (a) the base change and
   (b) the sequence context surrounding the variant, is extracted from a
-  reference sequence with the 'mutationContext' function.
+  genomic sequence with the 'mutationContext' function.
+
+  Different types of classes that represent the genomic sequence can
+  used togther with the 'mutationContext' function: 'BSgenome',
+  'FastaFile' and 'TwoBitFile' objects are supported through
+  Bioconductor by default. See the vignette for examples discussing an
+  analysis with non-referene genomes.
   
   For mutect variant calls, all relevant information is already
   contained in the results and somatic motifs can constructed by using
@@ -87,6 +93,7 @@ mutationContextH5vc(vc, ms, unify = TRUE)
 
   'mutationSpectrum' from the 'h5vc' package for 'mutationContextH5vc'
   
+  'showMethods("getSeq")' for genomic references that can be used
 }
 
 \examples{

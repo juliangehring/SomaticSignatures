@@ -10,6 +10,7 @@ nmfDecomposition <- function(x, r, ..., includeFit = FALSE) {
     w = w[ ,ord]
     h = h[ ,ord]
     
+    ## name signatures: S1, ..., Sn
     sig_names = paste0("S", 1:r)
     colnames(w) = colnames(h) = sig_names
     v = fitted(y)
@@ -36,6 +37,8 @@ kmeansDecomposition <- function(x, r, ..., includeFit = FALSE) {
     h = matrix(0, n_samples, r)
     h[ cbind(1:n_samples, as.vector(y$cluster)) ] = 1
     stopifnot(all(rowSums(h) == 1))
+
+    ## name signatures: S1, ..., Sn
     sig_names = paste0("S", 1:r)
     colnames(w) = colnames(h) = sig_names
     v = fitted(y)
@@ -58,6 +61,7 @@ pcaDecomposition <- function(x, r, ..., includeFit = FALSE) {
     h = loadings(y) ## samples x k
     v = fitted(y) 
     
+    ## name signatures: S1, ..., Sn
     sig_names = paste0("S", 1:r)      
     colnames(w) = colnames(h) = sig_names
 

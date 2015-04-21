@@ -22,6 +22,16 @@
 
 }
 
+\note{
+
+  While the 'scaSNVRanges' is provided for a convinient access to the
+  data of the 'SomaticCancerAlterations' package, we encourage you to
+  develop an understanding about the underlying data and its convertion
+  to a 'VRanges' object.  
+
+}
+  
+
 \value{
 
   A 'VRanges' object with somatic SNV calls.

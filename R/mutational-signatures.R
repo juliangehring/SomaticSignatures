@@ -29,6 +29,7 @@ findSignatures <- function(x, r, decomposition = nmfDecomposition, ...) {
     
     dc = decomposition(x, r, ...)
 
+    ## check returned object
     required_names = c("m", "w", "h", "v")
     if(any(!(required_names %in% names(dc)))) {
         msg = paste0("The decomposition function must return a list with names: ",

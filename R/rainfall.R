@@ -4,9 +4,6 @@ mutationDistance <- function(x) {
     idx_change = start(seqnames(x)) ## where does a new chr begin
     dist = diff(c(1, start(x))) ## to keep the same length
     dist[idx_change] = start(x[idx_change]) ## for new chr: distance to start
-    #stopifnot(all(dist > 0)) ## TODO
-    #idx_same = (as(dist, "Rle") == 0)
-    #dist[idx_same] = dist[idx_same - 1]
     x$distance = dist
     
     return(x)

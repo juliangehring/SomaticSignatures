@@ -41,12 +41,13 @@ plotSamples(s, normalize = FALSE, percent = FALSE)
     representation.}
 
   \item{normalize}{Plot relative constributions (TRUE) instead of
-    absolute (TRUE) ones.}
+    absolute (FALSE) ones.}
 
   \item{percent}{Display the results as fraction (FALSE) or percent
     (TRUE)}.
 
-  \item{group}{Grouping variable}
+  \item{group}{Charactering string that represents the variable name
+  used for grouping.}
 
 }
 
@@ -56,19 +57,24 @@ plotSamples(s, normalize = FALSE, percent = FALSE)
   occurrance in the samples can be visualized either as a heatmap
   ('plotSignatureMap', 'plotSampleMap') or a barchart ('plotSignature',
   'plotSamples').
-  
+
+  Since the plotting is based on the 'ggplot2' framework, all properties
+  of the plots can be fully controlled by the user after generating the
+  plots.  Please see the examples for some customizations and the
+  'ggplot2' documentation for the entire set of options.
+
 }
 
 \value{
 
-  A ggplot object
+  A 'ggplot' object, whose properties can further be changed
   
 }
 
 
 \seealso{
 
-  'ggplot2' package
+  See the 'ggplot2' package for customizing the plots.
 
 }
 
@@ -78,5 +84,22 @@ data("sca_sigs", package = "SomaticSignatures")
 
 plotSamples(sigs_nmf)
 
-plotSignatures(sigs_nmf)
+plotSignatures(sigs_nmf, normalize = TRUE)
+
+## customize the plots ##
+p = plotSamples(sigs_nmf)
+
+library(ggplot2)
+## (re)move the legend
+p = p + theme(legend.position = "none")
+## change the axis labels
+p = p + xlab("Studies")
+## add a title
+p = p + ggtitle("Somatic Signatures in TGCA WES Data")
+## change the color scale
+p = p + scale_fill_brewer(palette = "Blues")
+## decrease the size of x-axis labels
+p = p + theme(axis.text.x = element_text(size = 9))
+
+p
 }

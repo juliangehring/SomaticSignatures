@@ -1,3 +1,5 @@
+## The following functions for correlationg signatures is currently not exported nor used in the package ##
+
 retreiveSignatures <- function(vr, group, signatures, method = c("cospos", "cosine", "spearman", "pearson")) {
 
     method = match.arg(method)
@@ -34,7 +36,7 @@ correlateSignatures <- function(m, s, method = c("cospos", "cosine", "spearman",
     return(cc)
 }
 
-
+ 
 cossim <- function(x, y) {
     res = crossprod(x, y)/sqrt(crossprod(x) * crossprod(y))
     return(res)

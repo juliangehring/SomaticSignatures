@@ -1,5 +1,6 @@
 scaSNVRanges <- function(chrs = hsAutosomes()) {
 
+    ## explicit scoping here, since SCA package is optional
     sca_all = SomaticCancerAlterations::scaLoadDatasets()
     sca_metadata = SomaticCancerAlterations::scaMetadata()
 

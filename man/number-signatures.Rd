@@ -58,10 +58,10 @@ plotNumberSignatures(gof)
   are used as summary statistics which can generally applied to all
   decomposition approaches.
 
-  The 'plotNumberSignature' function visualizes the results of the
-  'assessNumberSignatures' step.  Statistics of the indivdual replicates
-  are shown as black crosses, whereas the mean and the range across the
-  replicates are depicted in red.
+  The 'plotNumberSignatures' function visualizes the results of the
+  'assessNumberSignatures' analysis.  Statistics of the indivdual
+  replicates are shown as gray crosses, whereas the mean across the
+  replicates is depicted in red.
 
   In practice, these summary statisics should not be trusted blindly,
   but rather interpreted together with biological knowledge and
@@ -73,8 +73,8 @@ plotNumberSignatures(gof)
 
 \value{
 
-  - assessNumberSignatures: A data frame with the RSS and KL statistic
-    for each run
+  - assessNumberSignatures: A data frame with the RSS and explained
+    variance for each run
 
   - plotNumberSignatures: A ggplot object
 

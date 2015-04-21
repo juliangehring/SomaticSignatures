@@ -1,6 +1,8 @@
 plotSpectrum <- function(x, colorby = c("sample", "alteration")) {
+
     colorby = match.arg(colorby)
 
+    ## reused part of 'meltSignatures'
     w_df = melt(x, varnames = c("motif", "sample"))
     w_df$alteration = sub("([ACGTN])([ACGTN]) .+", "\\1>\\2", w_df$motif)
     w_df$context = sub("[ACGTN][ACGTN] (.+)", "\\1", w_df$motif)
@@ -9,7 +11,7 @@ plotSpectrum <- function(x, colorby = c("sample", "alteration")) {
     p = p + geom_bar(aes_string(x = "context", y = "value", fill = colorby),
         stat = "identity", position = "identity")
     p = p + facet_grid(sample ~ alteration)
-    p = p + .theme_ss
+    p = p + theme_ss() + theme_small_axis()
     p = p + theme(legend.position = "none")
     p = p + scale_fill_brewer(palette = "Set3")
     p = p + xlab("Motif") + ylab("Contribution")
@@ -42,12 +44,12 @@ plotFittedSpectrum <- function(s, colorby = c("sample", "alteration")) {
 
 plotSignatureMap <- function(s) {
 
-    w_df = .meltSignatures(signatures(s))
+    w_df = meltSignatures(signatures(s))
 
     p = ggplot(w_df)
     p = p + geom_tile(aes_string(y = "motif", x = "signature", fill = "value"))
     p = p + scale_fill_gradient2(name = "")
-    p = p + .theme_ss
+    p = p + theme_ss() + theme_small_axis(x = FALSE)
     p = p + xlab("Signature") + ylab("Motif")
   
     return(p)
@@ -63,13 +65,13 @@ plotSignatures <- function(s, normalize = FALSE, percent = FALSE) {
             h = h * 100
         }
     }
-    w_df = .meltSignatures(h)
+    w_df = meltSignatures(h)
 
     p = ggplot(w_df)
     p = p + geom_bar(aes_string(x = "context", y = "value", fill = "alteration"),
         stat = "identity", position = "identity")
     p = p + facet_grid(signature ~ alteration)
-    p = p + .theme_ss
+    p = p + theme_ss() + theme_small_axis()
     p = p + theme(legend.position = "none")
     p = p + scale_fill_brewer(palette = "Set3")
     p = p + xlab("Motif") + ylab("Contribution")
@@ -83,10 +85,16 @@ plotSampleMap <- function(s) {
     h_df = melt(samples(s), varnames = c("sample", "signature"))
     h_df$signature = factor(h_df$signature)
 
+    ## lower zlim depending on data:
+    ## - 0 for NMF-like methods
+    ## - min(value) for others
+    zmin = min(h_df$value, na.rm = TRUE)
+    zmin = ifelse(zmin >= 0, 0, zmin)
+
     p = ggplot(h_df)
     p = p + geom_tile(aes_string(y = "sample", x = "signature", fill = "value"), color = "black")
-    p = p + scale_fill_gradient2(name = "Contribution", limits = c(0, NA)) ## for NMF
-    p = p + .theme_ss
+    p = p + scale_fill_gradient2(name = "Contribution", limits = c(zmin, NA))
+    p = p + theme_ss()
     p = p + xlab("Signature") + ylab("Sample")
   
     return(p)
@@ -106,8 +114,9 @@ plotSamples <- function(s, normalize = FALSE, percent = FALSE) {
     w_df$signature = factor(w_df$signature)
 
     p = ggplot(w_df)
-    p = p + geom_bar(aes_string(x = "sample", y = "value", fill = "signature"), color = "black", size = 0.3, stat = "identity", position = "stack")
-    p = p + .theme_ss
+    p = p + geom_bar(aes_string(x = "sample", y = "value", fill = "signature"),
+        color = "black", size = 0.3, stat = "identity", position = "stack")
+    p = p + theme_ss()
     p = p + scale_fill_brewer(palette = "Set3")
     p = p + xlab("Sample") + ylab("Signature Contribution")
 
@@ -115,13 +124,29 @@ plotSamples <- function(s, normalize = FALSE, percent = FALSE) {
 }
 
 
-.theme_ss <- theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
-          axis.text.y = element_text(hjust = 0.5),
-          axis.text = element_text(size = 6, family = "mono"))
+theme_ss <- function() {
+
+    t = theme_bw() +
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
+              axis.text.y = element_text(hjust = 0.5))
+
+    return(t)
+}
+
+theme_small_axis <- function(x = TRUE, y = TRUE, size = 6, family = "mono") {
+    ## decrease the x/y-axis label size
+    template = element_text(size = size, family = family)
+    t = theme_ss()
+    if(x)
+        t = t + theme(axis.text.x = template)
+    if(y)
+        t = t + theme(axis.text.y = template)
+        
+    return(t)
+}
 
 
-.meltSignatures <- function(x, vars = c("motif", "signature")) {
+meltSignatures <- function(x, vars = c("motif", "signature")) {
     
     w_df = melt(x, varnames = vars)
     w_df$alteration = sub("([ACGTN])([ACGTN]) .+", "\\1>\\2", w_df$motif)
