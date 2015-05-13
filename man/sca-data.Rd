@@ -12,15 +12,15 @@
 
 \description{
 
-  Motif matrix and 5 estimated signatures (NMF) from the
-  'SomaticCancerAlterations' dataset.  For details, see the vignette of
-  the 'SomaticSignatures' package.
+  Motif matrix and 5 estimated signatures (NMF) from the somatic variant
+  calls in the 'SomaticCancerAlterations' package.  For details, see the
+  vignette of the 'SomaticSignatures' package.
   
 }
 
 \seealso{
 
-  'SomaticCancerAlterations' package
+  SomaticCancerAlterations package
 
 }
 

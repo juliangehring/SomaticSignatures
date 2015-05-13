@@ -51,7 +51,7 @@ plotRainfall(x, group, size = 2, alpha = 0.5, space.skip = 0, ...)
   
 \seealso{
 
-  'ggbio::plotGrandLinear'
+  \code{\link[ggbio]{plotGrandLinear}} from the 'ggbio' package
 
 }
 

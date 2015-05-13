@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-04-21 Di 15:54 -->
+<!-- 2015-05-13 Mi 15:57 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring (EMBL Heidelberg)" />
@@ -135,7 +135,7 @@ for the JavaScript code in this tag.
 </ul>
 </li>
 <li><a href="#sec-7">7. References</a></li>
-<li><a href="#sec-8">8. Session Info</a></li>
+<li><a href="#sec-8">8. Session Information</a></li>
 </ul>
 </div>
 </div>
@@ -209,14 +209,14 @@ end.rcode-->
 <p>
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
-processes [<a href="#nik-zainal_mutational_2012">11</a>] [<a href="#alexandrov_signatures_2013">2</a>] [<a href="#alexandrov_deciphering_2013">3</a>].
-Conceptually, this relates somatically occurring <i>single nucleotide variants</i>
-(SNVs) to the surrounding sequence which will be referred to as <i>mutational</i> or
-<i>somatic motifs</i> in the following.  Based on the frequency of the motifs occurring
-in multiple samples, these can be decomposed mathematically into so called
-<i>mutational signatures</i>.  In case of the investigation of tumors, the term
-<i>somatic signatures</i> will be used here to distinguish them from germline mutations and
-their generating processes.
+processes [<a href="#nik-zainal_mutational_2012">11</a>] [<a href="#alexandrov_signatures_2013">2</a>]
+[<a href="#alexandrov_deciphering_2013">3</a>].  Conceptually, this relates somatically
+occurring <i>single nucleotide variants</i> (SNVs) to the surrounding sequence which
+will be referred to as <i>mutational</i> or <i>somatic motifs</i> in the following.  Based
+on the frequency of the motifs occurring in multiple samples, these can be
+decomposed mathematically into so called <i>mutational signatures</i>.  In case of
+the investigation of tumors, the term <i>somatic signatures</i> will be used here to
+distinguish them from germline mutations and their generating processes.
 </p>
 
 <p>
@@ -240,10 +240,11 @@ The basic idea of somatic signatures is composed of two parts:
 <p>
 Firstly, each somatic mutation is described in relation of the sequence context
 in which it occurs.  As an example, consider a SNV, resulting in the alteration
-from <code>A</code> in the normal to <code>G</code> in the tumor sample, that is embedded in the sequence
-context <code>TAC</code>.  Thus, the somatic motif can be written as <code>TAC&gt;TGC</code> or <code>T.C
-A&gt;G</code>.  The frequency of these motifs across multiple samples is then represented
-as a matrix \(M_{ij}\), where \(i\) counts over the motifs and \(j\) over the samples.
+from <code>A</code> in the normal to <code>G</code> in the tumor sample, that is embedded in the
+sequence context <code>TAC</code>.  Thus, the somatic motif can be written as <code>TAC&gt;TGC</code> or
+<code>T.C A&gt;G</code>.  The frequency of these motifs across multiple samples is then
+represented as a matrix \(M_{ij}\), where \(i\) counts over the motifs and \(j\) over
+the samples.
 </p>
 
 <p>
@@ -252,7 +253,7 @@ and \(H\)
 </p>
 
 <p>
-$$M_{ij} = \sum_{k=1}^{r} W_{ik} H_{kj}$$
+$$M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$$
 </p>
 
 <p>
@@ -466,8 +467,8 @@ end.rcode-->
 <p>
 The somatic signatures can be estimated with each of the statistical methods
 implemented in the package.  Here, we will use the <code>NMF</code> and <code>PCA</code>, and compare
-the results.  Prior to the estimation, the number \(r\) of signatures to obtain has to
-be fixed; in this example, the data will be decomposed into 5 signatures.
+the results.  Prior to the estimation, the number \(r\) of signatures to obtain
+has to be fixed; in this example, the data will be decomposed into 5 signatures.
 </p>
 
 <!--begin.rcode sca_nmf_pca
@@ -478,11 +479,6 @@ sigs_nmf = identifySignatures(sca_mm, n_sigs, nmfDecomposition)
 sigs_pca = identifySignatures(sca_mm, n_sigs, pcaDecomposition)
 end.rcode-->
 
-<p>
-The results contains the decomposed matrices stored in a list and can be
-accessed using standard R accessor functions.
-</p>
-
 <!--begin.rcode sca_explore_nmf
 sigs_nmf
 end.rcode-->
@@ -490,6 +486,11 @@ end.rcode-->
 <!--begin.rcode sca_explore_pca
 sigs_pca
 end.rcode-->
+
+<p>
+The individual matrices can be further inspected through the accessors
+<code>signatures</code>, <code>samples</code>, <code>observed</code> and <code>fitted</code>.
+</p>
 </div>
 </div>
 
@@ -506,13 +507,12 @@ decomposition method.
 </p>
 
 <p>
-With the <code>assessNumberSignatures</code> we can compute the residuals sum of squares
-and the explained variance between the observed and fitted mutational spectrum,
-for different numbers of signatures.  These measures are generally applicable to
-all kind of decomposition methods, and offer indications for a likely number of
-signatures.  The usage and arguments are analogous to the <code>identifySignatures</code>
-function.  We can visualize the results with the <code>plotNumberSignatures</code>
-function, 
+Using <code>assessNumberSignatures</code>, we can compute the residuals sum of squares
+(RSS) and the explained variance between the observed \(M\) and fitted \(WH\)
+mutational spectrum for different numbers of signatures.  These measures are
+generally applicable to all kinds of decomposition methods, and can aid in
+choosing a likely number of signatures.  The usage and arguments are analogous
+to the <code>identifySignatures</code> function.
 </p>
 
 <!--begin.rcode 
@@ -523,6 +523,14 @@ gof_nmf= assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
 gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
 end.rcode-->
 
+<p>
+The obtained statistics can further be visualized with the
+<code>plotNumberSignatures</code>.  For each tested number of signatures, black crosses
+indicate the statistic of a individual run, while the red dot represents the
+average over all respective runs.  Please note that having multiple runs is only
+relevant for randomly seeded decomposition methods, as the NMF in our example.
+</p>
+
 <!--begin.rcode fig.cap='Summary statistics for selecting the number of signatures in the NMF decomposition.'
 plotNumberSignatures(gof_nmf)
 end.rcode-->
@@ -532,18 +540,16 @@ plotNumberSignatures(gof_pca)
 end.rcode-->
 
 <p>
-While decompositions with more signatures naturally approximate the data better,
-is the first inflection point of the statistics, i.e. when it reaches a plateau,
-a good measure for the number of features [<a href="#hutchins_position-dependent_2008">9</a>].
-Within the range from 2 to 8, no best solution for \(r\) can be inferred from the
-statistics alone for our dataset.  A explanation for this is that eight or more
-independent processes are reflected in the data. This is reasonable given the
-high number of samples that would reflect a large degree of biological
-heterogeneity. However, a decomposition into a smaller number of components is
-nevertheless meaningful, as the most abundant mutational processes will still be
-reflected in the identified signatures.  In practice, a combination of a
-statistical assessment paired with biological knowledge about the nature of the
-data will yield the most reliable interpretation of the results.
+\(r\) can then be chosen such that increasing the number of signatures does not
+yield a significantly better approximation of the data, i.e. that the RSS and
+the explained variance do not change sufficiently for more complex models.  The
+first inflection point of the RSS curve has also been proposed as a measure for
+the number of features in this context [<a href="#hutchins_position-dependent_2008">9</a>].
+Judging from both statistics for our dataset, a total of 5 signatures seems to
+explain the characteristics of the observed mutational spectrum well.  In
+practice, a combination of a statistical assessment paired with biological
+knowledge about the nature of the data will allow for the most reliable
+interpretation of the results.
 </p>
 </div>
 </div>
@@ -589,8 +595,8 @@ end.rcode-->
 
 <p>
 Each signature represents different properties of the somatic spectrum observed
-in the data.  While signature S1 is mainly characterized by selective <code>C&gt;T</code> alterations,
-others as S4 and S5 show a broad distribution across the motifs.
+in the data.  While signature S1 is mainly characterized by selective <code>C&gt;T</code>
+alterations, others as S4 and S5 show a broad distribution across the motifs.
 </p>
 
 <p>
@@ -648,10 +654,10 @@ end.rcode-->
 <h4 id="sec-4-5-1"><span class="section-number-4">4.5.1</span> Customization: Changing Plot Properties</h4>
 <div class="outline-text-4" id="text-4-5-1">
 <p>
-As pointed out before, since all plots are generated with the <code>ggplot2</code>
-framework [<a href="#wickham_ggplot2:_2010">17</a>], we can change all their properties.  To
-continue the example from before, we will visualize the relative contribution of
-the mutational signatures in the studies, and change the plot to fit our needs
+As elaborated before, since all plots are generated with the <code>ggplot2</code> framework
+[<a href="#wickham_ggplot2:_2010">17</a>], we can change all their properties.  To continue the
+example from before, we will visualize the relative contribution of the
+mutational signatures in the studies, and change the plot to fit our needs
 better.
 </p>
 
@@ -677,6 +683,16 @@ end.rcode-->
 <!--begin.rcode sca_plot_nmf_samples_mod_print, fig.cap='Occurrence of signatures estimated with the NMF, customized plot. See the original plot above for comparisons.'
 p
 end.rcode-->
+
+
+<p>
+If you want to visualize a large number of samples or signatures, the default
+color palette may not provide a sufficient number of distinct colors.  You can
+add a well-suited palette to your plot, as we have shown before with the
+<code>scale_fill</code> functions.  For example, <code>scale_fill_discrete</code> will get you the
+default <code>ggplot2</code> color scheme; while this supports many more colors, the
+individual levels may be hard to distinguish.
+</p>
 </div>
 </div>
 </div>
@@ -905,28 +921,31 @@ end.rcode-->
 <h3 id="sec-6-2"><span class="section-number-3">6.2</span> Getting Help</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
-We welcome emails with questions or suggestions about our software, and want to
-ensure that we eliminate issues if and when they appear.  We have a few requests
-to optimize the process:
+We welcome questions or suggestions about our software, and want to ensure that
+we eliminate issues if and when they appear.  We have a few requests to optimize
+the process:
 </p>
 
 <ul class="org-ul">
-<li>All emails and follow-up questions should take place over the <a href="http://support.bioconductor.org/">Bioconductor
-support site</a>, which serves as a repository of information.  First search the
-site for past threads which might have answered your question.
-</li>
-<li>The subject line should contain <i>SomaticSignatures</i> and a few words describing
-the problem.  
-</li>
-<li>If you have a question about the behavior of a function, read the sections of
-the manual page for this function by typing a question mark and the function
-name, e.g. <code>?mutationContext</code>.  Additionally, read through the vignette to understand
-the interplay between different functions of the package.  We spend a lot of
-time documenting individual functions and the exact steps that the software is
-performing.
+<li>All questions and follow-ups should take place over the <a href="http://support.bioconductor.org/">Bioconductor support
+site</a>, which serves as a repository of information.  First search the site for
+past threads which might have answered your question.
 </li>
 
-<li>Include all of your R code related to the question you are asking.
+<li>The subject line should contain <i>SomaticSignatures</i> and a few words describing
+the problem.
+</li>
+
+<li>If you have a question about the behavior of a function, read the sections of
+the manual page for this function by typing a question mark and the function
+name, e.g. <code>?mutationContext</code>.  Additionally, read through the vignette to
+understand the interplay between different functions of the package.  We spend
+a lot of time documenting individual functions and the exact steps that the
+software is performing.
+</li>
+
+<li>Include all of your R code and its output related to the question you are
+asking.
 </li>
 
 <li>Include complete warning or error messages, and conclude your message with the
@@ -974,7 +993,7 @@ A central object in the workflow of <code>SomaticSignatures</code> is the <code>
 which is part of the <code>VariantAnnotation</code> package.  It builds upon the commonly
 used <code>GRanges</code> class of the <code>GenomicRanges</code> package.  Essentially, each row
 represents a variant in terms of its genomic location as well as its reference
-and alternative allele.  
+and alternative allele.
 </p>
 
 <!--begin.rcode results='hide', message=FALSE
@@ -1304,7 +1323,7 @@ H.&nbsp;Wickham.
 
 
 <div id="outline-container-sec-8" class="outline-2">
-<h2 id="sec-8"><span class="section-number-2">8</span> Session Info</h2>
+<h2 id="sec-8"><span class="section-number-2">8</span> Session Information</h2>
 <div class="outline-text-2" id="text-8">
 <!--begin.rcode echo=FALSE, results='markup'
 sessionInfo()

@@ -48,13 +48,14 @@ identifySignatures(m, nSigs, decomposition = nmfDecomposition, ...)
 
 \seealso{
 
-  The predefined decomposition functions: 'nmfDecomposition' and 'pcaDecomposition'
+  The predefined decomposition functions: \code{\link{nmfDecomposition}}
+  and \code{\link{pcaDecomposition}}
 
-  'mutationContext', 'mutationContextMutect'
+  \code{\link{mutationContext}}, \code{\link{mutationContextMutect}}
 
-  'motifMatrix'
+  \code{\link{motifMatrix}}
 
-  class 'MutationalSignatures'
+  \code{\link{MutationalSignatures}} class
   
 }
 

@@ -74,7 +74,7 @@ plotSamples(s, normalize = FALSE, percent = FALSE)
 
 \seealso{
 
-  See the 'ggplot2' package for customizing the plots.
+  See the \code{\link{ggplot2}} package for customizing the plots.
 
 }
 

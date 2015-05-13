@@ -83,9 +83,10 @@ plotNumberSignatures(gof)
 
 \seealso{
 
-  identifySignatures
+  \code{\link{identifySignatures}}
 
-  The 'rss' and 'evar' functions of the 'NMF' package.
+  \code{\link[NMF]{rss}} and \code{\link[NMF]{evar}} functions of the
+  \code{\link{NMF}} package.
   
 }
 

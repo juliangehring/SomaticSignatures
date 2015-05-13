@@ -26,7 +26,7 @@
 
   While the 'scaSNVRanges' is provided for a convinient access to the
   data of the 'SomaticCancerAlterations' package, we encourage you to
-  develop an understanding about the underlying data and its convertion
+  develop an understanding about the underlying data and its conversion
   to a 'VRanges' object.  
 
 }
@@ -41,6 +41,6 @@
 
 \seealso{
   
-  'SomaticCancerAlterations' package
+  SomaticCancerAlterations package
   
 }

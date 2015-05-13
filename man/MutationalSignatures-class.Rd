@@ -45,7 +45,7 @@
 
 \seealso{
 
-  identifySignatures
+  \code{\link{identifySignatures}}
  
 }
 

@@ -42,8 +42,8 @@ clusterSpectrum(m, by = c("sample", "motif"), distance = "Cosine", ...)
 
 \seealso{
 
-  hclust
+  \code{\link[stats]{hclust}}
 
-  'proxy' package
+  \code{\link[proxy]{dist}}
 
 }

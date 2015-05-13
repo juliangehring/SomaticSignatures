@@ -29,13 +29,7 @@
   A numeric vector with the GC content [0,1] for each region.
 
 }
-
-\seealso{
-
-  Inspired by the 'getGCcontent' function of the 'exomeCopy' package.
   
-}
-
 \examples{
 library(BSgenome.Hsapiens.UCSC.hg19)
 

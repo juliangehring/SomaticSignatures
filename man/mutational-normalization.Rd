@@ -32,6 +32,6 @@ normalizeMotifs(x, norms)
 
 \seealso{
 
-  motifMatrix
+  \code{\link{motifMatrix}}
   
 }

@@ -89,9 +89,7 @@ mutationContextH5vc(vc, ms, unify = TRUE)
 
 \seealso{
 
-  'readMutect' for 'mutationContextMutect'
-
-  'mutationSpectrum' from the 'h5vc' package for 'mutationContextH5vc'
+  \code{\link{readMutect}} for mutationContextMutect
   
   'showMethods("getSeq")' for genomic references that can be used
 }

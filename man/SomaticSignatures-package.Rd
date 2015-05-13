@@ -32,7 +32,7 @@
 
   Julian Gehring, Bernd Fischer, Michael Lawrence, Wolfgang Huber:
   SomaticSignatures: Inferring Mutational Signatures from Single
-  Nucleotide Variants. 2014, bioRxiv preprint,
+  Nucleotide Variants. 2015, bioRxiv preprint,
   \url{http://dx.doi.org/10.1101/010686}
 
   Maintainer: Julian Gehring, EMBL Heidelberg <julian.gehring@embl.de>

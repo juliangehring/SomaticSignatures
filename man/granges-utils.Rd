@@ -53,9 +53,9 @@
 
 \seealso{
   
-  'GenomicRanges' package: 'seqnames', 'mcols'
+  \code{\link{seqnames}}, \code{\link{mcols}}
   
-  'GenomeInfoDb' package: 'seqlevelsStyle'
+  \code{\link{seqlevelsStyle}}
   
 }
 

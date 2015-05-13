@@ -77,14 +77,14 @@
 
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
-processes [[cite:nik-zainal_mutational_2012]] cite:alexandrov_signatures_2013 cite:alexandrov_deciphering_2013.
-Conceptually, this relates somatically occurring /single nucleotide variants/
-(SNVs) to the surrounding sequence which will be referred to as /mutational/ or
-/somatic motifs/ in the following.  Based on the frequency of the motifs occurring
-in multiple samples, these can be decomposed mathematically into so called
-/mutational signatures/.  In case of the investigation of tumors, the term
-/somatic signatures/ will be used here to distinguish them from germline mutations and
-their generating processes.
+processes [[cite:nik-zainal_mutational_2012]] cite:alexandrov_signatures_2013
+cite:alexandrov_deciphering_2013.  Conceptually, this relates somatically
+occurring /single nucleotide variants/ (SNVs) to the surrounding sequence which
+will be referred to as /mutational/ or /somatic motifs/ in the following.  Based
+on the frequency of the motifs occurring in multiple samples, these can be
+decomposed mathematically into so called /mutational signatures/.  In case of
+the investigation of tumors, the term /somatic signatures/ will be used here to
+distinguish them from germline mutations and their generating processes.
 
 The =SomaticSignatures= package provides an efficient and user-friendly
 implementation for the extraction of somatic motifs based on a list of
@@ -99,15 +99,16 @@ The basic idea of somatic signatures is composed of two parts:
 
 Firstly, each somatic mutation is described in relation of the sequence context
 in which it occurs.  As an example, consider a SNV, resulting in the alteration
-from =A= in the normal to =G= in the tumor sample, that is embedded in the sequence
-context =TAC=.  Thus, the somatic motif can be written as =TAC>TGC= or =T.C
-A>G=.  The frequency of these motifs across multiple samples is then represented
-as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over the samples.
+from =A= in the normal to =G= in the tumor sample, that is embedded in the
+sequence context =TAC=.  Thus, the somatic motif can be written as =TAC>TGC= or
+=T.C A>G=.  The frequency of these motifs across multiple samples is then
+represented as a matrix $M_{ij}$, where $i$ counts over the motifs and $j$ over
+the samples.
 
 In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
 and $H$
 
-$$M_{ij} = \sum_{k=1}^{r} W_{ik} H_{kj}$$
+$$M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$$
 
 for a fixed number $r$ of signatures.  While $W$ describes the composition of
 each signature in term of somatic motifs, $H$ shows the contribution of the
@@ -356,8 +357,8 @@ distribution of the motifs clearly varies between the studies.
 
 The somatic signatures can be estimated with each of the statistical methods
 implemented in the package.  Here, we will use the =NMF= and =PCA=, and compare
-the results.  Prior to the estimation, the number $r$ of signatures to obtain has to
-be fixed; in this example, the data will be decomposed into 5 signatures.
+the results.  Prior to the estimation, the number $r$ of signatures to obtain
+has to be fixed; in this example, the data will be decomposed into 5 signatures.
 
 #+NAME: sca_nmf_pca
 #+BEGIN_SRC R :session *R-ss-vignette* :results output
@@ -367,9 +368,6 @@ be fixed; in this example, the data will be decomposed into 5 signatures.
 
   sigs_pca = identifySignatures(sca_mm, n_sigs, pcaDecomposition)
 #+END_SRC
-
-The results contains the decomposed matrices stored in a list and can be
-accessed using standard R accessor functions.
 
 #+NAME: sca_explore_nmf
 #+BEGIN_SRC R :session *R-ss-vignette* :results output
@@ -381,6 +379,9 @@ accessed using standard R accessor functions.
   sigs_pca
 #+END_SRC
 
+The individual matrices can be further inspected through the accessors
+=signatures=, =samples=, =observed= and =fitted=.
+
 
 ** Assessment: Number of Signatures
 
@@ -390,13 +391,12 @@ experiments may allow to determine $r$ independently.  If this is not the case,
 we can try to infer suitable estimates for $r$ from the data and the
 decomposition method.
 
-With the =assessNumberSignatures= we can compute the residuals sum of squares
-and the explained variance between the observed and fitted mutational spectrum,
-for different numbers of signatures.  These measures are generally applicable to
-all kind of decomposition methods, and offer indications for a likely number of
-signatures.  The usage and arguments are analogous to the =identifySignatures=
-function.  We can visualize the results with the =plotNumberSignatures=
-function, 
+Using =assessNumberSignatures=, we can compute the residuals sum of squares
+(RSS) and the explained variance between the observed $M$ and fitted $WH$
+mutational spectrum for different numbers of signatures.  These measures are
+generally applicable to all kinds of decomposition methods, and can aid in
+choosing a likely number of signatures.  The usage and arguments are analogous
+to the =identifySignatures= function.
 
 #+BEGIN_SRC R
   n_sigs = 2:8
@@ -406,6 +406,12 @@ function,
   gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
 #+END_SRC
 
+The obtained statistics can further be visualized with the
+=plotNumberSignatures=.  For each tested number of signatures, black crosses
+indicate the statistic of a individual run, while the red dot represents the
+average over all respective runs.  Please note that having multiple runs is only
+relevant for randomly seeded decomposition methods, as the NMF in our example.
+
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file p_gof_nmf.svg :ravel fig.cap='Summary statistics for selecting the number of signatures in the NMF decomposition.'
   plotNumberSignatures(gof_nmf)
 #+END_SRC
@@ -414,18 +420,16 @@ function,
   plotNumberSignatures(gof_pca)
 #+END_SRC
 
-While decompositions with more signatures naturally approximate the data better,
-is the first inflection point of the statistics, i.e. when it reaches a plateau,
-a good measure for the number of features [[cite:hutchins_position-dependent_2008]].
-Within the range from 2 to 8, no best solution for $r$ can be inferred from the
-statistics alone for our dataset.  A explanation for this is that eight or more
-independent processes are reflected in the data. This is reasonable given the
-high number of samples that would reflect a large degree of biological
-heterogeneity. However, a decomposition into a smaller number of components is
-nevertheless meaningful, as the most abundant mutational processes will still be
-reflected in the identified signatures.  In practice, a combination of a
-statistical assessment paired with biological knowledge about the nature of the
-data will yield the most reliable interpretation of the results.
+$r$ can then be chosen such that increasing the number of signatures does not
+yield a significantly better approximation of the data, i.e. that the RSS and
+the explained variance do not change sufficiently for more complex models.  The
+first inflection point of the RSS curve has also been proposed as a measure for
+the number of features in this context [[cite:hutchins_position-dependent_2008]].
+Judging from both statistics for our dataset, a total of 5 signatures seems to
+explain the characteristics of the observed mutational spectrum well.  In
+practice, a combination of a statistical assessment paired with biological
+knowledge about the nature of the data will allow for the most reliable
+interpretation of the results.
 
 
 ** Visualization: Exploration of Signatures and Samples
@@ -471,8 +475,8 @@ to S5) can be visualized either as a heatmap or as a barchart.
 [[file:report/p_nmf_signatures.svg]]
 
 Each signature represents different properties of the somatic spectrum observed
-in the data.  While signature S1 is mainly characterized by selective =C>T= alterations,
-others as S4 and S5 show a broad distribution across the motifs.
+in the data.  While signature S1 is mainly characterized by selective =C>T=
+alterations, others as S4 and S5 show a broad distribution across the motifs.
 
 In addition, the contribution of the signatures in each study can be represented
 with the same sets of plots.  Signature S1 and S3 are strongly represented in
@@ -531,10 +535,10 @@ identical for both all decomposition methods.
 
 *** Customization: Changing Plot Properties
 
-As pointed out before, since all plots are generated with the =ggplot2=
-framework [[cite:wickham_ggplot2:_2010]], we can change all their properties.  To
-continue the example from before, we will visualize the relative contribution of
-the mutational signatures in the studies, and change the plot to fit our needs
+As elaborated before, since all plots are generated with the =ggplot2= framework
+[[cite:wickham_ggplot2:_2010]], we can change all their properties.  To continue the
+example from before, we will visualize the relative contribution of the
+mutational signatures in the studies, and change the plot to fit our needs
 better.
 
 #+NAME: load_ggplot2_again
@@ -562,6 +566,14 @@ better.
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results value graphics :file report/p_nmf_samples.svg :ravel fig.cap='Occurrence of signatures estimated with the NMF, customized plot. See the original plot above for comparisons.'
   p
 #+END_SRC
+
+
+If you want to visualize a large number of samples or signatures, the default
+color palette may not provide a sufficient number of distinct colors.  You can
+add a well-suited palette to your plot, as we have shown before with the
+=scale_fill= functions.  For example, =scale_fill_discrete= will get you the
+default =ggplot2= color scheme; while this supports many more colors, the
+individual levels may be hard to distinguish.
 
 
 ** Clustering: Grouping by Motifs or Samples
@@ -770,23 +782,26 @@ If you use the =SomaticSignatures= package in your work, please cite it:
 
 ** Getting Help
 
-We welcome emails with questions or suggestions about our software, and want to
-ensure that we eliminate issues if and when they appear.  We have a few requests
-to optimize the process:
+We welcome questions or suggestions about our software, and want to ensure that
+we eliminate issues if and when they appear.  We have a few requests to optimize
+the process:
 
--  All emails and follow-up questions should take place over the [[http://support.bioconductor.org/][Bioconductor
-   support site]], which serves as a repository of information.  First search the
-   site for past threads which might have answered your question.
+- All questions and follow-ups should take place over the [[http://support.bioconductor.org/][Bioconductor support
+  site]], which serves as a repository of information.  First search the site for
+  past threads which might have answered your question.
+
 - The subject line should contain /SomaticSignatures/ and a few words describing
-  the problem.  
+  the problem.
+
 - If you have a question about the behavior of a function, read the sections of
   the manual page for this function by typing a question mark and the function
-  name, e.g. =?mutationContext=.  Additionally, read through the vignette to understand
-  the interplay between different functions of the package.  We spend a lot of
-  time documenting individual functions and the exact steps that the software is
-  performing.
+  name, e.g. =?mutationContext=.  Additionally, read through the vignette to
+  understand the interplay between different functions of the package.  We spend
+  a lot of time documenting individual functions and the exact steps that the
+  software is performing.
 
-- Include all of your R code related to the question you are asking.
+- Include all of your R code and its output related to the question you are
+  asking.
   
 - Include complete warning or error messages, and conclude your message with the
   full output of =sessionInfo()=.
@@ -820,7 +835,7 @@ A central object in the workflow of =SomaticSignatures= is the =VRanges= class
 which is part of the =VariantAnnotation= package.  It builds upon the commonly
 used =GRanges= class of the =GenomicRanges= package.  Essentially, each row
 represents a variant in terms of its genomic location as well as its reference
-and alternative allele.  
+and alternative allele.
 
 #+BEGIN_SRC R :exports code :ravel results='hide', message=FALSE
   library(VariantAnnotation)
@@ -849,7 +864,7 @@ format in the form of:
 #+BIBLIOGRAPHY: references abbrv limit:t option:-u option:-nobibsource option:-noabstract option:-nokeywords
 
 
-* Session Info
+* Session Information
 
 #+BEGIN_SRC R :ravel echo=FALSE, results='markup'
   sessionInfo()

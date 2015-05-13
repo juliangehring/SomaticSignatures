@@ -72,6 +72,10 @@
 
 \seealso{
   
-  'NMF' package, 'pcaMethods' package, 'prcomp'
+  \code{\link[NMF]{NMF}} package
+
+  \code{\link[pcaMethods]{pcaMethods}} package
+ 
+  \code{\link[stats]{prcomp}}
 
 }
