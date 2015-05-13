@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-05-13 Mi 15:57 -->
+<!-- 2015-05-13 Mi 17:22 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring (EMBL Heidelberg)" />
@@ -502,15 +502,14 @@ The individual matrices can be further inspected through the accessors
 Up to now, we have performed the decomposition based on a known number \(r\) of
 signatures.  In many settings, prior biological knowledge or complementing
 experiments may allow to determine \(r\) independently.  If this is not the case,
-we can try to infer suitable estimates for \(r\) from the data and the
-decomposition method.
+we can try to infer suitable values for \(r\) from the data.
 </p>
 
 <p>
-Using <code>assessNumberSignatures</code>, we can compute the residuals sum of squares
-(RSS) and the explained variance between the observed \(M\) and fitted \(WH\)
-mutational spectrum for different numbers of signatures.  These measures are
-generally applicable to all kinds of decomposition methods, and can aid in
+Using the <code>assessNumberSignatures</code> function, we can compute the residuals sum of
+squares (RSS) and the explained variance between the observed \(M\) and fitted
+\(WH\) mutational spectrum for different numbers of signatures.  These measures
+are generally applicable to all kinds of decomposition methods, and can aid in
 choosing a likely number of signatures.  The usage and arguments are analogous
 to the <code>identifySignatures</code> function.
 </p>
@@ -526,7 +525,7 @@ end.rcode-->
 <p>
 The obtained statistics can further be visualized with the
 <code>plotNumberSignatures</code>.  For each tested number of signatures, black crosses
-indicate the statistic of a individual run, while the red dot represents the
+indicate the results of individual runs, while the red dot represents the
 average over all respective runs.  Please note that having multiple runs is only
 relevant for randomly seeded decomposition methods, as the NMF in our example.
 </p>
