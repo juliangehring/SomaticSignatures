@@ -1,4 +1,4 @@
-mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = TRUE) {
+mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = FALSE) {
 
     ## only SNVs beyond this point
     if(any(width(vr)) != 1)
@@ -8,10 +8,6 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
     mid = (k + 1)/2
 
     gr = granges(vr) ## drop mcols
-    s = strand(gr)
-    if(any(s == "*"))
-        stop("The strand must be explicit, in order to read the correct strand.")
-
     ranges = resize(gr, k, fix = "center")
     context = getSeq(ref, ranges)
 
@@ -29,6 +25,9 @@ mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check 
     
     ## convert to the plus strand, generally not needed
     if(strand) {
+        s = strand(gr)
+        if(any(s == "*"))
+            stop("The strand must be explicit, in order to read the correct strand.")
         idx_minus = (s == "-")
         context[idx_minus] = reverseComplement(context[idx_minus])
         s[idx_minus] = "+"

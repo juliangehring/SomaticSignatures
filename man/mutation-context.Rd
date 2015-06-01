@@ -14,7 +14,7 @@
 }
 
 \usage{
-mutationContext(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = TRUE)
+mutationContext(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = FALSE)
 mutationContextMutect(vr, k = 3, unify = TRUE)
 mutationContextH5vc(vc, ms, unify = TRUE)
 }
