@@ -1,5 +1,5 @@
 #+TITLE: Inferring Somatic Signatures from Single Nucleotide Variant Calls
-#+AUTHOR: Julian Gehring (EMBL Heidelberg)
+#+AUTHOR: Julian Gehring, EMBL Heidelberg
 
 #+OPTIONS: html-postamble:nil html-preamble:nil html-style:nil
 
@@ -69,7 +69,7 @@
 #+END_SRC
 
 #+BEGIN_HTML
-<p class="author-top">Julian Gehring (EMBL Heidelberg)</p>
+<p class="author-top">Julian Gehring, EMBL Heidelberg</p>
 #+END_HTML
 
 
@@ -90,7 +90,14 @@ The =SomaticSignatures= package provides an efficient and user-friendly
 implementation for the extraction of somatic motifs based on a list of
 somatically mutated genomic sites and the estimation of somatic signatures with
 different matrix decomposition algorithms.  Methodologically, this is based on
-the work of Nik-Zainal and colleagues cite:nik-zainal_mutational_2012.
+the work of Nik-Zainal and colleagues cite:nik-zainal_mutational_2012. If you
+use =SomaticSignatures= in your research, please cite it as:
+
+Gehring, Julian S., Bernd Fischer, Michael Lawrence, and Wolfgang
+Huber. /SomaticSignatures: Inferring Mutational Signatures from Single
+Nucleotide Variants./ Bioinformatics, 2015,
+btv408. [[http://dx.doi.org/10.1093/bioinformatics/btv408][doi:10.1093/bioinformatics/btv408]].
+
 
 
 * Methodology: From Mutations to Somatic Signatures

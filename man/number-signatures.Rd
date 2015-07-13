@@ -27,7 +27,7 @@ plotNumberSignatures(gof)
     'identifySignatures'.}
 
   \item{decomposition}{Function to apply for the matrix
-    decompositon. See the 'decomposition' argument for
+    decomposition. See the 'decomposition' argument for
     'identifySignatures'.}
 
   \item{...}{Additional arguments passed to the 'decomposition'
@@ -43,7 +43,7 @@ plotNumberSignatures(gof)
 
 \details{
   
-  Compute the decompositon for a given number of signatures, and assess
+  Compute the decomposition for a given number of signatures, and assess
   the goodness of the reconstruction between the observed and fitted
   mutational spectra M and V, respectively.  The residual sum of squares
   (RSS)

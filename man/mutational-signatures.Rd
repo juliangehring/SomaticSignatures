@@ -24,7 +24,7 @@ identifySignatures(m, nSigs, decomposition = nmfDecomposition, ...)
   \item{nSigs}{Number of signatures [integer, required].}
 
   \item{decomposition}{Function to apply for the matrix
-    decompositon. The methods NMF and PCA are already implemented in the
+    decomposition. The methods NMF and PCA are already implemented in the
     functions 'nmfDecomposition' and 'pcaDecomposition', respectively.}
 
   \item{...}{Additional arguments passed to the 'decomposition'
@@ -35,7 +35,7 @@ identifySignatures(m, nSigs, decomposition = nmfDecomposition, ...)
 \details{
   
   'identifySignatures' estimate a set of 'r' somatic signatures, based
-  on a matrix decompositon method (such as NMF, PCA).
+  on a matrix decomposition method (such as NMF, PCA).
   
 }
 
