@@ -93,11 +93,12 @@ different matrix decomposition algorithms.  Methodologically, this is based on
 the work of Nik-Zainal and colleagues cite:nik-zainal_mutational_2012. If you
 use =SomaticSignatures= in your research, please cite it as:
 
-Gehring, Julian S., Bernd Fischer, Michael Lawrence, and Wolfgang
-Huber. /SomaticSignatures: Inferring Mutational Signatures from Single
-Nucleotide Variants./ Bioinformatics, 2015,
-btv408. [[http://dx.doi.org/10.1093/bioinformatics/btv408][doi:10.1093/bioinformatics/btv408]].
-
+#+BEGIN_QUOTE
+Gehring, Julian S., Bernd Fischer, Michael Lawrence, and Wolfgang Huber.\\
+/SomaticSignatures: Inferring Mutational Signatures from Single Nucleotide
+Variants./\\
+Bioinformatics, 2015, btv408. [[http://dx.doi.org/10.1093/bioinformatics/btv408]]
+#+END_QUOTE
 
 
 * Methodology: From Mutations to Somatic Signatures
@@ -319,11 +320,14 @@ genomic sequence.  Here, the =BSgenomes= object of the human hg19 reference is
 used for all samples.  However, [[personalized_genomes][personalized genomes or other sources for
 sequences]], for example an indexed FASTA file, can be used naturally.
 Additionally, we transform all motifs to have a pyrimidine base (=C= or =T=) as
-a reference base [[cite:alexandrov_signatures_2013]].
+a reference base [[cite:alexandrov_signatures_2013]]. The resulting =VRanges= object
+then contains the new columns =context= and =alteration= which specify the
+sequence content and the base substitution.
 
 #+NAME: sca_vr_to_motifs
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
   sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+  head(sca_motifs)
 #+END_SRC
 
 #+RESULTS: sca_vr_to_motifs

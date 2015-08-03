@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-07-13 Mo 11:13 -->
+<!-- 2015-08-03 Mo 10:51 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
@@ -228,15 +228,16 @@ the work of Nik-Zainal and colleagues [<a href="#nik-zainal_mutational_2012">11<
 use <code>SomaticSignatures</code> in your research, please cite it as:
 </p>
 
+<blockquote>
 <p>
-Gehring, Julian S., Bernd Fischer, Michael Lawrence, and Wolfgang
-Huber. <i>SomaticSignatures: Inferring Mutational Signatures from Single
-Nucleotide Variants.</i> Bioinformatics, 2015,
-btv408. <a href="http://dx.doi.org/10.1093/bioinformatics/btv408"><a href="10.1093/bioinformatics/btv408">10.1093/bioinformatics/btv408</a></a>.
+Gehring, Julian S., Bernd Fischer, Michael Lawrence, and Wolfgang Huber.<br  />
+<i>SomaticSignatures: Inferring Mutational Signatures from Single Nucleotide
+Variants.</i><br  />
+Bioinformatics, 2015, btv408. <a href="http://dx.doi.org/10.1093/bioinformatics/btv408">http://dx.doi.org/10.1093/bioinformatics/btv408</a>
 </p>
+</blockquote>
 </div>
 </div>
-
 
 
 <div id="outline-container-sec-2" class="outline-2">
@@ -437,11 +438,14 @@ genomic sequence.  Here, the <code>BSgenomes</code> object of the human hg19 ref
 used for all samples.  However, <a href="#personalized_genomes">personalized genomes or other sources for
 sequences</a>, for example an indexed FASTA file, can be used naturally.
 Additionally, we transform all motifs to have a pyrimidine base (<code>C</code> or <code>T</code>) as
-a reference base [<a href="#alexandrov_signatures_2013">2</a>].
+a reference base [<a href="#alexandrov_signatures_2013">2</a>]. The resulting <code>VRanges</code> object
+then contains the new columns <code>context</code> and <code>alteration</code> which specify the
+sequence content and the base substitution.
 </p>
 
 <!--begin.rcode sca_vr_to_motifs
 sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+head(sca_motifs)
 end.rcode-->
 
 <p>
