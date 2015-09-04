@@ -1,8 +1,8 @@
 mutationContext <- function(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = FALSE) {
 
-    ## only SNVs beyond this point
-    if(any(width(vr)) != 1)
-        stop("SNVs must have width of 1.")
+    ## only SNV substitutions beyond this point
+    if(!all(ref(vr) %in% DNA_BASES & alt(vr) %in% DNA_BASES))
+        stop("Only SNV substitutions are currently supported.")
     if(k %% 2 != 1)
         stop("'k' must be odd.")
     mid = (k + 1)/2

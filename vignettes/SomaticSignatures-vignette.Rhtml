@@ -3,9 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
-<!-- 2015-08-03 Mo 10:51 -->
+<!-- 2015-09-04 Fr 11:10 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Julian Gehring, EMBL Heidelberg" />
 <link rel="stylesheet" type="text/css" href="https://julian-gehring.github.io/bioc.css" />
@@ -55,48 +56,28 @@ for the JavaScript code in this tag.
  }
 /*]]>*///-->
 </script>
-<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js"></script>
-<script type="text/javascript">
-<!--/*--><![CDATA[/*><!--*/
+<script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-        // Only one of the two following lines, depending on user settings
-        // First allows browser-native MathML display, second forces HTML/CSS
-        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
-            jax: ["input/TeX", "output/HTML-CSS"],
-        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
-                     "TeX/noUndefined.js"],
-        tex2jax: {
-            inlineMath: [ ["\\(","\\)"] ],
-            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
-            skipTags: ["script","noscript","style","textarea","pre","code"],
-            ignoreClass: "tex2jax_ignore",
-            processEscapes: false,
-            processEnvironments: true,
-            preview: "TeX"
-        },
-        showProcessingMessages: true,
         displayAlign: "center",
-        displayIndent: "2em",
+        displayIndent: "0em",
 
-        "HTML-CSS": {
-             scale: 100,
-             availableFonts: ["STIX","TeX"],
-             preferredFont: "TeX",
-             webFont: "TeX",
-             imageFont: "TeX",
-             showMathMenu: true,
-        },
-        MMLorHTML: {
-             prefer: {
-                 MSIE:    "MML",
-                 Firefox: "MML",
-                 Opera:   "HTML",
-                 other:   "HTML"
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
              }
-        }
-    });
-/*]]>*///-->
+});
 </script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content">
@@ -105,37 +86,37 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1. Motivation: The Concept Behind Mutational Signatures</a></li>
-<li><a href="#sec-2">2. Methodology: From Mutations to Somatic Signatures</a></li>
-<li><a href="#sec-3">3. Workflow and Implementation: Analysis with the SomaticSignatures Package</a></li>
-<li><a href="#sec-4">4. Use case: Estimating Somatic Signatures from TCGA WES Studies</a>
+<li><a href="#orgheadline1">1. Motivation: The Concept Behind Mutational Signatures</a></li>
+<li><a href="#orgheadline2">2. Methodology: From Mutations to Somatic Signatures</a></li>
+<li><a href="#orgheadline3">3. Workflow and Implementation: Analysis with the SomaticSignatures Package</a></li>
+<li><a href="#orgheadline14">4. Use case: Estimating Somatic Signatures from TCGA WES Studies</a>
 <ul>
-<li><a href="#sec-4-1">4.1. Data: Preproccessing of the TCGA WES Studies</a></li>
-<li><a href="#sec-4-2">4.2. Motifs: Extracting the Sequence Context of Somatic Variants</a></li>
-<li><a href="#sec-4-3">4.3. Decomposition: Inferring Somatic Signatures</a></li>
-<li><a href="#sec-4-4">4.4. Assessment: Number of Signatures</a></li>
-<li><a href="#sec-4-5">4.5. Visualization: Exploration of Signatures and Samples</a>
+<li><a href="#orgheadline4">4.1. Data: Preproccessing of the TCGA WES Studies</a></li>
+<li><a href="#orgheadline5">4.2. Motifs: Extracting the Sequence Context of Somatic Variants</a></li>
+<li><a href="#orgheadline6">4.3. Decomposition: Inferring Somatic Signatures</a></li>
+<li><a href="#orgheadline7">4.4. Assessment: Number of Signatures</a></li>
+<li><a href="#orgheadline9">4.5. Visualization: Exploration of Signatures and Samples</a>
 <ul>
-<li><a href="#sec-4-5-1">4.5.1. Customization: Changing Plot Properties</a></li>
+<li><a href="#orgheadline8">4.5.1. Customization: Changing Plot Properties</a></li>
 </ul>
 </li>
-<li><a href="#sec-4-6">4.6. Clustering: Grouping by Motifs or Samples</a></li>
-<li><a href="#sec-4-7">4.7. Extension: Correction for Batch Effects and Confounding Variables</a></li>
-<li><a href="#sec-4-8">4.8. Extension: Normalization of Sequence Motif Frequencies</a></li>
-<li><a href="#sec-4-9">4.9. Extension: Motifs from Non-Reference Genomes</a></li>
+<li><a href="#orgheadline10">4.6. Clustering: Grouping by Motifs or Samples</a></li>
+<li><a href="#orgheadline11">4.7. Extension: Correction for Batch Effects and Confounding Variables</a></li>
+<li><a href="#orgheadline12">4.8. Extension: Normalization of Sequence Motif Frequencies</a></li>
+<li><a href="#orgheadline13">4.9. Extension: Motifs from Non-Reference Genomes</a></li>
 </ul>
 </li>
-<li><a href="#sec-5">5. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
-<li><a href="#sec-6">6. Frequently Asked Questions</a>
+<li><a href="#orgheadline15">5. Alternatives: Inferring Somatic Signatures with Different Approaches</a></li>
+<li><a href="#orgheadline20">6. Frequently Asked Questions</a>
 <ul>
-<li><a href="#sec-6-1">6.1. Citing SomaticSignatures</a></li>
-<li><a href="#sec-6-2">6.2. Getting Help</a></li>
-<li><a href="#sec-6-3">6.3. Installing and Upgrading</a></li>
-<li><a href="#sec-6-4">6.4. Working with VRanges</a></li>
+<li><a href="#orgheadline16">6.1. Citing SomaticSignatures</a></li>
+<li><a href="#orgheadline17">6.2. Getting Help</a></li>
+<li><a href="#orgheadline18">6.3. Installing and Upgrading</a></li>
+<li><a href="#orgheadline19">6.4. Working with VRanges</a></li>
 </ul>
 </li>
-<li><a href="#sec-7">7. References</a></li>
-<li><a href="#sec-8">8. Session Information</a></li>
+<li><a href="#orgheadline21">7. References</a></li>
+<li><a href="#orgheadline22">8. Session Information</a></li>
 </ul>
 </div>
 </div>
@@ -203,14 +184,13 @@ end.rcode-->
 <p class="author-top">Julian Gehring, EMBL Heidelberg</p>
 
 
-<div id="outline-container-sec-1" class="outline-2">
-<h2 id="sec-1"><span class="section-number-2">1</span> Motivation: The Concept Behind Mutational Signatures</h2>
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1"><span class="section-number-2">1</span> Motivation: The Concept Behind Mutational Signatures</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Recent publications introduced the concept of identifying mutational signatures
 from cancer sequencing studies and linked them to potential mutation generation
-processes [<a href="#nik-zainal_mutational_2012">11</a>] [<a href="#alexandrov_signatures_2013">2</a>]
-[<a href="#alexandrov_deciphering_2013">3</a>].  Conceptually, this relates somatically
+processes [<a href="#nik-zainal_mutational_2012">11</a>,<a href="#alexandrov_signatures_2013">2</a>,<a href="#alexandrov_deciphering_2013">3</a>].  Conceptually, this relates somatically
 occurring <i>single nucleotide variants</i> (SNVs) to the surrounding sequence which
 will be referred to as <i>mutational</i> or <i>somatic motifs</i> in the following.  Based
 on the frequency of the motifs occurring in multiple samples, these can be
@@ -240,8 +220,8 @@ Bioinformatics, 2015, btv408. <a href="http://dx.doi.org/10.1093/bioinformatics/
 </div>
 
 
-<div id="outline-container-sec-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Methodology: From Mutations to Somatic Signatures</h2>
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">2</span> Methodology: From Mutations to Somatic Signatures</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 The basic idea of somatic signatures is composed of two parts:
@@ -263,7 +243,7 @@ and \(H\)
 </p>
 
 <p>
-$$M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$$
+\($M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$\)
 </p>
 
 <p>
@@ -275,8 +255,8 @@ signature to the alterations present in each sample.
 </div>
 
 
-<div id="outline-container-sec-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Workflow and Implementation: Analysis with the SomaticSignatures Package</h2>
+<div id="outline-container-orgheadline3" class="outline-2">
+<h2 id="orgheadline3"><span class="section-number-2">3</span> Workflow and Implementation: Analysis with the SomaticSignatures Package</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The <code>SomaticSignatures</code> package offers a framework for inferring signatures of
@@ -296,7 +276,7 @@ indexed FASTA file, a <code>BSgenome</code> object, or a <code>GmapGenome</code>
 Alternatively, we provide functions to extract the relevant information from
 other sources of inputs.  At the moment, this covers the <i>MuTect</i>
 [<a href="#cibulskis_sensitive_2013">4</a>] variant caller and the <i>h5vc</i> package
-[<a href="#pyl_h5vc:_2014">13</a>] [<a href="#pyl_h5vc:_2013">14</a>].
+[<a href="#pyl_h5vc:_2014">13</a>,<a href="#pyl_h5vc:_2013">14</a>].
 </p>
 
 <p>
@@ -306,17 +286,14 @@ Generally, the individual steps of the analysis can be summarized as:
 <ol class="org-ol">
 <li>The somatic motifs for each variant are retrieved from the reference sequence
 with the <code>mutationContext</code> function and converted to a matrix representation
-with the <code>motifMatrix</code> function.
-</li>
+with the <code>motifMatrix</code> function.</li>
 
 <li>Somatic signatures are estimated with a method of choice (the package
 provides with <code>nmfDecomposition</code> and <code>pcaDecomposition</code> two approaches for
-the NMF and PCA).
-</li>
+the NMF and PCA).</li>
 
 <li>The somatic signatures and their representation in the samples are assessed
-with a set of accessor and plotting functions.
-</li>
+with a set of accessor and plotting functions.</li>
 </ol>
 
 <p>
@@ -324,18 +301,16 @@ To decompose \(M\), the <code>SomaticSignatures</code> package implements two me
 </p>
 
 <dl class="org-dl">
-<dt> Non-negative matrix factorization (NMF) </dt><dd>The NMF decomposes \(M\) with the
+<dt>Non-negative matrix factorization (NMF)</dt><dd>The NMF decomposes \(M\) with the
 constraint of positive components in \(W\) and \(H\)
 [<a href="#gaujoux_flexible_2010">7</a>].  The method was used
 [<a href="#nik-zainal_mutational_2012">11</a>] for the identification of mutational
-signatures, and can be computationally expensive for large data sets.
-</dd>
+signatures, and can be computationally expensive for large data sets.</dd>
 
-<dt> Principal component analysis (PCA) </dt><dd>The PCA employs the eigenvalue
+<dt>Principal component analysis (PCA)</dt><dd>The PCA employs the eigenvalue
 decomposition and is therefore suitable for large data sets
 [<a href="#stacklies_pcamethodsbioconductor_2007">15</a>].  While this is related to the
-NMF, no constraint on the sign of the elements of \(W\) and \(H\) exists.
-</dd>
+NMF, no constraint on the sign of the elements of \(W\) and \(H\) exists.</dd>
 </dl>
 
 <p>
@@ -346,8 +321,8 @@ Other methods can be supplied through the <code>decomposition</code> argument of
 </div>
 
 
-<div id="outline-container-sec-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> Use case: Estimating Somatic Signatures from TCGA WES Studies</h2>
+<div id="outline-container-orgheadline14" class="outline-2">
+<h2 id="orgheadline14"><span class="section-number-2">4</span> Use case: Estimating Somatic Signatures from TCGA WES Studies</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 In the following, the concept of somatic signatures and the steps for inferring
@@ -368,8 +343,8 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-4-1" class="outline-3">
-<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Data: Preproccessing of the TCGA WES Studies</h3>
+<div id="outline-container-orgheadline4" class="outline-3">
+<h3 id="orgheadline4"><span class="section-number-3">4.1</span> Data: Preproccessing of the TCGA WES Studies</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 The <code>SomaticCancerAlterations</code> package provides the somatic SNV calls for eight
@@ -429,13 +404,13 @@ end.rcode-->
 
 
 
-<div id="outline-container-sec-4-2" class="outline-3">
-<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Motifs: Extracting the Sequence Context of Somatic Variants<a id="motifs" name="motifs"></a></h3>
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">4.2</span> Motifs: Extracting the Sequence Context of Somatic Variants<a id="orgtarget2"></a></h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 In a first step, the sequence motif for each variant is extracted based on the
 genomic sequence.  Here, the <code>BSgenomes</code> object of the human hg19 reference is
-used for all samples.  However, <a href="#personalized_genomes">personalized genomes or other sources for
+used for all samples.  However, <a href="#orgtarget1">personalized genomes or other sources for
 sequences</a>, for example an indexed FASTA file, can be used naturally.
 Additionally, we transform all motifs to have a pyrimidine base (<code>C</code> or <code>T</code>) as
 a reference base [<a href="#alexandrov_signatures_2013">2</a>]. The resulting <code>VRanges</code> object
@@ -474,8 +449,8 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-4-3" class="outline-3">
-<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Decomposition: Inferring Somatic Signatures</h3>
+<div id="outline-container-orgheadline6" class="outline-3">
+<h3 id="orgheadline6"><span class="section-number-3">4.3</span> Decomposition: Inferring Somatic Signatures</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 The somatic signatures can be estimated with each of the statistical methods
@@ -508,8 +483,8 @@ The individual matrices can be further inspected through the accessors
 </div>
 
 
-<div id="outline-container-sec-4-4" class="outline-3">
-<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Assessment: Number of Signatures</h3>
+<div id="outline-container-orgheadline7" class="outline-3">
+<h3 id="orgheadline7"><span class="section-number-3">4.4</span> Assessment: Number of Signatures</h3>
 <div class="outline-text-3" id="text-4-4">
 <p>
 Up to now, we have performed the decomposition based on a known number \(r\) of
@@ -567,8 +542,8 @@ interpretation of the results.
 </div>
 
 
-<div id="outline-container-sec-4-5" class="outline-3">
-<h3 id="sec-4-5"><span class="section-number-3">4.5</span> Visualization: Exploration of Signatures and Samples</h3>
+<div id="outline-container-orgheadline9" class="outline-3">
+<h3 id="orgheadline9"><span class="section-number-3">4.5</span> Visualization: Exploration of Signatures and Samples</h3>
 <div class="outline-text-3" id="text-4-5">
 <p>
 To explore the results for the TCGA data set, we will use the plotting
@@ -662,8 +637,8 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-4-5-1" class="outline-4">
-<h4 id="sec-4-5-1"><span class="section-number-4">4.5.1</span> Customization: Changing Plot Properties</h4>
+<div id="outline-container-orgheadline8" class="outline-4">
+<h4 id="orgheadline8"><span class="section-number-4">4.5.1</span> Customization: Changing Plot Properties</h4>
 <div class="outline-text-4" id="text-4-5-1">
 <p>
 As elaborated before, since all plots are generated with the <code>ggplot2</code> framework
@@ -710,8 +685,8 @@ individual levels may be hard to distinguish.
 </div>
 
 
-<div id="outline-container-sec-4-6" class="outline-3">
-<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Clustering: Grouping by Motifs or Samples</h3>
+<div id="outline-container-orgheadline10" class="outline-3">
+<h3 id="orgheadline10"><span class="section-number-3">4.6</span> Clustering: Grouping by Motifs or Samples</h3>
 <div class="outline-text-3" id="text-4-6">
 <p>
 An alternative approach to interpreting the mutational spectrum by decomposition
@@ -737,8 +712,8 @@ end.rcode-->
 
 
 
-<div id="outline-container-sec-4-7" class="outline-3">
-<h3 id="sec-4-7"><span class="section-number-3">4.7</span> Extension: Correction for Batch Effects and Confounding Variables</h3>
+<div id="outline-container-orgheadline11" class="outline-3">
+<h3 id="orgheadline11"><span class="section-number-3">4.7</span> Extension: Correction for Batch Effects and Confounding Variables</h3>
 <div class="outline-text-3" id="text-4-7">
 <p>
 When investigating somatic signatures between samples from different studies,
@@ -746,7 +721,7 @@ corrections for technical confounding factors should be considered.  In our use
 case of the TCGA WES studies, this is of minor influence due to similar
 sequencing technology and variant calling methods across the studies.
 Approaches for the identification of so termed batch effects have been proposed
-[<a href="#leek_capturing_2007">10</a>] [<a href="#sun_multiple_2012">16</a>] and existing implementations can
+[<a href="#leek_capturing_2007">10</a>,<a href="#sun_multiple_2012">16</a>] and existing implementations can
 be used in identifying confounding variables as well as correcting for them.
 The best strategy in addressing technical effects depends strongly on the
 experimental design; we recommend reading the respective literature and software
@@ -777,8 +752,8 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-4-8" class="outline-3">
-<h3 id="sec-4-8"><span class="section-number-3">4.8</span> Extension: Normalization of Sequence Motif Frequencies</h3>
+<div id="outline-container-orgheadline12" class="outline-3">
+<h3 id="orgheadline12"><span class="section-number-3">4.8</span> Extension: Normalization of Sequence Motif Frequencies</h3>
 <div class="outline-text-3" id="text-4-8">
 <p>
 If comparisons are performed across samples or studies with different capture
@@ -841,11 +816,11 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-4-9" class="outline-3">
-<h3 id="sec-4-9"><span class="section-number-3">4.9</span> Extension: Motifs from Non-Reference Genomes<a id="personalized_genomes" name="personalized_genomes"></a></h3>
+<div id="outline-container-orgheadline13" class="outline-3">
+<h3 id="orgheadline13"><span class="section-number-3">4.9</span> Extension: Motifs from Non-Reference Genomes<a id="orgtarget1"></a></h3>
 <div class="outline-text-3" id="text-4-9">
 <p>
-When we <a href="#motifs">determine the sequence context</a> for each alteration, we typically use one
+When we <a href="#orgtarget2">determine the sequence context</a> for each alteration, we typically use one
 of the reference BSgenome packages in Bioconductor.  But we are not restricted
 to those, and derive the somatic motifs from different types of sequence
 sources, for example 2bit and FASTA files.  More precisely, the
@@ -871,7 +846,7 @@ function in particular for this.
 Taking further, we can base our analysis on the personalized genomic sequence
 for each individual, in case it is available.  If we imagined that we had a set
 of somatic variant calls as <code>VCF</code> files and the personalized genomic sequence as
-<code>FASTA</code> files for two individuals <code>A</code> and <code>B</code> at hand, here a simple example on
+<code>FASTA</code> files for two individuals <code>A</code> and <code>B</code> at hand, here a simple outline on
 how our analysis could work.
 </p>
 
@@ -881,12 +856,12 @@ vr_A = readVcfAsVRanges(vcf_A_path, "GenomeA")
 vr_B = readVcfAsVRanges(vcf_B_path, "GenomeB")
 
 ## Genomic sequences
-fa_A = FastaFile(fasta_A_path)
-fa_B = FastaFile(fasta_B_path)
+fa_A = FaFile(fasta_A_path)
+fa_B = FaFile(fasta_B_path)
 
 ## Somatic motifs
-vr_A = mutationalContext(vr_A, fa_A)
-vr_B = mutationalContext(vr_B, fa_B)
+vr_A = mutationContext(vr_A, fa_A)
+vr_B = mutationContext(vr_B, fa_B)
 
 ## Combine for further analysis
 vr = c(vr_A, vr_B)
@@ -897,13 +872,12 @@ end.rcode-->
 
 
 
-<div id="outline-container-sec-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Alternatives: Inferring Somatic Signatures with Different Approaches</h2>
+<div id="outline-container-orgheadline15" class="outline-2">
+<h2 id="orgheadline15"><span class="section-number-2">5</span> Alternatives: Inferring Somatic Signatures with Different Approaches</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 For the identification of somatic signatures, other methods and implementations
-exist.  The original framework [<a href="#nik-zainal_mutational_2012">11</a>]
-[<a href="#alexandrov_deciphering_2013">3</a>] proposed for this is based on the NMF and
+exist.  The original framework [<a href="#nik-zainal_mutational_2012">11</a>,<a href="#alexandrov_deciphering_2013">3</a>] proposed for this is based on the NMF and
 available for the Matlab programming language [<a href="#alexandrov_wtsi_2012">1</a>].  In
 extension, a probabilistic approach based on Poisson processes has been proposed
 [<a href="#fischer_emu:_2013-1">6</a>] and implemented [<a href="#fischer_emu:_2013">5</a>].
@@ -912,11 +886,11 @@ extension, a probabilistic approach based on Poisson processes has been proposed
 </div>
 
 
-<div id="outline-container-sec-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> Frequently Asked Questions</h2>
+<div id="outline-container-orgheadline20" class="outline-2">
+<h2 id="orgheadline20"><span class="section-number-2">6</span> Frequently Asked Questions</h2>
 <div class="outline-text-2" id="text-6">
-</div><div id="outline-container-sec-6-1" class="outline-3">
-<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Citing SomaticSignatures</h3>
+</div><div id="outline-container-orgheadline16" class="outline-3">
+<h3 id="orgheadline16"><span class="section-number-3">6.1</span> Citing SomaticSignatures</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 If you use the <code>SomaticSignatures</code> package in your work, please cite it:
@@ -929,8 +903,8 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-6-2" class="outline-3">
-<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Getting Help</h3>
+<div id="outline-container-orgheadline17" class="outline-3">
+<h3 id="orgheadline17"><span class="section-number-3">6.2</span> Getting Help</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 We welcome questions or suggestions about our software, and want to ensure that
@@ -941,35 +915,30 @@ the process:
 <ul class="org-ul">
 <li>All questions and follow-ups should take place over the <a href="http://support.bioconductor.org/">Bioconductor support
 site</a>, which serves as a repository of information.  First search the site for
-past threads which might have answered your question.
-</li>
+past threads which might have answered your question.</li>
 
 <li>The subject line should contain <i>SomaticSignatures</i> and a few words describing
-the problem.
-</li>
+the problem.</li>
 
 <li>If you have a question about the behavior of a function, read the sections of
 the manual page for this function by typing a question mark and the function
 name, e.g. <code>?mutationContext</code>.  Additionally, read through the vignette to
 understand the interplay between different functions of the package.  We spend
 a lot of time documenting individual functions and the exact steps that the
-software is performing.
-</li>
+software is performing.</li>
 
 <li>Include all of your R code and its output related to the question you are
-asking.
-</li>
+asking.</li>
 
 <li>Include complete warning or error messages, and conclude your message with the
-full output of <code>sessionInfo()</code>.
-</li>
+full output of <code>sessionInfo()</code>.</li>
 </ul>
 </div>
 </div>
 
 
-<div id="outline-container-sec-6-3" class="outline-3">
-<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Installing and Upgrading</h3>
+<div id="outline-container-orgheadline18" class="outline-3">
+<h3 id="orgheadline18"><span class="section-number-3">6.3</span> Installing and Upgrading</h3>
 <div class="outline-text-3" id="text-6-3">
 <p>
 Before you want to install the <code>SomaticSignatures</code> package, please ensure that
@@ -997,8 +966,8 @@ end.rcode-->
 </div>
 
 
-<div id="outline-container-sec-6-4" class="outline-3">
-<h3 id="sec-6-4"><span class="section-number-3">6.4</span> Working with VRanges</h3>
+<div id="outline-container-orgheadline19" class="outline-3">
+<h3 id="orgheadline19"><span class="section-number-3">6.4</span> Working with VRanges</h3>
 <div class="outline-text-3" id="text-6-4">
 <p>
 A central object in the workflow of <code>SomaticSignatures</code> is the <code>VRanges</code> class
@@ -1035,8 +1004,8 @@ end.rcode-->
 
 
 
-<div id="outline-container-sec-7" class="outline-2">
-<h2 id="sec-7"><span class="section-number-2">7</span> References</h2>
+<div id="outline-container-orgheadline21" class="outline-2">
+<h2 id="orgheadline21"><span class="section-number-2">7</span> References</h2>
 <div class="outline-text-2" id="text-7">
 <div id="bibliography">
 <h2>References</h2>
@@ -1334,8 +1303,8 @@ H.&nbsp;Wickham.
 </div>
 
 
-<div id="outline-container-sec-8" class="outline-2">
-<h2 id="sec-8"><span class="section-number-2">8</span> Session Information</h2>
+<div id="outline-container-orgheadline22" class="outline-2">
+<h2 id="orgheadline22"><span class="section-number-2">8</span> Session Information</h2>
 <div class="outline-text-2" id="text-8">
 <!--begin.rcode echo=FALSE, results='markup'
 sessionInfo()

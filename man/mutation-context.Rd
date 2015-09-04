@@ -18,35 +18,37 @@ mutationContext(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = FALSE)
 mutationContextMutect(vr, k = 3, unify = TRUE)
 mutationContextH5vc(vc, ms, unify = TRUE)
 }
-  
+
 \arguments{
-  
-  \item{vr}{'VRanges' object, with 'ref' and 'alt' columns filled
-    [required].  For 'mutationContextMutect', an object as returned by
-    the 'readMutect' function.}
-  
+
+  \item{vr}{'VRanges' with SNV substitutions, with 'ref' and 'alt'
+    columns filled [required].  Each element of 'ref' and 'alt' have be
+    a single base from the DNA bases (A,C,G,T).  For
+    'mutationContextMutect', an object as returned by the 'readMutect'
+    function.}
+
   \item{ref}{A 'BSgenome', 'FaFile' or 'TwoBitfile' object representing
     the reference sequence [required].  More generally, any object with
     a defined 'getSeq' method can be used.}
-  
+
   \item{k}{The 'k'-mer size of the context, including the variant
     position [integer, default: 3].  The variant will be located at the
     middle of the k-mer which requires 'k' to be odd.}
-  
+
   \item{strand}{Should all variants be converted to the 'plus'
     strand? [logical, default: FALSE].}
-  
+
   \item{unify}{Should the alterations be converted to have a C/T base
     pair as a reference alleles? [logical, default: TRUE]}
-  
+
   \item{check}{Should the reference base of 'vr' be checked against
     'ref' [logical, default: TRUE]?  In case the two references do not
     match, a warning will be printed.}
-  
+
   \item{vc}{A 'DataFrame' object as returned from a variant calling
     analysis by 'h5vc::h5dapply'.  See the 'details' section for more
     information.}
-  
+
   \item{ms}{A 'DataFrame' object as returned by
     'h5vc::mutationSpectrum'.  See the 'details' section for more
     information.}

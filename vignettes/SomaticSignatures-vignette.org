@@ -723,7 +723,7 @@ function in particular for this.
 Taking further, we can base our analysis on the personalized genomic sequence
 for each individual, in case it is available.  If we imagined that we had a set
 of somatic variant calls as =VCF= files and the personalized genomic sequence as
-=FASTA= files for two individuals =A= and =B= at hand, here a simple example on
+=FASTA= files for two individuals =A= and =B= at hand, here a simple outline on
 how our analysis could work.
 
 #+BEGIN_SRC R :eval no :ravel eval=FALSE
@@ -732,16 +732,17 @@ how our analysis could work.
   vr_B = readVcfAsVRanges(vcf_B_path, "GenomeB")
 
   ## Genomic sequences
-  fa_A = FastaFile(fasta_A_path)
-  fa_B = FastaFile(fasta_B_path)
+  fa_A = FaFile(fasta_A_path)
+  fa_B = FaFile(fasta_B_path)
 
   ## Somatic motifs
-  vr_A = mutationalContext(vr_A, fa_A)
-  vr_B = mutationalContext(vr_B, fa_B)
+  vr_A = mutationContext(vr_A, fa_A)
+  vr_B = mutationContext(vr_B, fa_B)
 
   ## Combine for further analysis
   vr = c(vr_A, vr_B)
 #+END_SRC
+
 
 
 ** Visualization: Mutational Landscapes and Hypermutated Regions  :noexport:

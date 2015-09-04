@@ -7,7 +7,7 @@ import(IRanges)
 import(Biostrings)
 import(methods)
 
-importFrom(reshape2, melt, acast)
+importFrom(reshape2, melt)
 importFrom(ggbio, plotGrandLinear)
 importFrom(NMF, nmf, basis, coef, fitted, rss, evar)
 importFrom(pcaMethods, pca, scores, loadings) ## fitted comes from 'stats'

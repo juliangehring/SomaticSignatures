@@ -48,7 +48,7 @@ plotSignatureMap <- function(s) {
 
     p = ggplot(w_df)
     p = p + geom_tile(aes_string(y = "motif", x = "signature", fill = "value"))
-    p = p + scale_fill_gradient2(name = "")
+    p = p + scale_fill_gradient2(name = "", space = "Lab")
     p = p + theme_ss() + theme_small_axis(x = FALSE)
     p = p + xlab("Signature") + ylab("Motif")
   
@@ -93,7 +93,7 @@ plotSampleMap <- function(s) {
 
     p = ggplot(h_df)
     p = p + geom_tile(aes_string(y = "sample", x = "signature", fill = "value"), color = "black")
-    p = p + scale_fill_gradient2(name = "Contribution", limits = c(zmin, NA))
+    p = p + scale_fill_gradient2(name = "Contribution", limits = c(zmin, NA), space = "Lab")
     p = p + theme_ss()
     p = p + xlab("Signature") + ylab("Sample")
   

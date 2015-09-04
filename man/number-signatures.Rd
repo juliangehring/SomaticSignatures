@@ -33,9 +33,9 @@ plotNumberSignatures(gof)
   \item{...}{Additional arguments passed to the 'decomposition'
     function.  See the '...' argument for 'identifySignatures'.}
 
-  \item{nReplicates}{How many replicates should be used for assing a
-    single value of 'nSigs'?  For decomposition methods with random
-    seeding, values greater than 1 are reasonable.}
+  \item{nReplicates}{How many runs should be used for assessing a value
+    of 'nSigs'?  For decomposition methods with random seeding, values
+    greater than 1 should be used.}
 
   \item{gof}{Data frame, as returned of 'assessNumberSignatures'}.
 
@@ -59,9 +59,19 @@ plotNumberSignatures(gof)
   decomposition approaches.
 
   The 'plotNumberSignatures' function visualizes the results of the
-  'assessNumberSignatures' analysis.  Statistics of the indivdual
-  replicates are shown as gray crosses, whereas the mean across the
-  replicates is depicted in red.
+  'assessNumberSignatures' analysis.  Statistics of the indivdual runs
+  are shown as gray crosses, whereas the mean across the runs is
+  depicted in red.
+
+  If a decomposition method uses random seeding and hence recomputing
+  the decomposition of the same data can yield different results,
+  evaluating the summary statistics will give more reliable estimates of
+  the number of signatures.  This applies to some NMF algorthims, for
+  example.  Methods with a deterministic decomposition, such as the
+  standard PCA, do not need this, since repeated computations will yield
+  the same decomposition. This behaviour is controlled by the
+  'nReplicates' parameter, where the default of '1' corresponds to a
+  single run.
 
   In practice, these summary statisics should not be trusted blindly,
   but rather interpreted together with biological knowledge and
