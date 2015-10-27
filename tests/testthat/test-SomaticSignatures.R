@@ -2,31 +2,29 @@ library(testthat)
 library(SomaticSignatures)
 
 context("mutect")
-  
+
+mutect_path = system.file("examples", "mutect.tsv", package = "SomaticSignatures")
+
 test_that("'readMutect' works", {
-    mutect_path = system.file("examples", "mutect.tsv", package = "variants")
 
     expect_true( file.exists(mutect_path) )
-    
+
     vr1 = readMutect(mutect_path)
     vr2 = readMutect(mutect_path, strip = TRUE)
 
-    expect_is( class(vr1), "VRanges" )
-    expect_is( class(vr2), "VRanges" )
-    expect_is( mcols(vr2), NULL )
+    expect_is( vr1, "VRanges" )
+    expect_is( vr2, "VRanges" )
 })
 
 
 context("granges-utils")
 
-mutect_path = system.file("examples", "mutect.tsv", package = "variants")
 vr2 = readMutect(mutect_path, strip = TRUE)
 
 test_that("'granges' works", {
     gr2 = granges(vr2)
 
-    expect_is( class(gr2), "GRanges" )
-    expect_is( mcols(gr2), NULL)
+    expect_is( gr2, "GRanges" )
 })
 
 test_that("'ucsc/ncbi' works", {
@@ -42,14 +40,11 @@ context("mutationContextMutect")
 
 test_that("'mutationContextMutect' works", {
 
-    mutect_path = system.file("examples", "mutect.tsv", package = "SomaticSignatures")
     vr1 = readMutect(mutect_path)
 
     ct1 = mutationContextMutect(vr1)
-    ct2 = mutationContextMutect(vr1, "normal_best_gt")
 
-    expect_is( class(ct1), "data.frame" )
-    expect_is( class(ct2), "data.frame" )
+    expect_is( ct1, "VRanges" )
 
     expect_error(mutationContextMutect(vr1, "notthere"))
 
@@ -62,13 +57,12 @@ test_that("'mutationContext' works", {
 
     if(require(BSgenome.Hsapiens.1000genomes.hs37d5)) {
 
-        mutect_path = system.file("examples", "mutect.tsv", package = "SomaticSignatures")
         vr0 = readMutect(mutect_path)
         vr1 = vr0
         mcols(vr1) = NULL
 
         vr2 = mutationContextMutect(vr0)
-        vr1 = mutationContext(vr1, BSgenome.Hsapiens.1000genomes.hs37d5)
+        vr1 = mutationContext(ncbi(vr1), BSgenome.Hsapiens.1000genomes.hs37d5)
         expect_equal(as.character(vr1$alteration), as.character(vr2$alteration))
         expect_equal(as.character(vr1$context), as.character(vr2$context.1))
 
@@ -80,6 +74,7 @@ test_that("'mutationContext' works", {
         ref(vr9) = "CAT"
         expect_error(mutationContext(vr9, BSgenome.Hsapiens.1000genomes.hs37d5))
 
+    }
 })
 
 
@@ -89,8 +84,8 @@ test_that("datasets for processing are available", {
 
     data("sca_mm", package = "SomaticSignatures")
     expect_is( sca_mm, "matrix" )
-    expect_equal( nrow(sca_mm), 96 i)
-    
+    expect_equal( nrow(sca_mm), 96 )
+
     data("sca_sigs", package = "SomaticSignatures")
     expect_is( sigs_nmf, "MutationalSignatures" )
     expect_is( sigs_pca, "MutationalSignatures" )    
