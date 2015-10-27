@@ -116,14 +116,14 @@ the samples.
 In a second step, the matrix $M$ is numerically decomposed into two matrices $W$
 and $H$
 
-$$M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$$
+$M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$
 
 for a fixed number $r$ of signatures.  While $W$ describes the composition of
 each signature in term of somatic motifs, $H$ shows the contribution of the
 signature to the alterations present in each sample.
 
 
-* Workflow and Implementation: Analysis with the SomaticSignatures Package
+* Workflow: Analysis with the SomaticSignatures Package
 
 The =SomaticSignatures= package offers a framework for inferring signatures of
 SNVs in a user-friendly and efficient manner for large-scale data sets.  A tight
@@ -188,7 +188,7 @@ Atlas (TCGA) project will be used, which are part of the
 #+NAME: load_data_package
 #+BEGIN_SRC R :session *R-ss-vignette* :ravel results='hide',message=FALSE
   library(SomaticCancerAlterations)
-  library(BSgenome.Hsapiens.UCSC.hg19)
+  library(BSgenome.Hsapiens.1000genomes.hs37d5)
 #+END_SRC
 
 
@@ -240,11 +240,9 @@ The starting point of the analysis is a =VRanges= object which describes the
 somatic variants in terms of their genomic locations as well as reference and
 alternative alleles.  For more details about this class and how to construct it,
 please see the documentation of the =VariantAnnotation= package
-[[cite:obenchain_variantannotation:_2011]].  Since the genomic positions are given
-in the /NCBI/ notation and the references used later are in /UCSC/ notation, the
-functions =ucsc= and =ncbi= are used to easily switch between the two notations.
-In this example, all mutational calls of a study will be pooled together, in
-order to find signatures related to a specific cancer type.
+[[cite:obenchain_variantannotation:_2011]].  In this example, all mutational calls
+of a study will be pooled together, in order to find signatures related to a
+specific cancer type.
 
 #+NAME: sca_to_vranges
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
@@ -262,7 +260,6 @@ order to find signatures related to a specific cancer type.
       sampleNames = sca_data$Patient_ID,
       seqinfo = seqinfo(sca_data), 
       study = sca_data$study)
-  sca_vr = ucsc(sca_vr)
 
   sca_vr
 #+END_SRC
@@ -326,7 +323,7 @@ sequence content and the base substitution.
 
 #+NAME: sca_vr_to_motifs
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
-  sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+  sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.1000genomes.hs37d5, unify = TRUE)
   head(sca_motifs)
 #+END_SRC
 
@@ -660,10 +657,10 @@ chromosomes, based on a sample of 10'000 locations.
   k = 3
   n = 1e4
          
-  hs_chrs = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
+  hs_chrs = as(seqinfo(BSgenome.Hsapiens.1000genomes.hs37d5), "GRanges")
   hs_chrs = keepStandardChromosomes(hs_chrs)
 
-  k3_hs_chrs = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_chrs)
+  k3_hs_chrs = kmerFrequency(BSgenome.Hsapiens.1000genomes.hs37d5, n, k, hs_chrs)
   k3_hs_chrs
  #+END_SRC
 
@@ -679,9 +676,9 @@ how to apply the approach to the human exome.
   n = 1e4
       
   hs_exons = reduce(exons(TxDb.Hsapiens.UCSC.hg19.knownGene))
-  hs_exons = keepStandardChromosomes(hs_exons)
+  hs_exons = ncbi(keepStandardChromosomes(hs_exons))
 
-  k3_exons = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_exons)
+  k3_exons = kmerFrequency(BSgenome.Hsapiens.1000genomes.hs37d5, n, k, hs_exons)
 #+END_SRC
 
 With the =normalizeMotifs= function, the frequency of motifs can be adjusted.

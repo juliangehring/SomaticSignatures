@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2015-09-04 Fr 11:10 -->
+<!-- 2015-10-27 Di 16:01 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
@@ -88,7 +88,7 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#orgheadline1">1. Motivation: The Concept Behind Mutational Signatures</a></li>
 <li><a href="#orgheadline2">2. Methodology: From Mutations to Somatic Signatures</a></li>
-<li><a href="#orgheadline3">3. Workflow and Implementation: Analysis with the SomaticSignatures Package</a></li>
+<li><a href="#orgheadline3">3. Workflow: Analysis with the SomaticSignatures Package</a></li>
 <li><a href="#orgheadline14">4. Use case: Estimating Somatic Signatures from TCGA WES Studies</a>
 <ul>
 <li><a href="#orgheadline4">4.1. Data: Preproccessing of the TCGA WES Studies</a></li>
@@ -243,7 +243,7 @@ and \(H\)
 </p>
 
 <p>
-\($M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}$\)
+\(M_{ij} \approx \sum_{k=1}^{r} W_{ik} H_{kj}\)
 </p>
 
 <p>
@@ -256,7 +256,7 @@ signature to the alterations present in each sample.
 
 
 <div id="outline-container-orgheadline3" class="outline-2">
-<h2 id="orgheadline3"><span class="section-number-2">3</span> Workflow and Implementation: Analysis with the SomaticSignatures Package</h2>
+<h2 id="orgheadline3"><span class="section-number-2">3</span> Workflow: Analysis with the SomaticSignatures Package</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The <code>SomaticSignatures</code> package offers a framework for inferring signatures of
@@ -338,7 +338,7 @@ end.rcode-->
 
 <!--begin.rcode load_data_package, results='hide',message=FALSE
 library(SomaticCancerAlterations)
-library(BSgenome.Hsapiens.UCSC.hg19)
+library(BSgenome.Hsapiens.1000genomes.hs37d5)
 end.rcode-->
 </div>
 
@@ -363,11 +363,9 @@ The starting point of the analysis is a <code>VRanges</code> object which descri
 somatic variants in terms of their genomic locations as well as reference and
 alternative alleles.  For more details about this class and how to construct it,
 please see the documentation of the <code>VariantAnnotation</code> package
-[<a href="#obenchain_variantannotation:_2011">12</a>].  Since the genomic positions are given
-in the <i>NCBI</i> notation and the references used later are in <i>UCSC</i> notation, the
-functions <code>ucsc</code> and <code>ncbi</code> are used to easily switch between the two notations.
-In this example, all mutational calls of a study will be pooled together, in
-order to find signatures related to a specific cancer type.
+[<a href="#obenchain_variantannotation:_2011">12</a>].  In this example, all mutational calls
+of a study will be pooled together, in order to find signatures related to a
+specific cancer type.
 </p>
 
 <!--begin.rcode sca_to_vranges
@@ -385,7 +383,6 @@ sca_vr = VRanges(
     sampleNames = sca_data$Patient_ID,
     seqinfo = seqinfo(sca_data), 
     study = sca_data$study)
-sca_vr = ucsc(sca_vr)
 
 sca_vr
 end.rcode-->
@@ -419,7 +416,7 @@ sequence content and the base substitution.
 </p>
 
 <!--begin.rcode sca_vr_to_motifs
-sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.UCSC.hg19, unify = TRUE)
+sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.1000genomes.hs37d5, unify = TRUE)
 head(sca_motifs)
 end.rcode-->
 
@@ -773,10 +770,10 @@ chromosomes, based on a sample of 10'000 locations.
 k = 3
 n = 1e4
 
-hs_chrs = as(seqinfo(BSgenome.Hsapiens.UCSC.hg19), "GRanges")
+hs_chrs = as(seqinfo(BSgenome.Hsapiens.1000genomes.hs37d5), "GRanges")
 hs_chrs = keepStandardChromosomes(hs_chrs)
 
-k3_hs_chrs = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_chrs)
+k3_hs_chrs = kmerFrequency(BSgenome.Hsapiens.1000genomes.hs37d5, n, k, hs_chrs)
 k3_hs_chrs
 end.rcode-->
 
@@ -793,9 +790,9 @@ k = 3
 n = 1e4
 
 hs_exons = reduce(exons(TxDb.Hsapiens.UCSC.hg19.knownGene))
-hs_exons = keepStandardChromosomes(hs_exons)
+hs_exons = ncbi(keepStandardChromosomes(hs_exons))
 
-k3_exons = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, n, k, hs_exons)
+k3_exons = kmerFrequency(BSgenome.Hsapiens.1000genomes.hs37d5, n, k, hs_exons)
 end.rcode-->
 
 <p>

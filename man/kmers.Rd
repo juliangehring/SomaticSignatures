@@ -43,7 +43,7 @@ kmerFrequency(ref, n = 1e4, k = 1, ranges = as(seqinfo(ref), "GRanges"))
 }
 
 \examples{
-  library(BSgenome.Hsapiens.UCSC.hg19)
+  library(BSgenome.Hsapiens.1000genomes.hs37d5)
   
-  kmer_freq = kmerFrequency(BSgenome.Hsapiens.UCSC.hg19, 1e2, 3)
+  kmer_freq = kmerFrequency(BSgenome.Hsapiens.1000genomes.hs37d5, 1e2, 3)
 }

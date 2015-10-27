@@ -31,9 +31,9 @@
 }
   
 \examples{
-library(BSgenome.Hsapiens.UCSC.hg19)
+library(BSgenome.Hsapiens.1000genomes.hs37d5)
 
-regs = GRanges(c("chr1", "chr2"), IRanges(1e7, width = 100))
+regs = GRanges(c("1", "2"), IRanges(1e7, width = 100))
 
-gc = gcContent(regs, BSgenome.Hsapiens.UCSC.hg19)
+gc = gcContent(regs, BSgenome.Hsapiens.1000genomes.hs37d5)
 }
