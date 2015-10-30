@@ -5,6 +5,15 @@ context("mutect")
 
 mutect_path = system.file("examples", "mutect.tsv", package = "SomaticSignatures")
 
+## random mutations
+n = 100
+ref = sample(1:4, n, TRUE)
+alt = sapply(ref, function(r) sample(setdiff(1:4, r), 1))
+vr = VRanges(sample(1:3, n, TRUE),
+             IRanges(sample(1:10000, n), width = 1),
+             ref = ref, alt = alt,
+             sampleNames = sample(c("T1", "T2"), n, TRUE))
+
 test_that("'readMutect' works", {
 
     expect_true( file.exists(mutect_path) )
@@ -77,6 +86,16 @@ test_that("'mutationContext' works", {
     }
 })
 
+context("plotRainfall")
+
+test_that("'plotRainfall' work", {
+
+    plotRainfall(granges(vr))
+
+    plotRainfall(vr)
+    plotRainfall(vr, "alt")
+
+})
 
 context("datasets")
 
