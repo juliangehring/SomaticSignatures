@@ -139,8 +139,7 @@ reference sequence can be, for example, a =FaFile= object, representing an
 indexed FASTA file, a =BSgenome= object, or a =GmapGenome= object.
 Alternatively, we provide functions to extract the relevant information from
 other sources of inputs.  At the moment, this covers the /MuTect/
-[[cite:cibulskis_sensitive_2013]] variant caller and the /h5vc/ package
-[[cite:pyl_h5vc:_2014]] [[cite:pyl_h5vc:_2013]].
+[[cite:cibulskis_sensitive_2013]] variant caller.
 
 Generally, the individual steps of the analysis can be summarized as:
 

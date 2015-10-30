@@ -20,7 +20,7 @@ exportMethods(show, signatures, samples, observed, fitted)
 
 export(readMutect)
 export(ucsc, ncbi, seqchar)
-export(mutationContext, mutationContextMutect, mutationContextH5vc)
+export(mutationContext, mutationContextMutect)
 export(kmerFrequency)
 export(mutationDistance)
 export(plotRainfall, plotVariantAbundance)

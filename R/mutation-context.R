@@ -79,35 +79,3 @@ mutationContextMutect <- function(vr, k = 3, unify = TRUE) {
 
     return(vr)
 }
-
-
-mutationContextH5vc <- function( vc, ms, unify = TRUE ) {
-
-    vr = VRanges(
-        vc$Chrom,
-        IRanges(vc$Start, vc$End),
-        sampleNames = vc$Sample,
-        ref = vc$refAllele,
-        alt = vc$altAllele)
-
-    ref_base = DNAStringSet(ref(vr))
-    alt_base = DNAStringSet(alt(vr))
-    context = DNAStringSet(ms$Context)
-    k = width(context[1])
-    mid = (k+1) / 2
-    subseq(context, mid, mid) = "."
-
-    ## convert to alterations starting with "C/T"
-    if(unify) {
-        idx_complement = ref_base %in% c("A", "G")
-        context[idx_complement] = reverseComplement(context[idx_complement])
-        ref_base[idx_complement] = reverseComplement(ref_base[idx_complement])
-        alt_base[idx_complement] = reverseComplement(alt_base[idx_complement])
-    }    
-
-    alteration = xscat(ref_base, alt_base)
-    df = DataFrame(alteration = alteration, context = context)      
-    mcols(vr) = cbind(mcols(vr), df)
-
-    return(vr)
-}

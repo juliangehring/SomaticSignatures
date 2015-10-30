@@ -2,7 +2,6 @@
 
 \alias{mutationContext}
 \alias{mutationContextMutect}
-\alias{mutationContextH5vc}
 
 \title{mutationContext functions}
 
@@ -16,7 +15,6 @@
 \usage{
 mutationContext(vr, ref, k = 3, strand = FALSE, unify = TRUE, check = FALSE)
 mutationContextMutect(vr, k = 3, unify = TRUE)
-mutationContextH5vc(vc, ms, unify = TRUE)
 }
 
 \arguments{
@@ -45,14 +43,6 @@ mutationContextH5vc(vc, ms, unify = TRUE)
     'ref' [logical, default: TRUE]?  In case the two references do not
     match, a warning will be printed.}
 
-  \item{vc}{A 'DataFrame' object as returned from a variant calling
-    analysis by 'h5vc::h5dapply'.  See the 'details' section for more
-    information.}
-
-  \item{ms}{A 'DataFrame' object as returned by
-    'h5vc::mutationSpectrum'.  See the 'details' section for more
-    information.}
-
 }
 
 \details{
@@ -71,10 +61,6 @@ mutationContextH5vc(vc, ms, unify = TRUE)
   contained in the results and somatic motifs can constructed by using
   the 'mutationContextMutect' function, without the need for the
   reference sequence.
-
-  For h5vc variant calls, the information is merged from the outputs of
-  the 'h5dapply' and 'mutationSpectrum' functions of the 'h5vc' package.
-  A detailed example is shown in the vignette of the package.
   
 }
 
