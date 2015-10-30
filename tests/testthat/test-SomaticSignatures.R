@@ -12,6 +12,8 @@ alt = sapply(ref, function(r) sample(setdiff(1:4, r), 1))
 vr = VRanges(sample(1:3, n, TRUE),
              IRanges(sample(1:10000, n), width = 1),
              ref = ref, alt = alt,
+             totalDepth = rbinom(n, 50, 0.9),
+             altDepth = rbinom(n, 40, 0.4), 
              sampleNames = sample(c("T1", "T2"), n, TRUE))
 
 test_that("'readMutect' works", {
@@ -86,7 +88,7 @@ test_that("'mutationContext' works", {
     }
 })
 
-context("plotRainfall")
+context("Variant plots")
 
 test_that("'plotRainfall' work", {
 
@@ -96,6 +98,13 @@ test_that("'plotRainfall' work", {
     plotRainfall(vr, "alt")
 
 })
+
+test_that("'plotVariantAbundance' work", {
+
+    plotVariantAbundance(vr)
+
+})
+
 
 context("datasets")
 
@@ -151,9 +160,12 @@ test_that("'assessNumberSignatures' works", {
 
     gof_nmf = assessNumberSignatures(sca_mm, 2:4)
     expect_is( gof_nmf, "data.frame" )
+    plotNumberSignatures(gof_nmf)
 
     gof_pca = assessNumberSignatures(sca_mm, 2:4, pcaDecomposition)
     expect_is( gof_pca, "data.frame" )
+    plotNumberSignatures(gof_pca)
+
 })
 
 test_that("'assessNumberSignatures' low-level functions work", {
@@ -172,4 +184,51 @@ test_that("'assessNumberSignatures' low-level functions work", {
     e1 = evar(x, x)
     expect_equal( r1, 0 )
     expect_equal( e1, 1 )
+})
+
+
+context("plotting")
+
+test_that("plotting functions works", {
+
+    data("sca_sigs", package = "SomaticSignatures")
+
+    plotObservedSpectrum(sigs_nmf)
+    plotObservedSpectrum(sigs_nmf, "sample")
+    plotObservedSpectrum(sigs_nmf, "alteration")
+    expect_error( plotObservedSpectrum(sigs_nmf, "no") )
+
+    plotFittedSpectrum(sigs_nmf)
+    plotFittedSpectrum(sigs_nmf, "sample")
+    plotFittedSpectrum(sigs_nmf, "alteration")
+    expect_error( plotFittedSpectrum(sigs_nmf, "no") )
+
+    plotSignatures(sigs_nmf)
+    plotSignatures(sigs_nmf, normalize = TRUE)
+    plotSignatures(sigs_nmf, normalize = TRUE, percent = TRUE)
+    plotSignatures(sigs_nmf, normalize = FALSE, percent = TRUE)
+
+    plotSignatureMap(sigs_nmf)
+
+    plotSamples(sigs_nmf)
+    plotSamples(sigs_nmf, normalize = TRUE)
+    plotSamples(sigs_nmf, normalize = TRUE, percent = TRUE)
+    plotSamples(sigs_nmf, normalize = FALSE, percent = TRUE)
+
+    plotSampleMap(sigs_nmf)
+
+})
+
+context("Human chromosomes")
+
+test_that("'hs*' work", {
+
+    expect_equal( length(hsToplevel()), 25 )
+
+    expect_equal( length(hsAutosomes()), 22 )
+
+    expect_equal( length(hsAllosomes()), 2 )
+
+    expect_equal( length(hsLinear()), 24 )
+
 })
