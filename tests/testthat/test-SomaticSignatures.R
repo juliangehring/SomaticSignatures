@@ -139,6 +139,8 @@ context("motifMatrix")
 
 test_that("'motifMatrix' works", {
 
+    data(sca_motifs_tiny)
+  
     vr1 = readMutect(mutect_path)
     vr1 = mutationContextMutect(vr1)
     vr = readMutect(mutect_path, strip = TRUE)

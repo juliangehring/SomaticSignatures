@@ -33,7 +33,7 @@ motifMatrix(vr, group = "sampleNames", normalize = TRUE)
   TRUE), the counts are transformed to frequencies, such that the sum of
   frequencies of each group equal 1.  Otherwise (with 'normalize' set to
   FALSE), the counts for each mofis in a group is returned.
-  
+
 }
 
 \value{
@@ -49,7 +49,7 @@ motifMatrix(vr, group = "sampleNames", normalize = TRUE)
 }
 
 \examples{
-\dontrun{
+data(sca_motifs_tiny)
+
 motifMatrix(sca_motifs, group = "study")
-}
 }
