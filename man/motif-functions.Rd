@@ -51,5 +51,5 @@ motifMatrix(vr, group = "sampleNames", normalize = TRUE)
 \examples{
 data(sca_motifs_tiny)
 
-motifMatrix(sca_motifs, group = "study")
+motifMatrix(sca_motifs_tiny, group = "study")
 }

@@ -135,24 +135,20 @@ test_that("datasets for processing are available", {
 
 })
 
+
 context("motifMatrix")
 
 test_that("'motifMatrix' works", {
 
     data(sca_motifs_tiny)
+    vr = sca_motifs_tiny
   
-    vr1 = readMutect(mutect_path)
-    vr1 = mutationContextMutect(vr1)
-    vr = readMutect(mutect_path, strip = TRUE)
-    sampleNames(vr) = ifelse(start(vr) %% 2 == 0, "T", "N")
-    vr$context = vr1$context.1
-    vr$alteration = vr1$alteration
-
-    mm = motifMatrix(vr)
+    mm = motifMatrix(vr, "study")
 
     expect_equal( nrow(mm), 96 )
-    expect_equal( ncol(mm), 2 )
+    expect_equal( ncol(mm), nlevels(vr$study) )
 
+    expect_true( all(colSums(mm) == 1) )
 })
 
 
