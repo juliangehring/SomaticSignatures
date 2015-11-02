@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2015-10-30 Fr 18:16 -->
+<!-- 2015-11-02 Mo 15:14 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inferring Somatic Signatures from Single Nucleotide Variant Calls</title>
@@ -415,7 +415,7 @@ sequence content and the base substitution.
 </p>
 
 <!--begin.rcode sca_vr_to_motifs
-sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.1000genomes.hs37d5, unify = TRUE)
+sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.1000genomes.hs37d5)
 head(sca_motifs)
 end.rcode-->
 
@@ -501,7 +501,7 @@ to the <code>identifySignatures</code> function.
 <!--begin.rcode 
 n_sigs = 2:8
 
-gof_nmf= assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
+gof_nmf = assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
 
 gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
 end.rcode-->

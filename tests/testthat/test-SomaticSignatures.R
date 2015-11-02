@@ -88,6 +88,21 @@ test_that("'mutationContext' works", {
     }
 })
 
+
+context("GC")
+
+test_that("'gc' works", {
+
+    if(require(BSgenome.Hsapiens.1000genomes.hs37d5)) {
+
+        roi = as(seqinfo(BSgenome.Hsapiens.1000genomes.hs37d5), "GRanges")[22]
+        gc22 = gcContent(roi, BSgenome.Hsapiens.1000genomes.hs37d5)
+        expect_equal(round(gc22, 2), 0.48)
+
+    }
+})
+
+
 context("Variant plots")
 
 test_that("'plotRainfall' work", {
@@ -135,7 +150,7 @@ test_that("'motifMatrix' works", {
 
     expect_equal( nrow(mm), 96 )
     expect_equal( ncol(mm), 2 )
-  
+
 })
 
 

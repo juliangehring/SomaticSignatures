@@ -322,7 +322,7 @@ sequence content and the base substitution.
 
 #+NAME: sca_vr_to_motifs
 #+BEGIN_SRC R :session *R-ss-vignette* :exports both :results output
-  sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.1000genomes.hs37d5, unify = TRUE)
+  sca_motifs = mutationContext(sca_vr, BSgenome.Hsapiens.1000genomes.hs37d5)
   head(sca_motifs)
 #+END_SRC
 
@@ -407,7 +407,7 @@ to the =identifySignatures= function.
 #+BEGIN_SRC R
   n_sigs = 2:8
 
-  gof_nmf= assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
+  gof_nmf = assessNumberSignatures(sca_mm, n_sigs, nReplicates = 5)
 
   gof_pca = assessNumberSignatures(sca_mm, n_sigs, pcaDecomposition)
 #+END_SRC
