@@ -1,7 +1,7 @@
 identifySignaturesVRanges <- function(vr, group, nSigs, decomposition = nmfDecomposition, ...) {
 
     m = motifMatrix(vr, group, normalize = TRUE)
-    
+
     res = findSignatures(m, nSigs, decomposition, ...)
     res@decomposition = decomposition
     res@options = list(...)
@@ -21,12 +21,15 @@ identifySignatures <- function(m, nSigs, decomposition = nmfDecomposition, ...) 
 findSignatures <- function(x, r, decomposition = nmfDecomposition, ...) {
 
     ## check input arguments
-    if(!( length(r) == 1 & all.equal(r, as.integer(r)) & r > 0 ))
-        stop("'nSigs | r' must be a single, positive integer.")
+    nm = min(dim(x))
+    if(!( length(r) == 1 & all.equal(r, as.integer(r)) & r > 0 & r <= nm)) {
+        msg = "'nSigs | r' must be a single, positive integer in the range [1,%d]"
+        stop(sprintf(msg, nm))
+    }
 
     if(!is.function(decomposition))
         stop("'decomposition' must be a function.")
-    
+
     dc = decomposition(x, r, ...)
 
     ## check returned object
@@ -36,7 +39,7 @@ findSignatures <- function(x, r, decomposition = nmfDecomposition, ...) {
             paste(required_names, ", "))
         stop(msg)
     }
-    
+
     res = new("MutationalSignatures",
         signatures = dc$w,
         samples = dc$h,

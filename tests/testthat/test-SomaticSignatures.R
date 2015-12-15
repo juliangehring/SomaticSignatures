@@ -142,7 +142,7 @@ test_that("'motifMatrix' works", {
 
     data(sca_motifs_tiny)
     vr = sca_motifs_tiny
-  
+
     mm = motifMatrix(vr, "study")
 
     expect_equal( nrow(mm), 96 )
@@ -178,6 +178,10 @@ test_that("'identifySignatures' handles bad inputs", {
     expect_error( identifySignatures(sca_mm, 0),
                  ".*single, positive integer.*")
 
+    ## bad number of signatures
+    expect_error( identifySignatures(sca_mm, min(dim(sca_mm))+1),
+                 ".*in the range.*")
+
     ## 'decomposition' argument no function
     expect_error( identifySignatures(sca_mm, 3, "a"),
                  "*.must be a function.*")
@@ -200,6 +204,16 @@ test_that("'assessNumberSignatures' works", {
     gof_pca = assessNumberSignatures(sca_mm, 2:4, pcaDecomposition)
     expect_is( gof_pca, "data.frame" )
     plotNumberSignatures(gof_pca)
+
+})
+
+test_that("'assessNumberSignatures' handles bad inputs", {
+
+    data("sca_mm", package = "SomaticSignatures")
+
+    nm = min(dim(sca_mm))
+    expect_error( assessNumberSignatures(sca_mm, (nm-1):(nm+2)),
+                 ".*in the range.*")
 
 })
 
